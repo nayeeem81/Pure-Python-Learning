@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>c0441d29-b03f-4854-9f47-39837454508c</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>PythonWavFileExtractHeaderMetadata.py</StartupFile>
+    <StartupFile>PythonWavExtractMetadata.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,7 +22,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="PythonWavFileExtractHeaderMetadata.py" />
+    <Compile Include="PythonWavExtractMetadata.py" />
     <Compile Include="PythonWavProcesser.py">
       <SubType>Code</SubType>
     </Compile>
