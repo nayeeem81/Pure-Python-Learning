@@ -20,14 +20,16 @@ with wave.open(input_filename, "rb") as wav:
     sample_width = wav.getsampwidth()
     sample_rate = wav.getframerate()
     num_frames = wav.getnframes()
-    
     # Read raw binary frames
     raw_bytes = wav.readframes(num_frames)
 
 if num_channels != 2:
     print(f"💡 This script is designed for 2-channel Stereo. Your file has {num_channels} channel(s).")
+
     print("For demonstration, we will duplicate the mono channel as Left and Right.")
+
     num_channels = 2
+
     # Duplicate bytes to simulate stereo if file is mono
     if sample_width == 2:
         new_bytes = bytearray()
