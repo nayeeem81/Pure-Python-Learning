@@ -1,3 +1,5 @@
+
+
 # How to display a waves of samples (2 channel) from total sample in a chart in python.
 
 To display your 2-channel (Stereo) audio samples visually inside a chart, you can use Python's built-in tkinter module to draw a custom graph from scratch. This maintains your pure Python (zero-install) requirement without needing heavy external charting packages like Matplotlib or NumPy.

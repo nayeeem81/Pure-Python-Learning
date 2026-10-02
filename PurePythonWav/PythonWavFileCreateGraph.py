@@ -3,7 +3,6 @@ import struct
 import tkinter as tk
 import wave
 
-
 # Fix working directory for Visual Studio
 try:
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -12,9 +11,6 @@ except Exception:
 
 input_filename = "vs_audio_mix.wav"
 
-# ==========================================
-# 1. EXTRACT AND SEPARATE STEREO SAMPLES
-# ==========================================
 if not os.path.exists(input_filename):
     print(f"Error: '{input_filename}' not found. Please run your audio creation script first!")
     exit()
