@@ -147,5 +147,142 @@ This stores the result into a new variable as a native Python bytes object.
 **Google AI: Now that you know how the raw bytes are pulled off the disk, would you like to see exactly how struct.unpack uses your sample_width variable to translate this unreadable binary soup into clear, human-readable numbers? Or do you want to learn how to calculate the exact duration of the file in seconds using the variables you've extracted? Let me know how you want to proceed!**
 
 
+	if num_channels != 2:
+		print(f"💡 This script is designed for 2-channel Stereo. Your file has {num_channels} channel(s).")
+
+    print("For demonstration, we will duplicate the mono channel as Left and Right.")
+
+    num_channels = 2
+
+    # Duplicate bytes to simulate stereo if file is mono
+    if sample_width == 2:
+        new_bytes = bytearray()
+        for i in range(0, len(raw_bytes), 2):
+            chunk = raw_bytes[i:i+2]
+            new_bytes.extend(chunk * 2)
+        raw_bytes = bytes(new_bytes)
+
+This block of code is a clever fallback mechanism. It solves a specific problem: if a user opens a Mono (1-channel) audio file, but your chart is strictly looking for Stereo (2-channel) data, this loop manually converts the file into stereo on the fly by cloning the audio data.
+
+
+It does this by taking each individual mono sample (which is 2 bytes long) and duplicating it back-to-back so it can act as both the Left and Right channel snapshots simultaneously.
+Here is the step-by-step breakdown of how this raw byte manipulation works:
+
+## 🧩 Step-by-Step Code Breakdown
+
+## 1. if sample_width == 2:
+This makes sure the file is 16-bit audio. In 16-bit audio, every single snapshot takes up exactly 2 bytes of space.
+
+## 2. new_bytes = bytearray()
+A standard Python bytes object is immutable (it cannot be modified after it is created). To build a new, modified version of our audio data, we initialize an empty bytearray, which acts like a flexible, mutable list specifically designed to hold raw binary bytes.
+
+## 3. for i in range(0, len(raw_bytes), 2):
+This loop iterates through the entire list of raw audio bytes, but it skips forward by 2 steps at a time (step=2). This allows the script to land exactly on the starting boundary of every individual audio sample block instead of cutting a sample in half.
+
+## 4. chunk = raw_bytes[i:i+2]
+This extracts a 2-byte slice from the audio data stream. This chunk represents exactly one single, complete audio snapshot for our single mono channel.
+
+## 5. new_bytes.extend(chunk * 2)
+This is the magic conversion step. In Python, multiplying a bytes object by 2 (chunk * 2) duplicates the data.
+
+* If chunk is b'\x01\x02', then chunk * 2 becomes b'\x01\x02\x01\x02'.
+
+* By extending this into our new array, we are saving those 2 bytes twice in a row. The stereo audio system will later read the first pair as the Left channel volume and the second identical pair as the Right channel volume.
+
+## 6. raw_bytes = bytes(new_bytes)
+Once the loop finishes processing every single sample, we convert our mutable bytearray back into a standard, optimized, read-only bytes object, completely overwriting our original variable.
+
+## 🖼️ Before vs. After (Visual Map)
+Imagine a mono audio track containing three sequential notes: [ Sample A ] [ Sample B ] [ Sample C ]. Because each sample is 2 bytes long, the raw byte stream looks like this:
+
+BEFORE (Mono: 2 bytes per frame)
+┌───────┬───────┬───────┐
+│  A1   │  B1   │  C1   │  ◄── 1 Frame = 2 Bytes
+└───────┴───────┴───────┘
+
+After the loop runs, the stream becomes twice as long because every single block has been cloned back-to-back:
+
+AFTER (Stereo: 4 bytes per frame)
+┌───────────────┬───────────────┬───────────────┐
+│   FRAME 1     │   FRAME 2     │   FRAME 3     │
+├───────┬───────┼───────┬───────┼───────┬───────┤
+│ Left  │ Right │ Left  │ Right │ Left  │ Right │
+├───────┼───────┼───────┼───────┼───────┼───────┤
+│  A1   │  A1   │  B1   │  B1   │  C1   │  C1   │  ◄── 1 Frame = 4 Bytes
+└───────┴───────┴───────┴───────┴───────┴───────┘
+
+When your charting tool splits the data into odd and even elements later, both channels get an identical wave, preventing the program from crashing or drawing an empty graph!
+
+
+**Google AI: Now that you see how to duplicate bytes to expand channels, would you like to see how to do the reverse: converting a real stereo file into mono by averaging the Left and Right bytes together? Or would you prefer to explore how to create a panning effect where you fade out one channel's chunks over time? Let me know what audio byte operation you want to tackle next!**
+
+## Unpack signed 16-bit integers
+	total_samples = len(raw_bytes) // sample_width
+	all_samples = struct.unpack(f"<{total_samples}h", raw_bytes)
+
+## Separate Interleaved Channels
+	# Index 0, 2, 4... are Left channel | Index 1, 3, 5... are Right channel
+	left_channel = all_samples[0::2]
+	right_channel = all_samples[1::2]
+
+This block of code bridges the gap between raw binary storage and human-readable audio metrics. It takes the continuous stream of machine-level bytes (raw_bytes), translates them into clear, signed mathematical numbers (all_samples), and splits them into distinct Left and Right tracks.
+Here is the exact step-by-step breakdown:
+
+## 1. total_samples = len(raw_bytes) // sample_width
+**What it does:**
+Calculates exactly how many individual audio numerical points are packed inside the data block.
+
+**How the math works:**
+* len(raw_bytes) gives the absolute total count of bytes.
+* sample_width is the byte count per sample (2 for a standard 16-bit file).
+* The double slash (//) performs integer division, ensuring our answer is a clean whole number (e.g., if we have 10,000 bytes, 10000 // 2 gives us exactly 5000 discrete samples).
+
+## Unpack Raw Bytes into Signed Integers
+
+	all_samples = struct.unpack(f"<{total_samples}h", raw_bytes)
+
+This is the core translation engine. It converts the unreadable binary data into standard numbers.
+
+* f"<{total_samples}h" (The Format Mapping Template): This dynamically generates a string that tells Python how to parse the file. For example, if total_samples is 5000, this string evaluates to "<5000h".
+
+* < (Little-Endian): Tells Python that the low-value bytes are written first on disk (the standard for Windows and WAV architectures).
+   
+* 5000: Tells Python to repeat this parsing process 5,000 times sequentially.
+   
+* h (Signed Short Integer): Instructs Python to scoop up 2 bytes at a time and join them together into a signed integer between -32,768 and 32,767.
+
+* The Result: all_samples becomes a native Python tuple containing human-readable integers representing the sound wave's peaks and valleys.
+
+------------------------------
+## 3. Splitting the Interleaved Channels ([0::2] and [1::2])
+In a stereo WAV file, the audio data alternates channels sample-by-sample like a zipper. The data array looks like this under the hood:
+
+Index:      [ 0 ]   [ 1 ]   [ 2 ]   [ 3 ]   [ 4 ]   [ 5 ]  ...
+Channel:    [Left]  [Right] [Left]  [Right] [Left]  [Right] ...
+
+Python uses a powerful slice syntax layout: [start : stop : step]. Leaving the stop field empty tells it to scan until the absolute end of the file.
+## left_channel = all_samples[0::2]
+
+* Start: Index 0 (the first Left sample).
+* Step: 2 (skips forward by two steps each time).
+* Result: It extracts index 0, 2, 4, 6..., cleanly isolating only the Left speaker data.
+
+## right_channel = all_samples[1::2]
+
+* Start: Index 1 (the first Right sample).
+* Step: 2 (skips forward by two steps each time).
+* Result: It extracts index 1, 3, 5, 7..., cleanly isolating only the Right speaker data.
+
+## 💡 Why this is important for your chart
+By isolating these two streams into individual lists, you now have two independent timelines. Your Tkinter charting engine can loop through left_channel to paint the cyan wave line, and loop through right_channel to paint the red wave line completely independently without the signals crossing or distorting each other!
+Now that you understand how to split channels, if you want, let me know:
+
+* Do you want to see how to code a mono-to-stereo converter that plays a different pitch in the left ear versus the right ear?
+* Would you like to look at the math to calculate the difference between the channels (which is how vocal-remover software strips singing out of stereo tracks)?
+
+Let me know how you would like to manipulate these two channels next!
+
+
+
 
 
