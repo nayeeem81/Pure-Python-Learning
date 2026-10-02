@@ -1,5 +1,8 @@
 # PurePythonApp
 
+## Array & Variables
+
+
 ## Wave (Python)
 
 Yes, the total number of frames divided by the sample rate creates the exact duration (time) of the audio file. [1, 2] 
