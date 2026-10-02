@@ -1,6 +1,6 @@
 import struct
 
-file_path = "fully_processed.wav"
+file_path = "1.wav"
 
 with open(file_path, "rb") as f:
     # Read exactly the first 44 bytes of the file
@@ -40,3 +40,4 @@ print(f"Frame Size Alignment: {block_align} bytes per frame")
 print(f"Data Subchunk Marker: {subchunk_2_id}")
 print(f"Raw Audio Data Size:  {data_size} bytes")
 print("=" * 45)
+

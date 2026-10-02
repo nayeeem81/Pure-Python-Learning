@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Solution Items/">
+    <File Path="Pure Python Stereo Waveform Charting Script.md" />
     <File Path="PythonFileDirectory.md" />
     <File Path="PythonWavMetadata.md" />
     <File Path="WavExample.md" />
