@@ -1,8 +1,8 @@
 <Solution>
   <Folder Name="/Solution Items/">
-    <File Path="AudioWavFileConcept.md" />
+    <File Path="AudioWavFileConcepts.md" />
+    <File Path="PythonBestPractisesObjects.md" />
     <File Path="PythonControlStatements.md" />
-    <File Path="PythonObjects.md" />
     <File Path="PythonWavFileCreateChart.md" />
     <File Path="PythonWavProcesser.md" />
     <File Path="README.md" />
