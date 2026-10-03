@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>c0441d29-b03f-4854-9f47-39837454508c</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>PythonWavFileCreateChart.py</StartupFile>
+    <StartupFile>ZoomWavPlayer.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,10 +22,14 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="InteractiveWavPlayer.py" />
     <Compile Include="PythonWavFileMetadata.py" />
     <Compile Include="PythonWavFileTimeDuration.py" />
     <Compile Include="PythonWavFileCreateChart.py" />
     <Compile Include="PythonWavProcesser.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ZoomWavPlayer.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
