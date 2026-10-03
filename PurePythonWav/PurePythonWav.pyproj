@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>c0441d29-b03f-4854-9f47-39837454508c</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>PythonWavFileCreateGraph.py</StartupFile>
+    <StartupFile>PythonWavFileCreateChart.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,9 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="PythonWavExtractMetadata.py" />
-    <Compile Include="PythonWavFileCalculateDuration.py" />
-    <Compile Include="PythonWavFileCreateGraph.py" />
+    <Compile Include="PythonWavFileMetadata.py" />
+    <Compile Include="PythonWavFileTimeDuration.py" />
+    <Compile Include="PythonWavFileCreateChart.py" />
     <Compile Include="PythonWavProcesser.py">
       <SubType>Code</SubType>
     </Compile>
