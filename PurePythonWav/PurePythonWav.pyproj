@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>c0441d29-b03f-4854-9f47-39837454508c</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>circle.py</StartupFile>
+    <StartupFile>ZoomWavPlayer.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -32,6 +32,7 @@
     <Compile Include="PythonWavProcesser.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ManupulateWavPlayer.py" />
     <Compile Include="ZoomWavPlayer.py">
       <SubType>Code</SubType>
     </Compile>
@@ -48,6 +49,7 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="abbatensor.wav" />
     <Content Include="vs_audio_mix.wav" />
     <Content Include="1.wav" />
     <Content Include="requirements.txt" />

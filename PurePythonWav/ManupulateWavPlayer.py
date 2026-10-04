@@ -11,7 +11,7 @@ try:
 except Exception:
     pass
 
-input_filename = "abba_processed.wav"
+input_filename = "abbatensor.wav"
 
 # ==========================================
 # 1. PARSE AUDIOS & SEPARATE CHANNELS
@@ -32,7 +32,7 @@ all_samples = struct.unpack(f"<{total_samples}h", raw_bytes)
 
 if num_channels == 2:
     left_channel = all_samples[0::2]
-    right_channel = all_samples[1::2]
+    right_channel = left_channel[1::2]
 else:
     left_channel = list(all_samples)
     right_channel = list(all_samples)

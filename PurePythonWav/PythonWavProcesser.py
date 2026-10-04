@@ -2,8 +2,8 @@ import math
 import os
 import struct
 
-input_filename = "1.wav"
-output_filename = "fully_processed.wav"
+input_filename = "abbatensor.wav"
+output_filename = "abba_processed.wav"
 
 # ==========================================
 # 1. PARSE THE RAW FILE & HEADER MANUALLY

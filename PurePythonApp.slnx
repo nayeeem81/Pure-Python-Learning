@@ -4,6 +4,7 @@
     <File Path="InteractiveWavPlayer.md" />
     <File Path="PythonBestPractisesObjects.md" />
     <File Path="PythonControlStatements.md" />
+    <File Path="PythonModuleGlobalVariables.md" />
     <File Path="PythonWavFileCreateChart.md" />
     <File Path="PythonWavProcesser.md" />
     <File Path="README.md" />
