@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="vs_audio_mix.wav" />
-    <Content Include="Wav\2.wav" />
+    <Content Include="Wav\1.wav" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>

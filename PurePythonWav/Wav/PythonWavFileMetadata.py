@@ -1,12 +1,13 @@
-import os
 import sys
+import os
 import struct
 import asyncio  
 
 import aiofiles # <--- Import this for non-blocking file reads
 
+
 # Expose both the runner function and the global configuration variable
-__all__ = ['extract_wav_file_header', 'global_file_path']
+__all__ = ['print_wav_file_header', 'extract_wav_file_header', 'global_file_path']
 
 
 # Fix root execution directory routing inside Visual Studio
@@ -15,45 +16,78 @@ try:
 except Exception:
     pass
 
-global_file_path = "2.wav"
+
+
+
+
+global_file_path = "1.wav"
+
+
+
+def initialize_path():
+	global global_file_path
+
 
 
 def initialize_debugging_arguments():
+ 
     global global_file_path
 
     try:
-        # Visual Studio will inject the argument into sys.argv[1]
+        # Check if a non-empty argument was passed
         if len(sys.argv) > 1 and sys.argv[1].strip():
-            if not os.path.exists(sys.argv[1]):
-                print(f"⚠️ Error: '{sys.argv[1]}' not found. Please ensure it exists in your folder! 🏠 Using default file.")
-            else:
-                global_file_path =  sys.argv[1]
-                print(f"🐞 [VS 2026 Debugger Argument Caught.]: {global_file_path}")
+            print(f"🐞 [VS 2026 Debugger Argument Caught]: {sys.argv[1]}")
         else:
             print(f"🏠 [No Arguments Passed]: Using fallback default -> {global_file_path}")
-    except Exception as e:
-        print(f"⚠️ [Error Handling Debug Arguments]: {e.strerror}")
+
+
+        if  len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
+            # If the argument is a valid file path, set it as the global file path
+            global_file_path = sys.argv[1]
+        else:
+            # Explicitly keep or set default
+            initialize_path()
+            print(f"⚠️ Error: '{sys.argv[1]}' not found in your folder.")
+            print(f"🏠 Using fallback default -> {global_file_path}")
+    
+    except Exception:
+        # Explicitly keep or set default
+        initialize_path()
+        print(f"⚠️ [Error Handling Debug Arguments]")
+        print(f"🏠 Using fallback default -> {global_file_path}")
         pass
 
 
-initialize_debugging_arguments()
 
 async def extract_wav_file_header(): 
+    initialize_debugging_arguments()
+    header = await _get_header(global_file_path)
+    return header
+
+
+
+async def print_wav_file_header(): 
+    initialize_debugging_arguments()
     header = await _get_header(global_file_path)
     await _printheader(header)
 
 
 async def _get_header(path):  
    async with aiofiles.open(path, "rb") as f:
+        print()
         print(f"Reading WAV header from: {path}")
+       
         # Read exactly the first 44 bytes of the file
         header = await f.read(44)
         # Unpack the binary header according to the RIFF spec layout
+        
         # Format string guide:
         # 4s = 4-byte string, I = 4-byte unsigned int, H = 2-byte unsigned short
         elements = struct.unpack("<4sI4s4sIHHIIHH4sI", header)
+        
         await asyncio.sleep(0.1)  
         # Simulate async operation
+        
         return elements
 
 
@@ -76,6 +110,8 @@ async def _printheader(elements):
     await asyncio.sleep(0.1)  # Simulate async operation
  
     # Display our extracted metadata
+    print()
+    print()
     print("=" * 45)
     print("       RAW WAV HEADER METADATA             ")
     print("=" * 45)
@@ -91,8 +127,10 @@ async def _printheader(elements):
     print("=" * 45)
 
 
+
 async def main():
-    await extract_wav_file_header()
+    await print_wav_file_header()
+
 
 if __name__ == "__main__":
     asyncio.run(main())
