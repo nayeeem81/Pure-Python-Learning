@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>c0441d29-b03f-4854-9f47-39837454508c</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Wav\PythonWavFileMetadata.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -27,19 +27,23 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="circle.py">
+    <Compile Include="Circle\circle.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Wav\InteractiveWavPlayer.py" />
-    <Compile Include="Wav\PythonWavFileMetadata.py" />
-    <Compile Include="Wav\PythonWavFileTimeDuration.py" />
-    <Compile Include="Wav\PythonWavFileCreateChart.py" />
-    <Compile Include="Wav\PythonWavProcesser.py">
+    <Compile Include="config.py" />
+    <Compile Include="main.py" />
+    <Compile Include="Wav\interactive_wavplayer.py" />
+    <Compile Include="Wav\processor.py" />
+    <Compile Include="Wav\metadata.py" />
+    <Compile Include="Wav\wavfile_timelen.py" />
+    <Compile Include="Wav\wav_chart.py" />
+    <Compile Include="Wav\wav_export.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Wav\ZoomWavPlayer.py">
+    <Compile Include="Wav\zoom_wavplayer.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Wav\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -53,11 +57,11 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="vs_audio_mix.wav" />
     <Content Include="Wav\1.wav" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Circle\" />
     <Folder Include="Wav\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

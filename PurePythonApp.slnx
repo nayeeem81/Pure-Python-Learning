@@ -1,16 +1,16 @@
 <Solution>
   <Folder Name="/Solution Items/">
-    <File Path="AudioWavFileConcepts.md" />
-    <File Path="InteractiveWavPlayer.md" />
-    <File Path="PythonBestPractisesObjects.md" />
-    <File Path="PythonControlStatements.md" />
-    <File Path="PythonModuleGlobalVariables.md" />
-    <File Path="PythonMultiTasking.md" />
-    <File Path="PythonWavFileCreateChart.md" />
-    <File Path="PythonWavFileMetadata.md" />
+    <File Path="canvas_wave_sample_gui_study.md" />
+    <File Path="extract_metadata_study.md" />
+    <File Path="filesystem_formatting_ bytearrays_study.md" />
+    <File Path="module_design_structure_study.md" />
     <File Path="PythonWavProcesser.md" />
     <File Path="README.md" />
-    <File Path="ZoomWavPlayer.md" />
+    <File Path="threading_async_study.md" />
+    <File Path="try_catch_block.md" />
+    <File Path="wavfile_datastructure_study.md" />
+    <File Path="wav_player_zoom_chart.md" />
+    <File Path="wav_play_open_wavfiles.md" />
   </Folder>
   <Project Path="PurePythonWav/PurePythonWav.pyproj" Type="888888a0-9f3d-457c-b088-3a5042f75d52" Id="c0441d29-b03f-4854-9f47-39837454508c">
     <Build Project="false" />
