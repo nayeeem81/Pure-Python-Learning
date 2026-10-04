@@ -5,7 +5,9 @@
     <File Path="PythonBestPractisesObjects.md" />
     <File Path="PythonControlStatements.md" />
     <File Path="PythonModuleGlobalVariables.md" />
+    <File Path="PythonMultiTasking.md" />
     <File Path="PythonWavFileCreateChart.md" />
+    <File Path="PythonWavFileMetadata.md" />
     <File Path="PythonWavProcesser.md" />
     <File Path="README.md" />
     <File Path="ZoomWavPlayer.md" />

@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>c0441d29-b03f-4854-9f47-39837454508c</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>ZoomWavPlayer.py</StartupFile>
+    <StartupFile>Wav\PythonWavFileMetadata.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -12,6 +12,11 @@
     <Name>PurePythonWav</Name>
     <RootNamespace>PurePythonWav</RootNamespace>
     <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <CommandLineArguments>1.wav</CommandLineArguments>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <InterpreterPath>
+    </InterpreterPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,15 +30,14 @@
     <Compile Include="circle.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="InteractiveWavPlayer.py" />
-    <Compile Include="PythonWavFileMetadata.py" />
-    <Compile Include="PythonWavFileTimeDuration.py" />
-    <Compile Include="PythonWavFileCreateChart.py" />
-    <Compile Include="PythonWavProcesser.py">
+    <Compile Include="Wav\InteractiveWavPlayer.py" />
+    <Compile Include="Wav\PythonWavFileMetadata.py" />
+    <Compile Include="Wav\PythonWavFileTimeDuration.py" />
+    <Compile Include="Wav\PythonWavFileCreateChart.py" />
+    <Compile Include="Wav\PythonWavProcesser.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ManupulateWavPlayer.py" />
-    <Compile Include="ZoomWavPlayer.py">
+    <Compile Include="Wav\ZoomWavPlayer.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -49,10 +53,12 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="abbatensor.wav" />
     <Content Include="vs_audio_mix.wav" />
-    <Content Include="1.wav" />
+    <Content Include="Wav\2.wav" />
     <Content Include="requirements.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Wav\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
