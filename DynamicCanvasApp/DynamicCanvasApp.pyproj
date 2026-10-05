@@ -2,21 +2,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>c0441d29-b03f-4854-9f47-39837454508c</ProjectGuid>
+    <ProjectGuid>eb3a5181-1e2f-4c9f-b9e4-84b39c37a135</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Wav\wav_chart.py</StartupFile>
+    <StartupFile>app_window_circle.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>PurePythonWav</Name>
-    <RootNamespace>PurePythonWav</RootNamespace>
+    <Name>DynamicCanvasApp</Name>
+    <RootNamespace>DynamicCanvasApp</RootNamespace>
     <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
-    <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>1.wav</CommandLineArguments>
-    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
-    <InterpreterPath>
-    </InterpreterPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,20 +22,22 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="config.py" />
+    <Compile Include="app_engine_threedim.py" />
+    <Compile Include="app_projection_threedim.py" />
+    <Compile Include="app_window_grid.py" />
+    <Compile Include="app_window.py" />
     <Compile Include="main.py" />
-    <Compile Include="Wav\interactive_wavplayer.py" />
-    <Compile Include="Wav\processor.py" />
-    <Compile Include="Wav\metadata.py" />
-    <Compile Include="Wav\wavfile_timelen.py" />
-    <Compile Include="Wav\wav_chart.py" />
-    <Compile Include="Wav\wav_export.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Wav\zoom_wavplayer.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Wav\__init__.py" />
+    <Compile Include="shapes\base.py" />
+    <Compile Include="app_window_circle.py" />
+    <Compile Include="shapes\graphgrid.py" />
+    <Compile Include="shapes\primitives.py" />
+    <Compile Include="shapes\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="shapes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -52,13 +49,6 @@
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
       <Architecture>X64</Architecture>
     </Interpreter>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Wav\1.wav" />
-    <Content Include="requirements.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Wav\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

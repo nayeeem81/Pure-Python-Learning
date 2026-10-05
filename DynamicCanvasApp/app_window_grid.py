@@ -1,8 +1,8 @@
 # app_window.py
 import tkinter as tk
 # If grid.py is inside a folder named "shapes"
-from Shapes.grid import GraphGrid
-from Shapes.primitives import MathCircle, MathParabola
+from shapes.graphgrid import GraphGrid
+from shapes.primitives import MathCircle, MathParabola
 
 class DynamicCanvasGridApp:
     def __init__(self, root):

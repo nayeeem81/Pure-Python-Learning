@@ -15,6 +15,9 @@
     <File Path="wav_player_zoom_chart.md" />
     <File Path="wav_play_open_wavfiles.md" />
   </Folder>
+  <Project Path="DynamicCanvasApp/DynamicCanvasApp.pyproj" Type="888888a0-9f3d-457c-b088-3a5042f75d52" Id="eb3a5181-1e2f-4c9f-b9e4-84b39c37a135">
+    <Build Project="false" />
+  </Project>
   <Project Path="PurePythonWav/PurePythonWav.pyproj" Type="888888a0-9f3d-457c-b088-3a5042f75d52" Id="c0441d29-b03f-4854-9f47-39837454508c">
     <Build Project="false" />
   </Project>
