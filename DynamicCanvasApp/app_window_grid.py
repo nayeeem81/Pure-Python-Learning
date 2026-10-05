@@ -18,13 +18,13 @@ class DynamicCanvasApp:
         self.control_frame.pack(fill=tk.X, side=tk.BOTTOM)
         
         # 3. MATHEMATICAL GRID ENVIRONMENT
-        self.grid = GraphGrid(x_min=-10, x_max=10, y_min=-10, y_max=10)
+        self.grid = GraphGrid(x_min=-16, x_max=16, y_min=-32, y_max=32)
         
         # Initialize primary shapes
-        self.rectangle = MathRectangle(h=3, k=-2, w_math=4, h_math=3, color="#e3f2fd", outline="#2196f3", width=2)
-        self.circle    = MathCircle(h=-3, k=4, r=2.5, color="", outline="#4caf50", width=2)
-        self.ellipse   = MathEllipse(h=4, k=4, a_semi=3.5, b_semi=1.5, color="", outline="#9c27b0", width=2)
-        self.parabola  = MathParabola(a=0.2, h=4, k=-5, color="", outline="#f44336", width=2)
+        self.rectangle = MathRectangle(h=0, k=-0, w_math=16, h_math=32, color="#e3f2fd", outline="#2196f3", width=8)
+        self.circle    = MathCircle(h=-0, k=0, r=16, color="", outline="#4caf50", width=8)
+        self.ellipse   = MathEllipse(h=0, k=0, a_semi=16, b_semi=8, color="", outline="#9c27b0", width=8)
+        self.parabola  = MathParabola(a=0.2, h=0, k=-0, color="", outline="#f44336", width=8)
         
         # Layer stack arrangement
         self.shapes = [self.rectangle, self.circle, self.ellipse, self.parabola]
@@ -51,51 +51,51 @@ class DynamicCanvasApp:
     def build_ui_layout(self):
         """Generates slider rows across the bottom panel tray."""
         # --- COLUMN 0 & 1: Circle Controls ---
-        tk.Label(self.control_frame, text="[ CIRCLE CONFIG ]", bg="#f5f5f5", font=("Arial", 9, "bold"), fg="#4caf50").grid(row=0, column=0, columnspan=2)
+        tk.Label(self.control_frame, text="[ CIRCLE CONFIG ]", bg="#f5f5f5", font=("Arial", 14, "bold"), fg="#4caf50").grid(row=0, column=0, columnspan=2)
         
         tk.Label(self.control_frame, text="Radius (r):", bg="#f5f5f5").grid(row=1, column=0, sticky=tk.W)
-        self.slider_cr = tk.Scale(self.control_frame, from_=0.5, to=6.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        self.slider_cr = tk.Scale(self.control_frame, from_=1, to=16, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
         self.slider_cr.set(self.circle.r)
         self.slider_cr.grid(row=1, column=1, padx=5, pady=2)
         
         tk.Label(self.control_frame, text="Center X (h):", bg="#f5f5f5").grid(row=2, column=0, sticky=tk.W)
-        self.slider_ch = tk.Scale(self.control_frame, from_=-8.0, to=8.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        self.slider_ch = tk.Scale(self.control_frame, from_=-16.0, to=16.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
         self.slider_ch.set(self.circle.h)
         self.slider_ch.grid(row=2, column=1, padx=5, pady=2)
         
         tk.Label(self.control_frame, text="Center Y (k):", bg="#f5f5f5").grid(row=3, column=0, sticky=tk.W)
-        self.slider_ck = tk.Scale(self.control_frame, from_=-8.0, to=8.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        self.slider_ck = tk.Scale(self.control_frame, from_=-32.0, to=32.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
         self.slider_ck.set(self.circle.k)
         self.slider_ck.grid(row=3, column=1, padx=5, pady=2)
 
         # --- COLUMN 2 & 3: Rectangle Controls ---
-        tk.Label(self.control_frame, text="[ RECTANGLE ]", bg="#f5f5f5", font=("Arial", 9, "bold"), fg="#2196f3").grid(row=0, column=2, columnspan=2)
+        tk.Label(self.control_frame, text="[ RECTANGLE ]", bg="#f5f5f5", font=("Arial", 14, "bold"), fg="#2196f3").grid(row=0, column=2, columnspan=2)
         tk.Label(self.control_frame, text="Width (w):", bg="#f5f5f5").grid(row=1, column=2, sticky=tk.W)
-        self.slider_rw = tk.Scale(self.control_frame, from_=1.0, to=8.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        self.slider_rw = tk.Scale(self.control_frame, from_=1.0, to=16.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
         self.slider_rw.set(self.rectangle.w_math)
         self.slider_rw.grid(row=1, column=3, padx=5, pady=2)
 
         # --- COLUMN 4 & 5: Ellipse Controls ---
-        tk.Label(self.control_frame, text="[ ELLIPSE ]", bg="#f5f5f5", font=("Arial", 9, "bold"), fg="#9c27b0").grid(row=0, column=4, columnspan=2)
+        tk.Label(self.control_frame, text="[ ELLIPSE ]", bg="#f5f5f5", font=("Arial", 14, "bold"), fg="#9c27b0").grid(row=0, column=4, columnspan=2)
         tk.Label(self.control_frame, text="Semi X (a):", bg="#f5f5f5").grid(row=1, column=4, sticky=tk.W)
-        self.slider_ea = tk.Scale(self.control_frame, from_=0.5, to=6.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        self.slider_ea = tk.Scale(self.control_frame, from_=1.0, to=16.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
         self.slider_ea.set(self.ellipse.a_semi)
         self.slider_ea.grid(row=1, column=5, padx=5, pady=2)
         
         tk.Label(self.control_frame, text="Semi Y (b):", bg="#f5f5f5").grid(row=2, column=4, sticky=tk.W)
-        self.slider_eb = tk.Scale(self.control_frame, from_=0.5, to=6.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        self.slider_eb = tk.Scale(self.control_frame, from_=1.0, to=8.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
         self.slider_eb.set(self.ellipse.b_semi)
         self.slider_eb.grid(row=2, column=5, padx=5, pady=2)
 
         # --- COLUMN 6 & 7: Parabola Controls ---
-        tk.Label(self.control_frame, text="[ PARABOLA ]", bg="#f5f5f5", font=("Arial", 9, "bold"), fg="#f44336").grid(row=0, column=6, columnspan=2)
+        tk.Label(self.control_frame, text="[ PARABOLA ]", bg="#f5f5f5", font=("Arial", 14, "bold"), fg="#f44336").grid(row=0, column=6, columnspan=2)
         tk.Label(self.control_frame, text="Curve (a):", bg="#f5f5f5").grid(row=1, column=6, sticky=tk.W)
         self.slider_pa = tk.Scale(self.control_frame, from_=-1.0, to=1.0, resolution=0.05, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
         self.slider_pa.set(self.parabola.a)
         self.slider_pa.grid(row=1, column=7, padx=5, pady=2)
         
         tk.Label(self.control_frame, text="Vertex Y (k):", bg="#f5f5f5").grid(row=2, column=6, sticky=tk.W)
-        self.slider_pk = tk.Scale(self.control_frame, from_=-8.0, to=2.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        self.slider_pk = tk.Scale(self.control_frame, from_=-32.0, to=32.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
         self.slider_pk.set(self.parabola.k)
         self.slider_pk.grid(row=2, column=7, padx=5, pady=2)
 
