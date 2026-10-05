@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/GuiStudy/">
+    <File Path="symbolic_math_gui.md" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="canvas_wave_sample_gui_study.md" />
     <File Path="extract_metadata_study.md" />

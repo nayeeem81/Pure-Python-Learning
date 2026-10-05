@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>c0441d29-b03f-4854-9f47-39837454508c</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Circle\circle.py</StartupFile>
+    <StartupFile>DynamicCanvas\app.window.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -27,10 +27,21 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DynamicCanvas\app.engine.threedim.py" />
+    <Compile Include="DynamicCanvas\app.window.py" />
     <Compile Include="Circle\circle.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Circle\dynamiccanvasshape.py" />
     <Compile Include="config.py" />
+    <Compile Include="DynamicCanvas\app.window.grid.py" />
+    <Compile Include="Circle\dynamiccanvas.py" />
+    <Compile Include="DynamicCanvas\main.py" />
+    <Compile Include="DynamicCanvas\Shapes\base.py" />
+    <Compile Include="DynamicCanvas\Shapes\grid.py" />
+    <Compile Include="DynamicCanvas\Shapes\primitives.py" />
+    <Compile Include="DynamicCanvas\app.threedim.projection.py" />
+    <Compile Include="DynamicCanvas\Shapes\__init__.py" />
     <Compile Include="main.py" />
     <Compile Include="Wav\interactive_wavplayer.py" />
     <Compile Include="Wav\processor.py" />
@@ -62,6 +73,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Circle\" />
+    <Folder Include="DynamicCanvas\" />
+    <Folder Include="DynamicCanvas\Shapes\" />
     <Folder Include="Wav\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
