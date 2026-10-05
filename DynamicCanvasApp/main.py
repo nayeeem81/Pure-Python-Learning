@@ -1,7 +1,8 @@
 # main.py
+# Application entry point
 import tkinter as tk
-from app_window import DynamicCanvasApp
-from app_window_grid import DynamicCanvasGridApp
+# from app_window import DynamicCanvasApp
+from app_window_grid import DynamicCanvasApp
 
 if __name__ == "__main__":
     # Fix High-DPI text scaling blur strictly on Windows devices
@@ -12,5 +13,5 @@ if __name__ == "__main__":
         pass
 
     root = tk.Tk()
-    app = DynamicCanvasGridApp(root)
+    app = DynamicCanvasApp(root)
     root.mainloop()

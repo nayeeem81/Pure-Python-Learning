@@ -1,4 +1,5 @@
 # shapes/grid.py
+ # GraphGrid with to_pixels translation math
 class GraphGrid:
     def __init__(self, x_min=-10, x_max=10, y_min=-10, y_max=10):
         self.x_min = x_min
