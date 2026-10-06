@@ -84,22 +84,23 @@ class Engine3DApp:
 
     def generate_particle_field(self, num_particles):
         """Populates the matrix space cluster with volumetric rings/clouds."""
-        colors = ["#58a6ff", "#ff7b72", "#7ee787", "#d2a8ff", "#ffc284"]
+        colors = ["#D14009", "#FC9601", "#FFCC33", "#FFE484", "#FFFFFF"]
         
-        for _ in range(num_particles):
+        for i in range(num_particles):
             # Generate random points distributed in a wide 3D sphere volume cluster
-            radius = random.uniform(50, 180)
-            theta = random.uniform(0, 2 * math.pi)
+            radius = random.uniform(350, 360)
+            theta = random.uniform(-5, 2 * math.pi)
             phi = random.uniform(-math.pi / 2, math.pi / 2)
 
             x = radius * math.cos(phi) * math.cos(theta)
             y = radius * math.sin(phi)
             z = radius * math.cos(phi) * math.sin(theta)
+            base_radius = random.uniform(5, 12)
             
             self.particles.append(
                 Particle3D(
                     x=x, y=y, z=z, 
-                    base_radius=random.uniform(5, 12),
+                    base_radius=base_radius,
                     color=random.choice(colors)
                 )
             )
@@ -135,7 +136,7 @@ class Engine3DApp:
                  f"Active Particles Render Pipeline: {len(self.particles)}\n"
                  f"Global Axis Orbit Angle: {math.degrees(self.rotation_angle):.1f}°\n"
                  f"Z-Buffer Sort Phase Status: ACTIVE",
-            font=("Consolas", 10)
+            font=("Consolas", 14)
         )
 
         # Queue next frame computation pass loop cycle execution safely (~60fps target execution)
@@ -153,4 +154,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = Engine3DApp(root)
     root.mainloop()
-

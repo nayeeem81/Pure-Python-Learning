@@ -7,13 +7,13 @@ class ThreeDProjectionApp:
         self.root.title("3D Perspective Canvas Simulation")
         self.root.geometry("800x600")
 
-        self.canvas = tk.Canvas(self.root, bg="#0d1117", highlightthickness=0)
+        self.canvas = tk.Canvas(self.root, bg="#000000", highlightthickness=2)
         self.canvas.pack(fill=tk.BOTH, expand=True)
         self.canvas.bind("<Configure>", self.on_resize)
 
         # Window dimension bounds (tracked dynamically)
-        self.w = 800
-        self.h = 600
+        self.w = 1000
+        self.h = 1000
 
         # Camera Configuration properties
         self.focal_length = 400  # Distance from the screen viewport to simulated eye
@@ -21,8 +21,8 @@ class ThreeDProjectionApp:
         # 3D Math Coordinates of our Circle: (X, Y, Z)
         self.circle_x = 0        # Centered horizontally in math space
         self.circle_y = 0        # Centered vertically in math space
-        self.circle_z = 5.0      # Current depth distance away (Z > 0 is in front of camera)
-        self.base_radius = 80    # Intrinsic mathematical size of the circle
+        self.circle_z = 50.0      # Current depth distance away (Z > 0 is in front of camera)
+        self.base_radius = 200    # Intrinsic mathematical size of the circle
 
         # Animation State Variables
         self.z_speed = 0.08      # Forward motion velocity per frame cycle step
@@ -95,7 +95,7 @@ class ThreeDProjectionApp:
         # Project corner bounding vectors away from center to simulate structural walls
         corners = [(0, 0), (self.w, 0), (self.w, self.h), (0, self.h)]
         for ox, oy in corners:
-            self.canvas.create_line(cx, cy, ox, oy, fill="#21262d", width=1)
+            self.canvas.create_line(cx, cy, ox, oy, fill="#21262d", width=10)
 
 
 if __name__ == "__main__":
