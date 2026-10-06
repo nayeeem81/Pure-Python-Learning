@@ -22,9 +22,12 @@ class DynamicCanvasApp:
         
         # Initialize primary shapes
         self.rectangle = MathRectangle(h=0, k=-0, w_math=16, h_math=32, color="#e3f2fd", outline="#2196f3", width=8)
-        self.circle    = MathCircle(h=-0, k=0, r=16, color="", outline="#4caf50", width=8)
-        self.ellipse   = MathEllipse(h=0, k=0, a_semi=16, b_semi=8, color="", outline="#9c27b0", width=8)
-        self.parabola  = MathParabola(a=0.2, h=0, k=-0, color="", outline="#f44336", width=8)
+        
+        self.circle    = MathCircle(h=-0, k=0, r=16, color="#e3f2fd", outline="#4caf50", width=8)
+        
+        self.ellipse   = MathEllipse(h=0, k=0, a_semi=16, b_semi=8, color="#e3f2fd", outline="#9c27b0", width=8)
+        
+        self.parabola  = MathParabola(a=0.2, h=0, k=-0, color="#e3f2fd", outline="#f44336", width=8)
         
         # Layer stack arrangement
         self.shapes = [self.rectangle, self.circle, self.ellipse, self.parabola]
@@ -53,50 +56,100 @@ class DynamicCanvasApp:
         # --- COLUMN 0 & 1: Circle Controls ---
         tk.Label(self.control_frame, text="[ CIRCLE CONFIG ]", bg="#f5f5f5", font=("Arial", 14, "bold"), fg="#4caf50").grid(row=0, column=0, columnspan=2)
         
+        #  Circle Radius Slider
         tk.Label(self.control_frame, text="Radius (r):", bg="#f5f5f5").grid(row=1, column=0, sticky=tk.W)
+        
         self.slider_cr = tk.Scale(self.control_frame, from_=1, to=16, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        
         self.slider_cr.set(self.circle.r)
+        
         self.slider_cr.grid(row=1, column=1, padx=5, pady=2)
         
+
+        #  Circle X-Center Slider
         tk.Label(self.control_frame, text="Center X (h):", bg="#f5f5f5").grid(row=2, column=0, sticky=tk.W)
+        
         self.slider_ch = tk.Scale(self.control_frame, from_=-16.0, to=16.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        
         self.slider_ch.set(self.circle.h)
+        
         self.slider_ch.grid(row=2, column=1, padx=5, pady=2)
         
+
+        #  Circle Y-Center Slider
         tk.Label(self.control_frame, text="Center Y (k):", bg="#f5f5f5").grid(row=3, column=0, sticky=tk.W)
+
         self.slider_ck = tk.Scale(self.control_frame, from_=-32.0, to=32.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        
         self.slider_ck.set(self.circle.k)
+        
         self.slider_ck.grid(row=3, column=1, padx=5, pady=2)
+
+
 
         # --- COLUMN 2 & 3: Rectangle Controls ---
         tk.Label(self.control_frame, text="[ RECTANGLE ]", bg="#f5f5f5", font=("Arial", 14, "bold"), fg="#2196f3").grid(row=0, column=2, columnspan=2)
+        
+        #  Rectangle Width Slider
         tk.Label(self.control_frame, text="Width (w):", bg="#f5f5f5").grid(row=1, column=2, sticky=tk.W)
-        self.slider_rw = tk.Scale(self.control_frame, from_=1.0, to=16.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        
+        self.slider_rw = tk.Scale(self.control_frame, from_=1.0, to=32.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        
         self.slider_rw.set(self.rectangle.w_math)
+        
         self.slider_rw.grid(row=1, column=3, padx=5, pady=2)
+
+        #  Rectangle Height Slider
+        tk.Label(self.control_frame, text="Height (h):", bg="#f5f5f5").grid(row=2, column=2, sticky=tk.W)
+        
+        self.slider_rh = tk.Scale(self.control_frame, from_=1.0, to=32.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        
+        self.slider_rh.set(self.rectangle.h_math)
+        
+        self.slider_rh.grid(row=2, column=3, padx=5, pady=2)
 
         # --- COLUMN 4 & 5: Ellipse Controls ---
         tk.Label(self.control_frame, text="[ ELLIPSE ]", bg="#f5f5f5", font=("Arial", 14, "bold"), fg="#9c27b0").grid(row=0, column=4, columnspan=2)
+
+        # Ellipse Semi-Axis Sliders
         tk.Label(self.control_frame, text="Semi X (a):", bg="#f5f5f5").grid(row=1, column=4, sticky=tk.W)
+        
+        # Ellipse Semi-X  (a) Sliders
         self.slider_ea = tk.Scale(self.control_frame, from_=1.0, to=16.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+
         self.slider_ea.set(self.ellipse.a_semi)
+
         self.slider_ea.grid(row=1, column=5, padx=5, pady=2)
         
+        # Ellipse Semi-Y (b) Sliders
         tk.Label(self.control_frame, text="Semi Y (b):", bg="#f5f5f5").grid(row=2, column=4, sticky=tk.W)
+        
         self.slider_eb = tk.Scale(self.control_frame, from_=1.0, to=8.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+
         self.slider_eb.set(self.ellipse.b_semi)
+
         self.slider_eb.grid(row=2, column=5, padx=5, pady=2)
+
 
         # --- COLUMN 6 & 7: Parabola Controls ---
         tk.Label(self.control_frame, text="[ PARABOLA ]", bg="#f5f5f5", font=("Arial", 14, "bold"), fg="#f44336").grid(row=0, column=6, columnspan=2)
+
+        # Parabola (X) Sliders
         tk.Label(self.control_frame, text="Curve (a):", bg="#f5f5f5").grid(row=1, column=6, sticky=tk.W)
+        
         self.slider_pa = tk.Scale(self.control_frame, from_=-1.0, to=1.0, resolution=0.05, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        
         self.slider_pa.set(self.parabola.a)
+        
         self.slider_pa.grid(row=1, column=7, padx=5, pady=2)
         
+        # Parabola (Y) Sliders
         tk.Label(self.control_frame, text="Vertex Y (k):", bg="#f5f5f5").grid(row=2, column=6, sticky=tk.W)
+        
         self.slider_pk = tk.Scale(self.control_frame, from_=-32.0, to=32.0, resolution=0.1, orient=tk.HORIZONTAL, length=120, command=self.on_ui_modify)
+        
         self.slider_pk.set(self.parabola.k)
+        
         self.slider_pk.grid(row=2, column=7, padx=5, pady=2)
 
     def on_ui_modify(self, val):
@@ -107,8 +160,9 @@ class DynamicCanvasApp:
             self.circle.k = float(self.slider_ck.get())
             
             self.rectangle.w_math = float(self.slider_rw.get())
+            self.rectangle.h_math = float(self.slider_rh.get())
             self.ellipse.a_semi = float(self.slider_ea.get())
-            self.ellipse.b_semi = float(self.slider_eb.get())
+            self.ellipse.b_semi = float(self.slider_eb.get())       
             self.parabola.a = float(self.slider_pa.get())
             self.parabola.k = float(self.slider_pk.get())
             self.render_scene()
@@ -136,18 +190,26 @@ class DynamicCanvasApp:
         """Fires continuously while dragging the cursor."""
         if self.selected_shape:
             current_mx, current_my = self.pixel_to_math(event.x, event.y)
-            
             new_h = current_mx - self.drag_offset_x
             new_k = current_my - self.drag_offset_y
-            
-            self.selected_shape.h = round(new_h, 2)
-            self.selected_shape.k = round(new_k, 2)
-            
+
+            # --- SYNCHRONIZE EACH SHAPE'S  MATCHING SLIDERS ---
             if self.selected_shape == self.circle:
-                self.slider_ch.set(self.selected_shape.h)
-                self.slider_ck.set(self.selected_shape.k)
+                self.selected_shape.h = round(new_h, 2)
+                self.selected_shape.k = round(new_k, 2)
+                self.render_scene()
                 
-            self.render_scene()
+            elif self.selected_shape == self.rectangle:
+                # Rectangle lacks h/k sliders in your layout, but updates internally
+                self.selected_shape.h = round(new_h, 2)
+                self.selected_shape.k = round(new_k, 2)
+                self.render_scene()
+                
+            elif self.selected_shape == self.ellipse:
+                # If you add center h/k sliders for the ellipse later, sync them here
+                self.selected_shape.h = round(new_h, 2)
+                self.selected_shape.k = round(new_k, 2)
+                self.render_scene()
 
     def on_mouse_release(self, event):
         self.selected_shape = None
@@ -160,12 +222,11 @@ class DynamicCanvasApp:
         self.canvas.delete("all")
         w = self.canvas.winfo_width() if event is None else event.width
         h = self.canvas.winfo_height() if event is None else event.height
-        if w < 10 or h < 10: return
+        if w > 32 and h > 32:
+            self.grid.draw(self.canvas, w, h)
 
-        self.grid.draw(self.canvas, w, h)
-        
-        for shape in self.shapes:
-            shape.draw(self.canvas, w, h, self.grid)
+            for shape in self.shapes:
+                shape.draw(self.canvas, w, h, self.grid)
             
         mx_pixel, my_pixel = self.grid.to_pixels(self.mouse_math_x, self.mouse_math_y, w, h)
         display_text = f"Matrix: ({self.mouse_math_x:.2f}, {self.mouse_math_y:.2f})"

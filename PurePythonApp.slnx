@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/GuiStudy/">
     <File Path="symbolic_math_gui.md" />
+    <File Path="tkinterroot.md" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="canvas_wave_sample_gui_study.md" />
