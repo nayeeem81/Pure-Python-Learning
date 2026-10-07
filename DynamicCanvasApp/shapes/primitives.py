@@ -1,124 +1,95 @@
 # shapes/primitives.py
-
 import math
 import tkinter as tk
 from .base import Shape  
 # Relative import from the same package
-
-class Rectangle(Shape):
-    def __init__(self, w_pct, h_pct, **kwargs):
-        super().__init__(**kwargs)
-        self.w_pct = w_pct
-        self.h_pct = h_pct
-
-    def draw(self, canvas, w, h):
-        x1 = (w - (w * self.w_pct)) / 2
-        y1 = (h - (h * self.h_pct)) / 2
-        x2 = x1 + (w * self.w_pct)
-        y2 = y1 + (h * self.h_pct)
-        canvas.create_rectangle(x1, y1, x2, y2, fill=self.color, outline=self.outline, width=self.width)
-
-class Circle(Shape):
-    def __init__(self, h_offset, k_offset, r_pct, **kwargs):
-        super().__init__(**kwargs)
-        self.h_offset = h_offset
-        self.k_offset = k_offset
-        self.r_pct = r_pct
-
-    def contains_math_point(self, mx, my):
-        """Returns True if a mathematical coordinate point falls inside the circle."""
-        import math
-        distance = math.sqrt((mx - self.h_offset)**2 + (my - self.k_offset)**2)
-        return distance <= self.r_pct * min(w, h)
-
-    def draw(self, canvas, w, h):
-        center_x = (w / 2) + self.h_offset
-        center_y = (h / 2) + self.k_offset
-        radius = min(w, h) * self.r_pct
-        canvas.create_oval(
-            center_x - radius, center_y - radius,
-            center_x + radius, center_y + radius,
-            fill=self.color, outline=self.outline, width=self.width
-        )
-
 # MathCircle and MathParabola primitives
 # shapes/primitives.py
 
 class MathCircle(Shape):
-    def __init__(self, h, k, r, steps=100, **kwargs):
+    def __init__(self, mx, my, r, steps=100, **kwargs):
         super().__init__(**kwargs)
-        self.h = h        # Math X-center
-        self.k = k        # Math Y-center
-        self.r = r        # Math radius
+        self.mx = mx        # Math X-center
+        self.my = my        # Math Y-center
+        self.r = r          # Math radius
         self.steps = steps
+
+    def contains_math_point_circle(self, mx, my, r, grid):
+        """Returns True if a mathematical coordinate point falls inside the circle bounds."""
+        self.r = r
+        math_points = self.get_coordinates()
+        pixel_points = []
+        # Transform every explicit coordinate point into screen pixels
+        for mx, my in math_points:
+            px, py = grid.to_pixels(mx, my)
+            if px == mx and py == my:
+                return True
+        return False
 
     def get_coordinates(self):
         """Returns a comprehensive list of all raw (x, y) math points."""
         coords = []
         for i in range(self.steps + 1):
             t = (2 * math.pi * i) / self.steps
-            # Parametric Circle Equation: x = h + r*cos(t), y = k + r*sin(t)
-            x = self.h + self.r * math.cos(t)
-            y = self.k + self.r * math.sin(t)
-            coords.append((x, y))
+            # Parametric Circle Equation: x = mx + r*cos(t), y = my + r*sin(t)
+            mx = self.mx + self.r * math.cos(t)
+            my = self.my + self.r * math.sin(t)
+            coords.append((mx, my))
+        self.mathcoordinates.append({"MathCircle": coords})
         return coords
 
     def draw(self, canvas, w, h, grid):
         math_points = self.get_coordinates()
         pixel_points = []
-        
         # Transform every explicit coordinate point into screen pixels
         for mx, my in math_points:
-            px, py = grid.to_pixels(mx, my, w, h)
+            px, py = grid.to_pixels(mx, my)
             pixel_points.extend([px, py])
-            
+        self.pixelcoordinates.append({"MathCircle": pixel_points, "fill": "", "outline": self.outline, "width": self.width})
         # Draw the collection as a continuous line loop
         canvas.create_polygon(pixel_points, fill="", outline=self.outline, width=self.width)
 
 
 class MathParabola(Shape):
-    def __init__(self, a, h, k, **kwargs):
+    def __init__(self, start, end, curve, mx, my, **kwargs):
         super().__init__(**kwargs)
-        self.a = a        # Vertical stretch / direction factor
-        self.h = h        # Vertex X coordinate
-        self.k = k        # Vertex Y coordinate
+        self.curve = curve          # Vertical shift factor (for parabolas)
+        self.mx = mx        # Vertex X coordinate
+        self.my = my        # Vertex Y coordinate
+        self.start = start  # Start X coordinate for drawing
+        self.end = end      # End X coordinate for drawing
 
-    def get_coordinates(self, x_start, x_end, steps=100):
+    def get_coordinates(self, start, end, steps=100):
         """Generates explicit mathematical coordinates along the parabola curve."""
         coords = []
-        step_size = (x_end - x_start) / steps
+        step_size = (end - start) / steps
         for i in range(steps + 1):
-            x = x_start + (i * step_size)
+            mx = start + (i * step_size)
             # Standard Vertex Form Equation: y = a(x - h)^2 + k
-            y = self.a * ((x - self.h) ** 2) + self.k
-            coords.append((x, y))
+            my = self.curve * ((mx - self.mx) ** 2) + self.my
+            coords.append((mx, my))
         return coords
 
     def draw(self, canvas, w, h, grid):
         # Calculate points over the visible grid viewport range
-        math_points = self.get_coordinates(grid.x_min, grid.x_max)
+        math_points = self.get_coordinates(self.start, self.end)
+        self.mathcoordinates.append({"MathParabola": math_points})
         pixel_points = []
-        
         for mx, my in math_points:
-            px, py = grid.to_pixels(mx, my, w, h)
+            px, py = grid.to_pixels(mx, my)
             pixel_points.extend([px, py])
-            
+        self.pixelcoordinates.append({"MathParabola": pixel_points, "fill": "", "outline": self.outline, "width": self.width})
         canvas.create_line(pixel_points, fill=self.outline, width=self.width)
 
 
 class MathRectangle(Shape):
-    def __init__(self, h, k, w_math, h_math, default_color="#e3f2fd", collision_color="#ffcdd2", **kwargs):
-        """
-        Defines a rectangle locked entirely to Cartesian Math Space with custom state behavior.
-        (h, k)           = Math Center coordinates of the rectangle
-        w_math, h_math   = Total width and height spans in math units
-        """
+    def __init__(self, mx, my, width, height, default_color="#e3f2fd", collision_color="#ffcdd2", **kwargs):
         super().__init__(**kwargs)
-        self.h = h
-        self.k = k
-        self.w_math = w_math
-        self.h_math = h_math
-        
+        # FIXED: Removed the extra 4 spaces of indentation below
+        self.mx = mx
+        self.my = my
+        self.width = width
+        self.height = height
         # Color state properties
         self.default_color = default_color
         self.collision_color = collision_color
@@ -131,33 +102,28 @@ class MathRectangle(Shape):
         return (mx1 <= mx <= mx2) and (my2 <= my <= my1)
 
     def get_corners(self):
-        half_w = self.w_math / 2
-        half_h = self.h_math / 2
-        return self.h - half_w, self.k + half_h, self.h + half_w, self.k - half_h
+        half_w = self.width / 2
+        half_h = self.height / 2  # FIXED typo: changed self.hight to self.height
+        return self.mx - half_w, self.my + half_h, self.mx + half_w, self.my - half_h
 
     def check_collision_with_circle(self, circle):
         """Calculates mathematical bounding box overlaps against a target circle."""
         mx1, my1, mx2, my2 = self.get_corners()
-        
         # Clamp the circle's center coordinates to the closest point inside the rectangle edges
-        # mx1 is left (min x), mx2 is right (max x)
-        closest_x = max(mx1, min(circle.h, mx2))
-        # my2 is bottom (min y), my1 is top (max y)
-        closest_y = max(my2, min(circle.k, my1))
-        
+        closest_x = max(mx1, min(circle.mx, mx2))
+        closest_y = max(my2, min(circle.my, my1))
         # Calculate the Euclidean distance from the closest point to the circle center
-        distance_x = circle.h - closest_x
-        distance_y = circle.k - closest_y
+        distance_x = circle.mx - closest_x
+        distance_y = circle.my - closest_y
         distance = math.sqrt((distance_x ** 2) + (distance_y ** 2))
-        
-        # Return True if the distance is smaller than the circle's radius
         return distance <= circle.r
 
     def draw(self, canvas, w, h, grid):
         mx1, my1, mx2, my2 = self.get_corners()
-        px1, py1 = grid.to_pixels(mx1, my1, w, h)
-        px2, py2 = grid.to_pixels(mx2, my2, w, h)
-        
+        self.mathcoordinates.append({"MathRectangle": (mx1, my1, mx2, my2), "fill": self.color, "outline": self.outline, "width": self.width})
+        px1, py1 = grid.to_pixels(mx1, my1)
+        px2, py2 = grid.to_pixels(mx2, my2)
+        self.pixelcoordinates.append({"MathRectangle": (px1, py1, px2, py2), "fill": self.color, "outline": self.outline, "width": self.width})
         canvas.create_rectangle(
             px1, py1, px2, py2, 
             fill=self.color, 
@@ -167,16 +133,11 @@ class MathRectangle(Shape):
 
 
 class MathEllipse(Shape):
-    def __init__(self, h, k, a_semi, b_semi, steps=100, **kwargs):
-        """
-        Defines an Ellipse locked to Cartesian Math Space.
-        (h, k)  = Center point coordinates
-        a_semi  = Horizontal semi-axis radius length
-        b_semi  = Vertical semi-axis radius length
-        """
+    def __init__(self, mx, my, a_semi, b_semi, steps=100, **kwargs):
+        """ Defines an Ellipse locked to Cartesian Math Space. """
         super().__init__(**kwargs)
-        self.h = h
-        self.k = k
+        self.mx = mx
+        self.my = my
         self.a_semi = a_semi
         self.b_semi = b_semi
         self.steps = steps
@@ -185,9 +146,10 @@ class MathEllipse(Shape):
         pixel_points = []
         for i in range(self.steps + 1):
             t = (2 * math.pi * i) / self.steps
-            # Parametric Ellipse Equation: x = h + a*cos(t), y = k + b*sin(t)
-            mx = self.h + self.a_semi * math.cos(t)
-            my = self.k + self.b_semi * math.sin(t)
-            px, py = grid.to_pixels(mx, my, w, h)
+            mx = self.mx + self.a_semi * math.cos(t)
+            my = self.my + self.b_semi * math.sin(t)
+            px, py = grid.to_pixels(mx, my)
             pixel_points.extend([px, py])
+        self.mathcoordinates.append({"MathEllipse": (self.mx, self.my, self.a_semi, self.b_semi), "fill": self.color, "outline": self.outline, "width": self.width})
+        self.pixelcoordinates.append({"MathEllipse": pixel_points, "fill": self.color, "outline": self.outline, "width": self.width})
         canvas.create_polygon(pixel_points, fill=self.color, outline=self.outline, width=self.width)
