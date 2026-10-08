@@ -1,0 +1,148 @@
+Here is the updated code adding a second independent wave line to the canvas grid!
+To make it easy to tell them apart, the waves are colored differently:
+
+* Wave 1 (Teal Line): Controlled by the top two sliders (Amplitude 1 and Frequency 1).
+* Wave 2 (Pink Line): Controlled by the bottom two sliders (Amplitude 2 and Frequency 2).
+
+You can now adjust both waves separately to see how they intersect, cross paths, and create different overlapping patterns in real time.
+
+import mathimport tkinter as tkfrom tkinter import ttk
+class DualSineWaveApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Dual Interactive Sine Waves")
+        self.root.geometry("640x560")
+        self.root.configure(bg="#121214")
+
+        # Initialize variables for Wave 1 (Teal)
+        self.amp1 = tk.DoubleVar(value=1.5)
+        self.freq1 = tk.DoubleVar(value=2.0)
+
+        # Initialize variables for Wave 2 (Pink)
+        self.amp2 = tk.DoubleVar(value=1.0)
+        self.freq2 = tk.DoubleVar(value=4.0)
+
+        # Create drawing canvas
+        self.canvas = tk.Canvas(
+            self.root, 
+            width=600, 
+            height=250, 
+            bg="#141416", 
+            highlightthickness=1, 
+            highlightbackground="#333"
+        )
+        self.canvas.pack(pady=20)
+
+        # Setup the UI controls frame
+        self.setup_controls()
+        
+        # Initial draw execution
+        self.update_graph()
+
+    def setup_controls(self):
+        controls_frame = tk.Frame(self.root, bg="#1e1e24", bd=10)
+        controls_frame.pack(fill="x", padx=20, pady=5)
+        
+        # ------------------ WAVE 1 CONTROLS (TEAL) ------------------
+        tk.Label(controls_frame, text="WAVE 1 (TEAL)", fg="#00adb5", bg="#1e1e24", font=("Arial", 9, "bold")).pack(anchor="w", pady=(0, 5))
+        
+        amp1_row = tk.Frame(controls_frame, bg="#1e1e24")
+        amp1_row.pack(fill="x", pady=2)
+        tk.Label(amp1_row, text="Amplitude 1:", fg="#e1e1e6", bg="#1e1e24", font=("Arial", 10), width=15, anchor="w").pack(side="left")
+        amp1_slider = tk.Scale(amp1_row, from_=0.0, to=3.0, resolution=0.1, orient="horizontal", variable=self.amp1, command=lambda e: self.update_graph(), showvalue=False, bg="#1e1e24", fg="#00adb5", highlightthickness=0, troughcolor="#444", activebackground="#00adb5")
+        amp1_slider.pack(side="left", fill="x", expand=True, padx=10)
+        self.amp1_val = tk.Label(amp1_row, text="1.5", width=6, fg="#00adb5", bg="#1e1e24", font=("Courier", 12, "bold"))
+        self.amp1_val.pack(side="right")
+
+        freq1_row = tk.Frame(controls_frame, bg="#1e1e24")
+        freq1_row.pack(fill="x", pady=2)
+        tk.Label(freq1_row, text="Frequency 1:", fg="#e1e1e6", bg="#1e1e24", font=("Arial", 10), width=15, anchor="w").pack(side="left")
+        freq1_slider = tk.Scale(freq1_row, from_=0.5, to=8.0, resolution=0.1, orient="horizontal", variable=self.freq1, command=lambda e: self.update_graph(), showvalue=False, bg="#1e1e24", fg="#00adb5", highlightthickness=0, troughcolor="#444", activebackground="#00adb5")
+        freq1_slider.pack(side="left", fill="x", expand=True, padx=10)
+        self.freq1_val = tk.Label(freq1_row, text="2.0", width=6, fg="#00adb5", bg="#1e1e24", font=("Courier", 12, "bold"))
+        self.freq1_val.pack(side="right")
+
+        # Separator line line decoration
+        ttk.Separator(controls_frame, orient='horizontal').pack(fill='x', pady=10)
+
+        # ------------------ WAVE 2 CONTROLS (PINK) ------------------
+        tk.Label(controls_frame, text="WAVE 2 (PINK)", fg="#ff79c6", bg="#1e1e24", font=("Arial", 9, "bold")).pack(anchor="w", pady=(0, 5))
+
+        amp2_row = tk.Frame(controls_frame, bg="#1e1e24")
+        amp2_row.pack(fill="x", pady=2)
+        tk.Label(amp2_row, text="Amplitude 2:", fg="#e1e1e6", bg="#1e1e24", font=("Arial", 10), width=15, anchor="w").pack(side="left")
+        amp2_slider = tk.Scale(amp2_row, from_=0.0, to=3.0, resolution=0.1, orient="horizontal", variable=self.amp2, command=lambda e: self.update_graph(), showvalue=False, bg="#1e1e24", fg="#ff79c6", highlightthickness=0, troughcolor="#444", activebackground="#ff79c6")
+        amp2_slider.pack(side="left", fill="x", expand=True, padx=10)
+        self.amp2_val = tk.Label(amp2_row, text="1.0", width=6, fg="#ff79c6", bg="#1e1e24", font=("Courier", 12, "bold"))
+        self.amp2_val.pack(side="right")
+
+        freq2_row = tk.Frame(controls_frame, bg="#1e1e24")
+        freq2_row.pack(fill="x", pady=2)
+        tk.Label(freq2_row, text="Frequency 2:", fg="#e1e1e6", bg="#1e1e24", font=("Arial", 10), width=15, anchor="w").pack(side="left")
+        freq2_slider = tk.Scale(freq2_row, from_=0.5, to=8.0, resolution=0.1, orient="horizontal", variable=self.freq2, command=lambda e: self.update_graph(), showvalue=False, bg="#1e1e24", fg="#ff79c6", highlightthickness=0, troughcolor="#444", activebackground="#ff79c6")
+        freq2_slider.pack(side="left", fill="x", expand=True, padx=10)
+        self.freq2_val = tk.Label(freq2_row, text="4.0", width=6, fg="#ff79c6", bg="#1e1e24", font=("Courier", 12, "bold"))
+        self.freq2_val.pack(side="right")
+
+    def update_graph(self):
+        # Wipe the canvas
+        self.canvas.delete("all")
+        
+        w, h = 600, 250
+        center_y = h / 2
+        center_x = w / 2
+
+        # Redraw Background Grid Lines
+        for x in range(0, w, 40):
+            self.canvas.create_line(x, 0, x, h, fill="#252529", width=1)
+        for y in range(0, h, 40):
+            self.canvas.create_line(0, y, w, y, fill="#252529", width=1)
+
+        # Redraw Main Axes
+        self.canvas.create_line(0, center_y, w, center_y, fill="#888", width=2)
+        self.canvas.create_line(center_x, 0, center_x, h, fill="#888", width=2)
+
+        # Update numerical slider labels display metrics
+        self.amp1_val.config(text=f"{self.amp1.get():.1f}")
+        self.freq1_val.config(text=f"{self.freq1.get():.1f}")
+        self.amp2_val.config(text=f"{self.amp2.get():.1f}")
+        self.freq2_val.config(text=f"{self.freq2.get():.1f}")
+
+        # Compute point tracking arrays for both waves
+        points_wave1 = []
+        points_wave2 = []
+
+        for pixel_x in range(w):
+            x = (pixel_x - center_x) / 40.0
+            
+            # Math rules mapping for Wave 1
+            y1 = self.amp1.get() * math.sin(self.freq1.get() * x)
+            pixel_y1 = center_y - (y1 * 40.0)
+            points_wave1.append((pixel_x, pixel_y1))
+
+            # Math rules mapping for Wave 2
+            y2 = self.amp2.get() * math.sin(self.freq2.get() * x)
+            pixel_y2 = center_y - (y2 * 40.0)
+            points_wave2.append((pixel_x, pixel_y2))
+
+        # Flatten arrays out for rendering functions
+        flat_w1 = [coord for pt in points_wave1 for coord in pt]
+        flat_w2 = [coord for pt in points_wave2 for coord in pt]
+
+        # Draw Wave 1 (Teal) and Wave 2 (Pink)
+        self.canvas.create_line(flat_w1, fill="#00adb5", width=3, smooth=True)
+        self.canvas.create_line(flat_w2, fill="#ff79c6", width=3, smooth=True)
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = DualSineWaveApp(root)
+    root.mainloop()
+
+## Interesting Experiment to Try:
+Set both Frequency 1 and Frequency 2 to the exact same number (like 3.0), and change one amplitude. You will see how they match up perfectly in cadence, but one peaks higher than the other!
+Now that we have two independent waves on the screen, what is our next step?
+
+* Should we add a "Play Chord" button that treats these two waves as two musical notes combined together, generates a WAV byte array, and plays the resulting sound mix?
+* Should we look at adding a third line that mathematically adds them together (showing how wave interference works)?
+
+Would you like to add a Play Chord button to generate a sound file from these two waves, or should we draw a third wave that shows them added together?
+
