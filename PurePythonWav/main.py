@@ -2,7 +2,7 @@
 import asyncio
 
 # Import the function from the Wav subfolder
-from Wav.metadata import print_wav_file_header
+from wav.app_metadata_reader import print_wav_file_header
 
 async def main():
     print("🚀 Starting program from main.py...")

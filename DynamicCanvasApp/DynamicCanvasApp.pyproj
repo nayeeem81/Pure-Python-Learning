@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>eb3a5181-1e2f-4c9f-b9e4-84b39c37a135</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>shapes\gridcanvas.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,26 +22,20 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="app_engine_threedim.py" />
-    <Compile Include="app_projection_threedim.py" />
-    <Compile Include="app_window_grid.py" />
-    <Compile Include="app_window.py" />
-    <Compile Include="canvas.py" />
+    <Compile Include="app_engine_rotateing_particle_render.py" />
+    <Compile Include="app_mathshapes_gridcanvas.py" />
+    <Compile Include="app_basiccanvas.py" />
     <Compile Include="main.py" />
     <Compile Include="shapes\base.py" />
-    <Compile Include="app_window_circle.py" />
+    <Compile Include="app_eqnbased_circle.py" />
     <Compile Include="shapes\grid.py" />
-    <Compile Include="shapes\gridcanvas.py">
+    <Compile Include="app_dragcell_geometry_gridcanvas.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="shapes\intersection.py" />
     <Compile Include="shapes\primitives.py" />
     <Compile Include="shapes\__init__.py" />
-    <Compile Include="ui\app_window_grid.py" />
-    <Compile Include="ui\__init__.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ui\" />
     <Folder Include="shapes\" />
   </ItemGroup>
   <ItemGroup>
