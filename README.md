@@ -1,5 +1,7 @@
 # PurePythonApp
 
+## AI GENERATED: GOOGLE 
+
 ## The Example Directory Structure
 Here is how you navigate 2 levels up and 2 levels down from your current folder location using relative paths in Python.
 
