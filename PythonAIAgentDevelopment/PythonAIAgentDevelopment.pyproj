@@ -2,15 +2,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>e4aa3778-d066-4e86-a928-48456662df3d</ProjectGuid>
+    <ProjectGuid>6c3b9a22-3940-4649-ba1e-465dd1810b19</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>dual_wave_chord_visualizer_player.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>CanvasSoundWave</Name>
-    <RootNamespace>CanvasSoundWave</RootNamespace>
+    <Name>PythonAIAgentDevelopment</Name>
+    <RootNamespace>PythonAIAgentDevelopment</RootNamespace>
     <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -22,27 +22,16 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="dual_signwave_app.py" />
-    <Compile Include="dual_wave_chord_visualizer_player.py" />
-    <Compile Include="interactive_line_app.py" />
-    <Compile Include="interactive_sine_waveapp.py" />
-    <Compile Include="single_static_line.py" />
-    <Compile Include="simple_grid_app.py" />
-    <Compile Include="Study\interactive_line_app.md" />
-    <Compile Include="Study\interactive_lineslope_app.md" />
-    <Compile Include="triad_chord_interference_app.py" />
-    <Compile Include="wave_interference_chord_app.py" />
+    <Compile Include="main.py" />
+    <Compile Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="interactive_lineslope_app.py" />
-    <Content Include="Study\dual_signwave_app.md" />
-    <Content Include="Study\dual_wave_chord_visualizer_player.md" />
-    <Content Include="Study\interactive_sine_waveapp.md" />
-    <Content Include="Study\requirements.txt" />
-    <Content Include="Study\snglestaticline.md" />
-    <Content Include="Study\startcanvas.md" />
-    <Content Include="Study\triad_chord_interference_app.md" />
-    <Content Include="Study\wave_interference_chord_app.md" />
+    <Folder Include="AI Agent\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AI Agent\AIAgentOverview.md" />
+    <Content Include="AI Agent\API Integration.md" />
+    <Content Include="AI Agent\oAuthFastApi.md" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -54,9 +43,6 @@
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
       <Architecture>X64</Architecture>
     </Interpreter>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Study\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
