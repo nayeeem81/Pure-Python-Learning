@@ -8,6 +8,7 @@ from config import config
 from api.endpoints import router as agent_router  
 # 1. Import your API routes
 from ui.canvas_ui import AgentDesktopUI
+from data.database import engine, Base
 
 app = FastAPI()
 

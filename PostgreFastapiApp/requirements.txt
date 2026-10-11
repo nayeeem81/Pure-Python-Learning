@@ -3,3 +3,8 @@ passlib
 uvicorn
 pyjwt[crypto]
 httpx
+sqlalchemy[asyncio] 
+asyncpg
+python-jose[cryptography]
+python-multipart
+pydantic-settings

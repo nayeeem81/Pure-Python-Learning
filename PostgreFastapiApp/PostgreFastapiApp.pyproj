@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>82a1e8eb-fd72-46af-8bde-5c9fcd94a3d4</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>api\postgre_fastapi_app.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -25,8 +25,15 @@
     <Compile Include="config.py" />
     <Compile Include="api\endpoints.py" />
     <Compile Include="api\__init__.py" />
+    <Compile Include="data\database.py" />
+    <Compile Include="data\__init__.py" />
     <Compile Include="main.py" />
-    <Compile Include="api\postgre_fastapi_app.py" />
+    <Compile Include="models\user_model.py" />
+    <Compile Include="models\__init__.py" />
+    <Compile Include="repositories\user_repository.py" />
+    <Compile Include="repositories\__init__.py" />
+    <Compile Include="schemas\user_schema.py" />
+    <Compile Include="schemas\__init__.py" />
     <Compile Include="security\auth.py" />
     <Compile Include="ui\canvas_ui.py" />
     <Compile Include="ui\__init__.py" />
@@ -48,6 +55,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="api\" />
+    <Folder Include="data\" />
+    <Folder Include="models\" />
+    <Folder Include="schemas\" />
+    <Folder Include="repositories\" />
     <Folder Include="security\" />
     <Folder Include="ui\" />
     <Folder Include="study\" />

@@ -805,13 +805,1295 @@ This updated code dynamically renders entry boxes onto your Tkinter Canvas, hand
 
 Would you like to build out a custom Canvas dashboard panel next to render graphs/logs, or do you want to add a user registration button on the canvas login page?
 
+## I want to add posgre in the python application.
+
+To connect your FastAPI backend to a PostgreSQL database within your Visual Studio desktop application structure, you should use SQLAlchemy (the Object-Relational Mapper) along with asyncpg (for asynchronous database operations).
+Here is how to set up PostgreSQL seamlessly without breaking your modular folders.
+
+## 1. Install Dependencies
+Run this in your Visual Studio Python Environment terminal to install the PostgreSQL driver and database suite:
+
+	pip install "sqlalchemy[asyncio]" asyncpg
+
+------------------------------
+## 2. Update config.py
+Add your database connection details to your centralized configuration system.
+
+	# config.py
+
+	import os
+	class AppConfig:
+		APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
+		APP_PORT = int(os.getenv("APP_PORT", "8000"))
+		APP_ENV = os.getenv("APP_ENV", "development")
+
+    # 1. PostgreSQL Database Configuration
+    # Replace username, password, localhost, and dbname with your actual system credentials
+    DB_USER = os.getenv("DB_USER", "postgres")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "your_password")
+    DB_HOST = os.getenv("DB_HOST", "localhost")
+    DB_PORT = os.getenv("DB_PORT", "5432")
+    DB_NAME = os.getenv("DB_NAME", "agent_db")
+
+    @property
+    def DATABASE_URL(self) -> str:
+        # We use postgresql+asyncpg for modern asynchronous FastAPI applications
+        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+
+    # 2. Tkinter UI Settings
+    WINDOW_TITLE = "Agent Secure Desktop Platform"
+    WINDOW_WIDTH = 800
+    WINDOW_HEIGHT = 600
+    CANVAS_BG_COLOR = "#1e1e1e"
+	config = AppConfig()
+
+------------------------------
+## 3. Create the Database Module (database.py)
+Create a new file called database.py at your root project level to manage engine initialization and session cycles.
+
+	# database.pyfrom sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSessionfrom sqlalchemy.orm import DeclarativeBasefrom config import config
+	# Create Async Engine for PostgreSQLengine = create_async_engine(config.DATABASE_URL, echo=True)
+	# Session factory for creating database links per web requestasync_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+	# Base class that our models inherit fromclass Base(DeclarativeBase):
+		pass
+	# Dependency injection generator for FastAPI endpointsasync def get_db():
+    async with async_session() as session:
+        yield session
+        await session.commit()
+
+------------------------------
+## 4. Create the User Data Model (models.py)
+Create a models.py file at your root project level to build a physical SQL layout schema mapping your agents/users table structure.
+
+	# models.pyfrom sqlalchemy import Column, Integer, Stringfrom database import Base
+	class UserModel(Base):
+		__tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+
+------------------------------
+## 5. Update initialization in main.py
+To automatically build your tables inside PostgreSQL when your application initializes, update main.py to leverage FastAPI's lifespan event loop:
+
+	# main.pyimport threadingimport timeimport uvicornfrom contextlib import asynccontextmanagerfrom fastapi import FastAPIfrom config import configfrom database import engine, Base
+	from api.endpoints import router as agent_routerfrom ui.canvas_ui import AgentDesktopUI
+
+	@asynccontextmanagerasync def lifespan(app: FastAPI):
+		# Boot action: Automatically generate tables in Postgres if they do not exist
+		async with engine.begin() as conn:
+			await conn.run_sync(Base.metadata.create_all)
+		yield
+		# Shutdown logic goes here if needed
+	app = FastAPI(lifespan=lifespan)
+	app.include_router(agent_router)
+	def start_fastapi_server():
+		uvicorn.run(app, host=config.APP_HOST, port=config.APP_PORT, log_level="warning")
+	if __name__ == "__main__":
+		api_thread = threading.Thread(target=start_fastapi_server, daemon=True)
+		api_thread.start()
+
+    time.sleep(0.4) 
+
+    desktop_app = AgentDesktopUI()
+    desktop_app.run()
+
+------------------------------
+## 6. Connect PostgreSQL Queries into api/endpoints.py
+Finally, replace your older mock_user_db object inside your endpoints file with modern database session queries via standard dependency injection (Depends(get_db)):
+
+	# api/endpoints.pyfrom fastapi import APIRouter, Depends, HTTPException, statusfrom fastapi.security import OAuth2PasswordRequestFormfrom sqlalchemy.ext.asyncio import AsyncSessionfrom sqlalchemy.future import selectfrom typing import Annotated
+
+	from database import get_dbfrom models import UserModelfrom auth import verify_password, get_password_hash, create_access_token# assuming you have standard Pydantic models UserRegister / Token in a schemas file
+
+	# from schemas 
+	import UserRegister, Token 
+	router = APIRouter()
+
+	@router.post("/register", status_code=status.HTTP_201_CREATED)async def register(user: UserRegister, db: AsyncSession = Depends(get_db)):
+		"""Registers a new agent and stores their information directly into PostgreSQL."""
+		# 1. Verify user does not already exist
+		result = await db.execute(select(UserModel).where(UserModel.username == user.username))
+		existing_user = result.scalars().first()
+		if existing_user:
+			raise HTTPException(status_code=400, detail="Username already registered")
+    
+    # 2. Hash and save record
+    hashed = get_password_hash(user.password)
+    new_user = UserModel(username=user.username, hashed_password=hashed)
+    db.add(new_user)
+    # The session auto-commits when exiting the get_db context manager
+    return {"username": user.username}
+
+	@router.post("/token")async def login_for_access_token(
+		form_data: Annotated[OAuth2PasswordRequestForm, Depends()], 
+		db: AsyncSession = Depends(get_db)
+	):
+		"""Verifies credentials against PostgreSQL users table."""
+		result = await db.execute(select(UserModel).where(UserModel.username == form_data.username))
+		user = result.scalars().first()
+    
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Issue your JWT token exactly like before...
+    access_token = create_access_token(data={"sub": user.username})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+Would you like help setting up a Pydantic validation schemas file to safely parse input data fields, or would you like to build a User Registration page inside your Tkinter canvas folder next?
+
+To connect your FastAPI backend to a PostgreSQL database within your Visual Studio desktop application structure, you should use SQLAlchemy (the Object-Relational Mapper) along with asyncpg (for asynchronous database operations).
+Here is how to set up PostgreSQL seamlessly without breaking your modular folders.
+
+## 1. Install Dependencies
+Run this in your Visual Studio Python Environment terminal to install the PostgreSQL driver and database suite:
+
+pip install "sqlalchemy[asyncio]" asyncpg
+
+------------------------------
+## 2. Update config.py
+Add your database connection details to your centralized configuration system.
+
+	# config.pyimport os
+	class AppConfig:
+		APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
+		APP_PORT = int(os.getenv("APP_PORT", "8000"))
+		APP_ENV = os.getenv("APP_ENV", "development")
+
+    # 1. PostgreSQL Database Configuration
+    # Replace username, password, localhost, and dbname with your actual system credentials
+    DB_USER = os.getenv("DB_USER", "postgres")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "your_password")
+    DB_HOST = os.getenv("DB_HOST", "localhost")
+    DB_PORT = os.getenv("DB_PORT", "5432")
+    DB_NAME = os.getenv("DB_NAME", "agent_db")
+
+    @property
+    def DATABASE_URL(self) -> str:
+        # We use postgresql+asyncpg for modern asynchronous FastAPI applications
+        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+
+    # 2. Tkinter UI Settings
+    WINDOW_TITLE = "Agent Secure Desktop Platform"
+    WINDOW_WIDTH = 800
+    WINDOW_HEIGHT = 600
+    CANVAS_BG_COLOR = "#1e1e1e"
+	config = AppConfig()
+
+------------------------------
+## 3. Create the Database Module (database.py)
+Create a new file called database.py at your root project level to manage engine initialization and session cycles.
+
+	# database.pyfrom sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSessionfrom sqlalchemy.orm import DeclarativeBasefrom config import config
+	# Create Async Engine for PostgreSQLengine = create_async_engine(config.DATABASE_URL, echo=True)
+	# Session factory for creating database links per web requestasync_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+	# Base class that our models inherit fromclass Base(DeclarativeBase):
+	pass
+	# Dependency injection generator for FastAPI endpointsasync def get_db():
+    async with async_session() as session:
+        yield session
+        await session.commit()
+
+------------------------------
+## 4. Create the User Data Model (models.py)
+Create a models.py file at your root project level to build a physical SQL layout schema mapping your agents/users table structure.
+
+# models.pyfrom sqlalchemy import Column, Integer, Stringfrom database import Base
+	class UserModel(Base):
+		__tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+
+------------------------------
+## 5. Update initialization in main.py
+To automatically build your tables inside PostgreSQL when your application initializes, update main.py to leverage FastAPI's lifespan event loop:
+
+	# main.py
+	
+	import threading
+	import timeimport uvicorn
+	from contextlib import asynccontextmanager
+	from fastapi import FastAPI
+	from config import config
+	from database import engine, Base
+	from api.endpoints import router as agent_router
+	from ui.canvas_ui import AgentDesktopUI
+
+	@asynccontextmanagerasync def lifespan(app: FastAPI):
+		# Boot action: Automatically generate tables in Postgres if they do not exist
+		async with engine.begin() as conn:
+			await conn.run_sync(Base.metadata.create_all)
+		yield
+		# Shutdown logic goes here if needed
+
+	app = FastAPI(lifespan=lifespan)
+	app.include_router(agent_router)
+
+	def start_fastapi_server():
+		uvicorn.run(app, host=config.APP_HOST, port=config.APP_PORT, log_level="warning")
+	
+	if __name__ == "__main__":
+		api_thread = threading.Thread(target=start_fastapi_server, daemon=True)
+		api_thread.start()
+
+    time.sleep(0.4) 
+
+    desktop_app = AgentDesktopUI()
+
+    desktop_app.run()
+
+------------------------------
+## 6. Connect PostgreSQL Queries into api/endpoints.py
+Finally, replace your older mock_user_db object inside your endpoints file with modern database session queries via standard dependency injection (Depends(get_db)):
+
+	# api/endpoints.py
+	
+	from fastapi import APIRouter, Depends, HTTPException, status
+	from fastapi.security import OAuth2PasswordRequestForm
+	from sqlalchemy.ext.asyncio import AsyncSession
+	from sqlalchemy.future import select
+	from typing import Annotated
+	from database import get_dbfrom models 
+	import UserModel
+	from auth import verify_password, get_password_hash, create_access_token
+	
+	# assuming you have standard Pydantic models UserRegister / Token in a schemas file# from schemas import UserRegister, Token 
+	router = APIRouter()
+
+	@router.post("/register", status_code=status.HTTP_201_CREATED)async def register(user: UserRegister, db: AsyncSession = Depends(get_db)):
+		"""Registers a new agent and stores their information directly into PostgreSQL."""
+		# 1. Verify user does not already exist
+		result = await db.execute(select(UserModel).where(UserModel.username == user.username))
+		existing_user = result.scalars().first()
+		if existing_user:
+			raise HTTPException(status_code=400, detail="Username already registered")
+    
+    # 2. Hash and save record
+    hashed = get_password_hash(user.password)
+    new_user = UserModel(username=user.username, hashed_password=hashed)
+
+    db.add(new_user)
+
+    # The session auto-commits when exiting the get_db context manager
+    return {"username": user.username}
+
+	@router.post("/token")
+	async def login_for_access_token(
+		form_data: Annotated[OAuth2PasswordRequestForm, Depends()], 
+		db: AsyncSession = Depends(get_db)
+	):
+
+	"""Verifies credentials against PostgreSQL users table."""
+	result = await db.execute(select(UserModel).where(UserModel.username == form_data.username))
+	user = result.scalars().first()
+    
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Issue your JWT token exactly like before...
+    access_token = create_access_token(data={"sub": user.username})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+Would you like help setting up a Pydantic validation schemas file to safely parse input data fields, or would you like to build a User Registration page inside your Tkinter canvas folder next?
+
+## Can we keep a seperate folder for model, repository?
+Yes, separating your database logic into models and repositories folders is an excellent architectural choice. This implements the Repository Pattern, which decouples your raw database queries from your API endpoints.
+Here is how to refactor your Visual Studio 2026 project layout into a clean corporate architecture.
+
+## 1. Clean Project Architecture
+Create two new subfolders: models and repositories. Make sure to include an empty __init__.py file in each so Python treats them as importable modules.
+
+	YourProject/
+	│
+	├── api/
+	│   ├── __init__.py
+	│   └── endpoints.py     # Calls the Repository tier
+	│
+	├── models/
+	│   ├── __init__.py
+	│   └── user_model.py    # Raw SQLAlchemy database schemas
+	│
+	├── repositories/
+	│   ├── __init__.py
+	│   └── user_repository.py # Core Database queries (CRUD operations)
+	│
+	├── ui/
+	│   ├── __init__.py
+	│   └── canvas_ui.py
+	│
+	├── auth.py
+	├── config.py
+	├── database.py          # Database setup engine & get_db dependency
+	└── main.py
+
+------------------------------
+## 2. The Model Tier (models/user_model.py)
+Isolate your structural declarations here. If your app grows, you can easily add order_model.py, log_model.py, etc., to this directory.
+
+	# models/user_model.py
+	
+	from sqlalchemy import Column, Integer, String
+	from database import Base
+
+	class UserModel(Base):
+		__tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    username = Column(String, unique=True, index=True, nullable=False)
+
+    hashed_password = Column(String, nullable=False)
+
+Expose the model in your models/__init__.py for cleaner cross-directory imports:
+
+	# models/__init__.py
+	from .user_model import UserModel
+
+------------------------------
+## 3. The Repository Tier (repositories/user_repository.py)
+The Repository manages the raw SQL query execution. This isolates database interactions so your endpoints don't have to worry about writing queries.
+
+	# repositories/user_repository.py
+	from sqlalchemy.ext.asyncio import AsyncSession
+	from sqlalchemy.future import selectfrom 
+	models.user_model import UserModel
+
+	class UserRepository:
+		def __init__(self, db: AsyncSession):
+			self.db = db
+
+    async def get_by_username(self, username: str) -> UserModel | None:
+        """Retrieves a single agent record by their unique username."""
+        result = await self.db.execute(
+            select(UserModel).where(UserModel.username == username)
+        )
+
+        return result.scalars().first()
+
+    async def create_user(self, username: str, hashed_password: str) -> UserModel:
+        """Inserts a brand new agent credentials record into PostgreSQL."""
+        new_user = UserModel(username=username, hashed_password=hashed_password)
+        self.db.add(new_user)
+        
+		# Session saves automatically if using our get_db context manager
+        return new_user
+
+------------------------------
+## 4. Hooking it up to the API Tier (api/endpoints.py)
+Now, your endpoints simply instantiate the Repository class using the database session. This leaves your API functions incredibly clean and easy to test.
+
+	# api/endpoints.py
+	from fastapi import APIRouter, Depends, HTTPException, status
+	from fastapi.security import OAuth2PasswordRequestForm
+	from sqlalchemy.ext.asyncio import AsyncSessionfrom typing 
+	import Annotated
+	from database import get_db
+	from repositories.user_repository 
+	import UserRepository  
+	# Import repository
+	from auth import verify_password, get_password_hash, create_access_token
+
+	router = APIRouter()
+
+	@router.post("/register", status_code=status.HTTP_201_CREATED)
+	async def register(user_data: dict, db: AsyncSession = Depends(get_db)):
+		"""Registers a new agent through the Repository layer."""
+		user_repo = UserRepository(db)
+    
+    # 1. Check existence via repository
+    existing_user = await user_repo.get_by_username(user_data["username"])
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Username already registered"
+        )
+    
+    # 2. Hash and save via repository
+    hashed = get_password_hash(user_data["password"])
+    await user_repo.create_user(username=user_data["username"], hashed_password=hashed)
+    
+    return {"username": user_data["username"]}
+
+	@router.post("/token")async def login_for_access_token(
+		form_data: Annotated[OAuth2PasswordRequestForm, Depends()], 
+		db: AsyncSession = Depends(get_db)
+	):
+
+	"""Authenticates credentials using the Repository tier."""
+	user_repo = UserRepository(db)
+	user = await user_repo.get_by_username(form_data.username)
+    
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token = create_access_token(data={"sub": user.username})
+
+    return {"access_token": access_token, "token_type": "bearer"}
+
+Would you like me to help you set up Pydantic Schemas in their own separate folder next to strictly validate the data structures passing through these layers, or do you want to handle the Tkinter registration window implementation?
+
+## Database will be in data folder or in the repository?
+Your database.py file should reside inside a data/ folder, completely separate from your repositories.
+In clean software architecture, the data/ folder manages infrastructure connections (database engines, session setups, drivers), while the repositories/ folder handles business-specific SQL queries.
+## 1. Updated Project Directory
+Create a new folder named data/ and relocate your engine setup files inside it like this:
+
+	YourProject/
+	│
+	├── api/
+	│   └── endpoints.py
+	│
+	├── data/
+	│   ├── __init__.py
+	│   └── database.py      # MOVED HERE: Connection engine & get_db helper
+	│
+	├── models/
+	│   └── user_model.py
+	│
+	├── repositories/
+	│   └── user_repository.py
+	│
+	├── ui/
+	│   └── canvas_ui.py
+	│
+	├── auth.py
+	├── config.py
+	└── main.py
+
+------------------------------
+## 2. Setting Up data/database.py
+The file contents stay the same, but it lives safely inside its new infrastructure subdirectory:
+
+	# data/database.py
+	
+	from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+	from sqlalchemy.orm import DeclarativeBase
+	from config import config
+
+	# Create Async Engine for Postgre
+	SQLengine = create_async_engine(config.DATABASE_URL, echo=True)
+
+	# Session factory for creating database links
+	
+	async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+	# Base class that our models inherit from
+	
+	class Base(DeclarativeBase):
+		pass
+
+	# Dependency injection generator for FastAPI endpointsasync 
+	
+	def get_db():
+		async with async_session() as session:
+			yield session
+			await session.commit()
+
+------------------------------
+## 3. How this changes your imports
+Now, when your files need to connect or refer to the base session, they path directly through your new data folder:
+
+	* In main.py:
+
+	from data.database import engine, Base
+
+	* In models/user_model.py:
+
+	from data.database import Base
+
+	* In api/endpoints.py:
+
+	from data.database import get_db
+
+
+Would you like me to show you how to set up Pydantic validation schemas inside a separate schemas/ folder to ensure incoming client data is clean before it hits your repository layer?
+
+
+Isolating your validation logic into a schemas/ folder implements the Data Transfer Object (DTO) pattern. This ensures that incoming data from your Tkinter desktop client is strictly validated before it ever interacts with your database models or repositories.
+## 1. Updated Project Structure
+Create a new folder named schemas and add an empty __init__.py file along with user_schema.py:
+
+	YourProject/
+	│
+	├── api/
+	│   └── endpoints.py
+	│
+	├── data/
+	│   └── database.py
+	│
+	├── models/
+	│   └── user_model.py
+	│
+	├── repositories/
+	│   └── user_repository.py
+	│
+	├── schemas/             # NEW: Data validation schemas
+	│   ├── __init__.py
+	│   └── user_schema.py   # Pydantic validation structures
+	│
+	├── ui/
+	│   └── canvas_ui.py
+	│
+	├── auth.py
+	├── config.py
+	└── main.py
+
+## 2. The Validation Tier (schemas/user_schema.py)
+This file uses Pydantic to strictly define what input data is allowed. It filters out unwanted malicious fields and ensures proper types:
+
+	# schemas/user_schema.pyfrom pydantic import BaseModel, Field
+	class UserRegister(BaseModel):
+		"""Validates the incoming payload when creating a new agent account."""
+		username: str = Field(..., min_length=3, max_length=50, description="Unique identifier for the agent")
+		password: str = Field(..., min_length=6, description="Secure account password")
+	class UserResponse(BaseModel):
+		"""Controls the exact fields serialized and returned back to the desktop client."""
+		username: str
+
+		class Config:
+			# Allows Pydantic to read data directly from your SQLAlchemy Model instances
+			from_attributes = True
+	class Token(BaseModel):
+		"""Validates structure for OAuth2 compliant authorization responses."""
+		access_token: str
+		token_type: str
+
+Expose them in your schemas/__init__.py for clean, consolidated imports:
+
+	# schemas/__init__.py
+	from .user_schema import UserRegister, UserResponse, Token
+
+## 3. Integrating Schemas into api/endpoints.py
+Now you can replace generic dictionary hints with your robust Pydantic schemas. FastAPI will automatically validate requests against these structures, returning a clean 422 Unprocessable Entity error to the desktop client if the data is malformed.
+
+	# api/endpoints.py
+
+	from fastapi import APIRouter, Depends, HTTPException, statusfrom fastapi.security 
+	import OAuth2PasswordRequestForm
+	from sqlalchemy.ext.asyncio import AsyncSession
+	from typing import Annotated
+	from data.database import get_db
+	from repositories.user_repository import UserRepository
+	from auth import verify_password, get_password_hash, create_access_token
+	# Import your new validation structures
+	from schemas import UserRegister, UserResponse, Token 
+	router = APIRouter()
+
+	@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)async def register(user_data: UserRegister, db: AsyncSession = Depends(get_db)):
+		"""Registers a new agent safely validated through the Schema framework."""
+		user_repo = UserRepository(db)
+    
+    # 1. Check if user already exists
+    existing_user = await user_repo.get_by_username(user_data.username)
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Username already registered"
+        )
+    
+    # 2. Hash and save via repository layer
+    hashed = get_password_hash(user_data.password)
+    new_user = await user_repo.create_user(username=user_data.username, hashed_password=hashed)
+    
+    # The endpoint safely filters out the password hash because response_model=UserResponse
+    return new_user
+
+	@router.post("/token", response_model=Token)async def login_for_access_token(
+		form_data: Annotated[OAuth2PasswordRequestForm, Depends()], 
+		db: AsyncSession = Depends(get_db)
+	):
+		"""Authenticates credentials and generates a secure schema-validated Token."""
+		user_repo = UserRepository(db)
+		user = await user_repo.get_by_username(form_data.username)
+    
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token = create_access_token(data={"sub": user.username})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+Would you like me to show you how to write the Tkinter user registration window view inside your canvas_ui.py so new users can actually register directly from the desktop interface?
+
+
+Here is how to update your ui/canvas_ui.py file to handle both user registration and secure logging in smoothly on your Tkinter Canvas.
+It adds an adaptive view switcher so you can cleanly jump between a registration page and a login page, making network calls directly to your FastAPI backend.
+## Updated UI Module (ui/canvas_ui.py)
+
+# ui/canvas_ui.pyimport tkinter as tkfrom tkinter import messageboximport httpxfrom config import config
+class AgentDesktopUI:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title(config.WINDOW_TITLE)
+        self.root.geometry(f"{config.WINDOW_WIDTH}x{config.WINDOW_HEIGHT}")
+        
+        # Core State
+        self.access_token = None
+        self.backend_url = f"http://{config.APP_HOST}:{config.APP_PORT}"
+        self.active_widgets = []  # Track dynamically rendered widgets for easy clearing
+
+        self._create_canvas()
+        self.show_login_screen()
+
+    def _create_canvas(self):
+        """Builds the main background Canvas layer."""
+        self.canvas = tk.Canvas(
+            self.root, 
+            width=config.WINDOW_WIDTH, 
+            height=config.WINDOW_HEIGHT, 
+            bg=config.CANVAS_BG_COLOR
+        )
+        self.canvas.pack(fill="both", expand=True)
+
+        # Centered Persistent Title
+        self.title_text = self.canvas.create_text(
+            config.WINDOW_WIDTH // 2, 
+            50, 
+            text="CLASSIFIED AGENT TERMINAL", 
+            fill="#00FF00",  # Cyber Green
+            font=("Courier New", 20, "bold")
+        )
+
+    def _clear_screen(self):
+        """Removes all dynamic canvas elements and widgets to redraw the screen."""
+        for item in self.active_widgets:
+            self.canvas.delete(item)
+        self.active_widgets.clear()
+
+    # --- VIEW 1: LOGIN SCREEN ---
+    def show_login_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="AGENT AUTHENTICATION", fill="#00FF00")
+
+        # Username Input
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 130, text="Username:", fill="white", font=("Arial", 11)))
+        username_entry = tk.Entry(self.root, width=25, font=("Arial", 12))
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 160, window=username_entry))
+
+        # Password Input
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 210, text="Password:", fill="white", font=("Arial", 11)))
+        password_entry = tk.Entry(self.root, width=25, font=("Arial", 12), show="*")
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 240, window=password_entry))
+
+        # Submit Login Button
+        login_btn = tk.Button(
+            self.root, text="Login", width=15, bg="#00FF00", fg="black", font=("Arial", 11, "bold"),
+            command=lambda: self._handle_login(username_entry.get(), password_entry.get())
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 300, window=login_btn))
+
+        # Switch to Registration Link
+        register_link = tk.Button(
+            self.root, text="Need an account? Register here", fg="#0055ff", bg=config.CANVAS_BG_COLOR, 
+            bd=0, activebackground=config.CANVAS_BG_COLOR, font=("Arial", 10, "underline"), cursor="hand2",
+            command=self.show_register_screen
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 350, window=register_link))
+
+    def _handle_login(self, username, password):
+        if not username.strip() or not password.strip():
+            messagebox.showwarning("Input Error", "Please enter both credentials.")
+            return
+
+        payload = {"username": username.strip(), "password": password.strip()}
+        try:
+            with httpx.Client() as client:
+                response = client.post(f"{self.backend_url}/token", data=payload)
+                
+            if response.status_code == 200:
+                self.access_token = response.json().get("access_token")
+                self.show_dashboard_screen()
+            else:
+                error_msg = response.json().get("detail", "Login failed.")
+                messagebox.showerror("Access Denied", error_msg)
+        except httpx.RequestError as exc:
+            messagebox.showerror("Network Error", f"Cannot connect to local backend: {exc}")
+
+    # --- VIEW 2: REGISTRATION SCREEN ---
+    def show_register_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="AGENT ENROLLMENT", fill="#00AAFF")
+
+        # New Username Input
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 130, text="Choose Username:", fill="white", font=("Arial", 11)))
+        reg_username_entry = tk.Entry(self.root, width=25, font=("Arial", 12))
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 160, window=reg_username_entry))
+
+        # New Password Input
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 210, text="Choose Password:", fill="white", font=("Arial", 11)))
+        reg_password_entry = tk.Entry(self.root, width=25, font=("Arial", 12), show="*")
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 240, window=reg_password_entry))
+
+        # Submit Register Button
+        register_btn = tk.Button(
+            self.root, text="Create Account", width=15, bg="#00AAFF", fg="black", font=("Arial", 11, "bold"),
+            command=lambda: self._handle_registration(reg_username_entry.get(), reg_password_entry.get())
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 300, window=register_btn))
+
+        # Switch back to Login Link
+        login_link = tk.Button(
+            self.root, text="Already have an account? Sign in", fg="#00FF00", bg=config.CANVAS_BG_COLOR, 
+            bd=0, activebackground=config.CANVAS_BG_COLOR, font=("Arial", 10, "underline"), cursor="hand2",
+            command=self.show_login_screen
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 350, window=login_link))
+
+    def _handle_registration(self, username, password):
+        # Local structural validation checks matching your Pydantic rules
+        if len(username.strip()) < 3 or len(password.strip()) < 6:
+            messagebox.showwarning("Validation Error", "Username must be at least 3 characters.\nPassword must be at least 6 characters.")
+            return
+
+        # Pydantic schema expects JSON payload for /register (json= instead of data=)
+        json_payload = {"username": username.strip(), "password": password.strip()}
+        try:
+            with httpx.Client() as client:
+                response = client.post(f"{self.backend_url}/register", json=json_payload)
+                
+            if response.status_code == 201:
+                messagebox.showinfo("Success", "Agent enrollment successful! You can now log in.")
+                self.show_login_screen()
+            else:
+                error_msg = response.json().get("detail", "Registration rejected.")
+                messagebox.showerror("Registration Failed", error_msg)
+        except httpx.RequestError as exc:
+            messagebox.showerror("Network Error", f"Cannot connect to registration server: {exc}")
+
+    # --- VIEW 3: SECURE DASHBOARD ---
+    def show_dashboard_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="ACCESS GRANTED", fill="#00FF00")
+        
+        self.active_widgets.append(self.canvas.create_text(
+            config.WINDOW_WIDTH // 2, 160, 
+            text="Welcome to the secure grid system.", fill="white", font=("Arial", 12)
+        ))
+
+        # Protected File Fetch Button
+        fetch_btn = tk.Button(
+            self.root, text="Fetch Core Intelligence", bg="#5500FF", fg="white", font=("Arial", 11, "bold"),
+            command=self._fetch_secure_data
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 220, window=fetch_btn))
+
+    def _fetch_secure_data(self):
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        try:
+            with httpx.Client() as client:
+                response = client.get(f"{self.backend_url}/agent/secure-data", headers=headers)
+            if response.status_code == 200:
+                payload = response.json().get("secret_payload")
+                messagebox.showinfo("Classified Feed", f"System Data Recovered:\n{payload}")
+            else:
+                messagebox.showerror("Unauthorized", "Session expired or access unauthorized.")
+        except httpx.RequestError as exc:
+            messagebox.showerror("Network Error", f"Data stream interrupted: {exc}")
+
+    def run(self):
+        self.root.mainloop()
+
+## Functional Highlights
+
+* json= vs data= Alignment: Notice that _handle_registration submits using json=json_payload because your FastAPI /register route handles JSON models. Conversely, _handle_login uses data=payload to align perfectly with FastAPI's native URL-encoded OAuth2PasswordRequestForm.
+* State Cleanliness: Using self.active_widgets ensures that moving between login and sign-up leaves zero orphaned text layers or overlapping active form entries on your Tkinter canvas.
+
+## Would you like to build a loading spinner or an animated status bar on the canvas next to indicate when background async HTTP requests are in transit, or should we refine the PostgreSQL model structures?
+Yes
+
+# ui/canvas_ui.py
+import tkinter as tk
+from tkinter import messagebox
+import httpx
+import threading
+from config import config
+
+class AgentDesktopUI:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title(config.WINDOW_TITLE)
+        self.root.geometry(f"{config.WINDOW_WIDTH}x{config.WINDOW_HEIGHT}")
+        
+        # Core State
+        self.access_token = None
+        self.backend_url = f"http://{config.APP_HOST}:{config.APP_PORT}"
+        self.active_widgets = []  # Track dynamic elements
+        self.is_loading = False   # Loader flag
+        self.animation_step = 0   # Track frame index
+
+        self._create_canvas()
+        self.show_login_screen()
+
+    def _create_canvas(self):
+        """Builds the main background Canvas layer."""
+        self.canvas = tk.Canvas(
+            self.root, 
+            width=config.WINDOW_WIDTH, 
+            height=config.WINDOW_HEIGHT, 
+            bg=config.CANVAS_BG_COLOR
+        )
+        self.canvas.pack(fill="both", expand=True)
+
+        # Centered Persistent Title
+        self.title_text = self.canvas.create_text(
+            config.WINDOW_WIDTH // 2, 
+            50, 
+            text="CLASSIFIED AGENT TERMINAL", 
+            fill="#00FF00",  
+            font=("Courier New", 20, "bold")
+        )
+
+        # Persistent Loader Graphic (Hidden by default via empty text)
+        self.loader_text = self.canvas.create_text(
+            config.WINDOW_WIDTH // 2, 
+            420, 
+            text="", 
+            fill="#00AAFF", 
+            font=("Courier New", 12, "bold")
+        )
+
+    def _animate_loader(self):
+        """Asynchronous canvas animation loop for network activity."""
+        if not self.is_loading:
+            self.canvas.itemconfig(self.loader_text, text="")
+            return
+
+        # Simple cyber terminal loading bar sequence
+        frames = [
+            "[■□□□□□□□□□] CONNECTING VIA SECURE CORRIDOR",
+            "[■■□□□□□□□□] VALIDATING AGENT CREDENTIALS",
+            "[■■■■□□□□□□] EXCHANGE KEY HANDSHAKE IN PROGRESS",
+            "[■■■■■■□□□□] PARSING SECURITY PRIVILEGES",
+            "[■■■■■■■■□□] EXTRACTING DATA PAYLOAD PACKETS",
+            "[■■■■■■■■■■] STREAM SYNCHRONIZATION COMPLETE"
+        ]
+        
+        current_frame = frames[self.animation_step % len(frames)]
+        self.canvas.itemconfig(self.loader_text, text=current_frame)
+        self.animation_step += 1
+
+        # Force a loop callback every 180ms without freezing the main app thread
+        self.root.after(180, self._animate_loader)
+
+    def start_loader(self):
+        """Activates loading flag and boots canvas frame sequence."""
+        self.is_loading = True
+        self.animation_step = 0
+        self._animate_loader()
+
+    def stop_loader(self):
+        """Signals loader system to spin down and clear."""
+        self.is_loading = False
+
+    def _clear_screen(self):
+        """Removes all dynamic canvas elements and widgets to redraw the screen."""
+        for item in self.active_widgets:
+            self.canvas.delete(item)
+        self.active_widgets.clear()
+
+    # --- VIEW 1: LOGIN SCREEN ---
+    def show_login_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="AGENT AUTHENTICATION", fill="#00FF00")
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 130, text="Username:", fill="white", font=("Arial", 11)))
+        username_entry = tk.Entry(self.root, width=25, font=("Arial", 12))
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 160, window=username_entry))
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 210, text="Password:", fill="white", font=("Arial", 11)))
+        password_entry = tk.Entry(self.root, width=25, font=("Arial", 12), show="*")
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 240, window=password_entry))
+
+        login_btn = tk.Button(
+            self.root, text="Login", width=15, bg="#00FF00", fg="black", font=("Arial", 11, "bold"),
+            command=lambda: self.run_network_task(self._handle_login, username_entry.get(), password_entry.get())
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 300, window=login_btn))
+
+        register_link = tk.Button(
+            self.root, text="Need an account? Register here", fg="#0055ff", bg=config.CANVAS_BG_COLOR, 
+            bd=0, activebackground=config.CANVAS_BG_COLOR, font=("Arial", 10, "underline"), cursor="hand2",
+            command=self.show_register_screen
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 350, window=register_link))
+
+    # --- VIEW 2: REGISTRATION SCREEN ---
+    def show_register_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="AGENT ENROLLMENT", fill="#00AAFF")
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 130, text="Choose Username:", fill="white", font=("Arial", 11)))
+        reg_username_entry = tk.Entry(self.root, width=25, font=("Arial", 12))
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 160, window=reg_username_entry))
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 210, text="Choose Password:", fill="white", font=("Arial", 11)))
+        reg_password_entry = tk.Entry(self.root, width=25, font=("Arial", 12), show="*")
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 240, window=reg_password_entry))
+
+        register_btn = tk.Button(
+            self.root, text="Create Account", width=15, bg="#00AAFF", fg="black", font=("Arial", 11, "bold"),
+            command=lambda: self.run_network_task(self._handle_registration, reg_username_entry.get(), reg_password_entry.get())
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 300, window=register_btn))
+
+        login_link = tk.Button(
+            self.root, text="Already have an account? Sign in", fg="#00FF00", bg=config.CANVAS_BG_COLOR, 
+            bd=0, activebackground=config.CANVAS_BG_COLOR, font=("Arial", 10, "underline"), cursor="hand2",
+            command=self.show_login_screen
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 350, window=login_link))
+
+    # --- VIEW 3: SECURE DASHBOARD ---
+    def show_dashboard_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="ACCESS GRANTED", fill="#00FF00")
+        
+        self.active_widgets.append(self.canvas.create_text(
+            config.WINDOW_WIDTH // 2, 160, 
+            text="Welcome to the secure grid system.", fill="white", font=("Arial", 12)
+        ))
+
+        fetch_btn = tk.Button(
+            self.root, text="Fetch Core Intelligence", bg="#5500FF", fg="white", font=("Arial", 11, "bold"),
+            command=lambda: self.run_network_task(self._fetch_secure_data)
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 220, window=fetch_btn))
+
+    # --- ASYNC MULTI-THREADING HANDLER ---
+    def run_network_task(self, target_function, *args):
+        """Spawns network methods in a background worker thread to keep the Canvas running smoothly."""
+        if self.is_loading:
+            return  # Prevent rapid duplicate clicks
+
+        self.start_loader()
+        
+        # Wrapper to stop the animation when the network operation completes
+        def worker_wrapper():
+            try:
+                target_function(*args)
+            finally:
+                self.root.after(0, self.stop_loader)
+
+        threading.Thread(target=worker_wrapper, daemon=True).start()
+
+    # --- BACKGROUND WORKER EXECUTIONS ---
+    def _handle_login(self, username, password):
+        if not username.strip() or not password.strip():
+            self.stop_loader()
+            messagebox.showwarning("Input Error", "Please enter both credentials.")
+            return
+
+        payload = {"username": username.strip(), "password": password.strip()}
+        try:
+            with httpx.Client() as client:
+                response = client.post(f"{self.backend_url}/token", data=payload)
+                
+            if response.status_code == 200:
+                self.access_token = response.json().get("access_token")
+                self.root.after(0, self.show_dashboard_screen)
+            else:
+                error_msg = response.json().get("detail", "Login failed.")
+                self.root.after(0, lambda: messagebox.showerror("Access Denied", error_msg))
+        except httpx.RequestError as exc:
+            self.root.after(0, lambda: messagebox.showerror("Network Error", f"Server dropped link: {exc}"))
+
+    def _handle_registration(self, username, password):
+        if len(username.strip()) < 3 or len(password.strip()) < 6:
+            self.stop_loader()
+            messagebox.showwarning("Validation Error", "Username must be ≥ 3 chars.\nPassword must be ≥ 6 chars.")
+            return
+
+        json_payload = {"username": username.strip(), "password": password.strip()}
+        try:
+            with httpx.Client() as client:
+                response = client.post(f"{self.backend_url}/register", json=json_payload)
+                
+            if response.status_code == 201:
+                self.root.after(0, lambda: messagebox.showinfo("Success", "Agent enrolled! Please login."))
+                self.root.after(0, self.show_login_screen)
+            else:
+                error_msg = response.json().get("detail", "Registration rejected.")
+                self.root.after(0, lambda: messagebox.showerror("Registration Failed", error_msg))
+        except httpx.RequestError as exc:
+            self.root.after(0, lambda: messagebox.showerror("Network Error", f"Server dropped link: {exc}"))
 
 
 
+	def _fetch_secure_data(self):
+		headers = {"Authorization": f"Bearer {self.access_token}"}
+		try:
+			with httpx.Client() as client:
+			response = client.get(f"{self.backend_url}/agent/secure-data", headers=headers)
+			if response.status_code == 200:
+			payload = response.json().get("secret_payload")
+			self.root.after(0, lambda: messagebox.showinfo("Classified Feed", f"System Data Recovered:\n{payload}"))
+			else:
+			self.root.after(0, lambda: messagebox.showerror("Unauthorized", "Session token signature expired."))
+		except httpx.RequestError as exc:
+			self.root.after(0, lambda: messagebox.showerror("Network Error", f"Data stream interrupted: {exc}"))
+		
+		def run(self):
+			self.root.mainloop()
 
 
+This error occurs because the python-jose library is missing in the specific Python environment running your Visual Studio solution.
+## How to Fix It
+You need to install the package that provides the jose module. Open your terminal or package manager and run:
+
+pip install "python-jose[cryptography]"
+
+## Steps for Visual Studio 2026
+If running the command in a global terminal doesn't fix it, your project is likely using a localized virtual environment. Fix it directly inside Visual Studio:
+
+   1. Look at the Python Environments window in Visual Studio (usually grouped with Solution Explorer).
+   2. Right-click on your active environment (e.g., Python 3.13 or env).
+   3. Select Install Python Package...
+   4. Type python-jose[cryptography] into the search bar and press Enter to install it directly into your project's active runtime path.
+
+------------------------------
+## Modern Alternative: Migrating to PyJWT
+The python-jose library has become outdated and doesn't fully support newer versions of Python (like your Python 3.13). The modern standard for FastAPI applications is PyJWT.
+If you'd rather use the updated industry standard, you can swap it out in two quick steps:
+1. Install PyJWT instead:
+
+pip install pyjwt
+
+2. Update the imports at the top of your security/auth.py file:
+
+# Replace this line:# from jose import JWTError, jwt
+# With this line:from jwt import PyJWTError as JWTError, jwt
+
+(Note: Everything else in your code will continue to work exactly the same!)
+Let me know which approach you prefer (installing python-jose or switching to PyJWT). Once your server successfully boots up, would you like to build out the dashboard layout interface to display information on the canvas?
+
+## Message=Form data requires "python-multipart" to be installed. 
+	You can install "python-multipart" with: 
+
+	pip install python-multipart
+
+	  Source=C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py
+	  StackTrace:
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 105, in ensure_multipart_is_installed
+		from python_multipart import __version__
+	ModuleNotFoundError: No module named 'python_multipart'
+
+	During handling of the above exception, another exception occurred:
+
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 112, in ensure_multipart_is_installed
+			__version__,
+    
+		)
+	ModuleNotFoundError: No module named 'multipart'
+
+	During handling of the above exception, another exception occurred:
+
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 129, in ensure_multipart_is_installed
+		raise RuntimeError(multipart_not_installed_error) from None
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 523, in analyze_param
+		ensure_multipart_is_installed()
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 296, in get_dependant
+			param_name=param_name,
+						^^^^^^^^^^
+		...<4 lines>...
+    
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 322, in get_dependant
+			path=path,
+    
+		...<7 lines>...
+			parent_oauth_scopes=current_scopes,
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\routing.py", line 894, in _build_dependant_with_parameterless_dependencies
+		dependant = get_dependant(path=path, call=call, scope="function")
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\routing.py", line 1094, in _populate_api_route_state
+			path=route.path_format,
+			^^^^^^^^^^^^^^^^^^^^^^^
+		...<3 lines>...
+			dependencies=route.dependencies,
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\routing.py", line 1226, in __init__
+			cast(_APIRouteLike, self),
+		...<28 lines>...
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\routing.py", line 3019, in add_api_route
+			self.prefix + path,
+				^^^^^^^^^^^^^^^
+		...<29 lines>...
+			response_model_by_alias=response_model_by_alias,
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\routing.py", line 3084, in decorator
+			path,
+			^^^^^
+		...<25 lines>...
+			response_model_include=response_model_include,
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\api\endpoints.py", line 36, in <module> (Current frame)
+		@router.post("/token", response_model=Token)
+		 ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\main.py", line 8, in <module>
+		from api.endpoints import router as agent_router
+	  File "C:\Users\Naim\AppData\Local\Python\pythoncore-3.13-64\Lib\runpy.py", line 88, in _run_code
+		exec(code, run_globals)
+	  File "C:\Users\Naim\AppData\Local\Python\pythoncore-3.13-64\Lib\runpy.py", line 203, in _run_module_as_main
+		return _run_code(code, main_globals, None,
+	RuntimeError: Form data requires "python-multipart" to be installed. 
+	You can install "python-multipart" with: 
+
+	pip install python-multipart
 
 
+## This error occurs because the python-jose library is missing in the specific Python environment running your Visual Studio solution.
+## How to Fix It
+You need to install the package that provides the jose module. Open your terminal or package manager and run:
+
+pip install "python-jose[cryptography]"
+
+## Steps for Visual Studio 2026
+If running the command in a global terminal doesn't fix it, your project is likely using a localized virtual environment. Fix it directly inside Visual Studio:
+
+   1. Look at the Python Environments window in Visual Studio (usually grouped with Solution Explorer).
+   2. Right-click on your active environment (e.g., Python 3.13 or env).
+   3. Select Install Python Package...
+   4. Type python-jose[cryptography] into the search bar and press Enter to install it directly into your project's active runtime path.
+
+------------------------------
+## Modern Alternative: Migrating to PyJWT
+The python-jose library has become outdated and doesn't fully support newer versions of Python (like your Python 3.13). The modern standard for FastAPI applications is PyJWT.
+If you'd rather use the updated industry standard, you can swap it out in two quick steps:
+1. Install PyJWT instead:
+
+pip install pyjwt
+
+2. Update the imports at the top of your security/auth.py file:
+
+# Replace this line:# from jose import JWTError, jwt
+# With this line:from jwt import PyJWTError as JWTError, jwt
+
+(Note: Everything else in your code will continue to work exactly the same!)
+Let me know which approach you prefer (installing python-jose or switching to PyJWT). Once your server successfully boots up, would you like to build out the dashboard layout interface to display information on the canvas?
 
 
+	Message=Form data requires "python-multipart" to be installed. 
+	You can install "python-multipart" with: 
+
+	pip install python-multipart
+
+	  Source=C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py
+	  StackTrace:
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 105, in ensure_multipart_is_installed
+		from python_multipart import __version__
+	ModuleNotFoundError: No module named 'python_multipart'
+
+	During handling of the above exception, another exception occurred:
+
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 112, in ensure_multipart_is_installed
+			__version__,
+    
+		)
+	ModuleNotFoundError: No module named 'multipart'
+
+	During handling of the above exception, another exception occurred:
+
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 129, in ensure_multipart_is_installed
+		raise RuntimeError(multipart_not_installed_error) from None
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 523, in analyze_param
+		ensure_multipart_is_installed()
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 296, in get_dependant
+			param_name=param_name,
+						^^^^^^^^^^
+		...<4 lines>...
+    
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\dependencies\utils.py", line 322, in get_dependant
+			path=path,
+    
+		...<7 lines>...
+			parent_oauth_scopes=current_scopes,
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\routing.py", line 894, in _build_dependant_with_parameterless_dependencies
+		dependant = get_dependant(path=path, call=call, scope="function")
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\routing.py", line 1094, in _populate_api_route_state
+			path=route.path_format,
+			^^^^^^^^^^^^^^^^^^^^^^^
+		...<3 lines>...
+			dependencies=route.dependencies,
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\routing.py", line 1226, in __init__
+			cast(_APIRouteLike, self),
+		...<28 lines>...
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\routing.py", line 3019, in add_api_route
+			self.prefix + path,
+				^^^^^^^^^^^^^^^
+		...<29 lines>...
+			response_model_by_alias=response_model_by_alias,
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Lib\site-packages\fastapi\routing.py", line 3084, in decorator
+			path,
+			^^^^^
+		...<25 lines>...
+			response_model_include=response_model_include,
+    
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\api\endpoints.py", line 36, in <module> (Current frame)
+		@router.post("/token", response_model=Token)
+		 ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\main.py", line 8, in <module>
+		from api.endpoints import router as agent_router
+	  File "C:\Users\Naim\AppData\Local\Python\pythoncore-3.13-64\Lib\runpy.py", line 88, in _run_code
+		exec(code, run_globals)
+	  File "C:\Users\Naim\AppData\Local\Python\pythoncore-3.13-64\Lib\runpy.py", line 203, in _run_module_as_main
+		return _run_code(code, main_globals, None,
+	RuntimeError: Form data requires "python-multipart" to be installed. 
+	You can install "python-multipart" with: 
+
+	pip install python-multipart
+
+This crash happens because FastAPI uses python-multipart under the hood to parse form fields. Since your /token endpoint relies on the OAuth2PasswordRequestForm dependency (which processes the login as form data), the package must be explicitly installed.
+## The Solution
+You need to target the virtual environment inside your Visual Studio project directory (C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\).
+## Option 1: Using the Visual Studio 2026 Package Manager (easiest)
+
+   1. Go to the Solution Explorer or find the Python Environments window in Visual Studio.
+   2. Select the specific environment named env (your project's local virtual environment).
+   3. Switch the dropdown interface from Overview to Packages (PyPI).
+   4. Type python-multipart in the search box and press Enter to install it directly into your virtual environment path.
+
+## Option 2: Running the installation via Terminal
+Open a command prompt or PowerShell and explicitly target the virtual environment's executable by running:
+
+C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Scripts\pip install python-multipart
+
+## Pro-Tip: Update your requirements.txt
+To prevent these missing module errors in the future, add all your app dependencies to a requirements.txt file at your project's root:
+
+fastapi
+uvicorn[standard]
+sqlalchemy[asyncio]
+asyncpg
+python-jose[cryptography]
+python-multipart
+httpx
+pydantic-settings
+
+You can right-click your env inside Visual Studio and select Generate requirements.txt to snapshot this automatically.
+Once your application starts up cleanly after installing python-multipart, should we design a hacker-style grid dashboard view on your Tkinter canvas to display your data once an agent successfully logs in?
 

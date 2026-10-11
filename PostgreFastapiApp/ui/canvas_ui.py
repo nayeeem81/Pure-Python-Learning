@@ -2,6 +2,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import httpx
+import threading
 from config import config
 
 class AgentDesktopUI:
@@ -9,140 +10,235 @@ class AgentDesktopUI:
         self.root = tk.Tk()
         self.root.title(config.WINDOW_TITLE)
         self.root.geometry(f"{config.WINDOW_WIDTH}x{config.WINDOW_HEIGHT}")
-        
-        # Token storage on the desktop client
+        # Core State
         self.access_token = None
         self.backend_url = f"http://{config.APP_HOST}:{config.APP_PORT}"
-
+        self.active_widgets = []  # Track dynamic elements
+        self.is_loading = False   # Loader flag
+        self.animation_step = 0   # Track frame index
         self._create_canvas()
-        self._build_login_form()
+        self.show_login_screen()
+
 
     def _create_canvas(self):
-        """Builds and draws your primary Tkinter canvas interface."""
+        """Builds the main background Canvas layer."""
         self.canvas = tk.Canvas(
             self.root, 
             width=config.WINDOW_WIDTH, 
             height=config.WINDOW_HEIGHT, 
             bg=config.CANVAS_BG_COLOR
         )
+
         self.canvas.pack(fill="both", expand=True)
 
-        # Main Title Header
+        # Centered Persistent Title
         self.title_text = self.canvas.create_text(
             config.WINDOW_WIDTH // 2, 
             50, 
             text="CLASSIFIED AGENT TERMINAL", 
-            fill="#00FF00",  # Cyber Green
+            fill="#00FF00",  
             font=("Courier New", 20, "bold")
         )
 
-    def _build_login_form(self):
-        """Places Tkinter entry widgets directly onto the Canvas canvas layer."""
-        # Username Field
-        self.canvas.create_text(config.WINDOW_WIDTH // 2, 130, text="Username:", fill="white", font=("Arial", 12))
-        self.username_entry = tk.Entry(self.root, width=25, font=("Arial", 12))
-        self.username_window = self.canvas.create_window(config.WINDOW_WIDTH // 2, 160, window=self.username_entry)
-
-        # Password Field
-        self.canvas.create_text(config.WINDOW_WIDTH // 2, 210, text="Password:", fill="white", font=("Arial", 12))
-        self.password_entry = tk.Entry(self.root, width=25, font=("Arial", 12), show="*")
-        self.password_window = self.canvas.create_window(config.WINDOW_WIDTH // 2, 240, window=self.password_entry)
-
-        # Login Submit Button
-        self.login_button = tk.Button(
-            self.root, 
-            text="Authenticate", 
-            command=self._handle_login, 
-            bg="#00FF00", 
-            fg="black", 
-            font=("Arial", 11, "bold"),
-            padx=10,
-            pady=5
+        # Persistent Loader Graphic (Hidden by default via empty text)
+        self.loader_text = self.canvas.create_text(
+            config.WINDOW_WIDTH // 2, 
+            420, 
+            text="", 
+            fill="#00AAFF", 
+            font=("Courier New", 12, "bold")
         )
-        self.button_window = self.canvas.create_window(config.WINDOW_WIDTH // 2, 300, window=self.login_button)
 
-    def _handle_login(self):
-        """Extracts entries and communicates with the FastAPI /token endpoint."""
-        username = self.username_entry.get().strip()
-        password = self.password_entry.get().strip()
 
-        if not username or not password:
-            messagebox.showwarning("Input Error", "Please provide both an agent username and password.")
+    def _animate_loader(self):
+        """Asynchronous canvas animation loop for network activity."""
+        if not self.is_loading:
+            self.canvas.itemconfig(self.loader_text, text="")
             return
 
-        # OAuth2PasswordRequestForm expects data as form-encoded fields, not JSON
-        payload = {
-            "username": username,
-            "password": password
-        }
+        # Simple cyber terminal loading bar sequence
+        frames = [
+            "[■□□□□□□□□□] CONNECTING VIA SECURE CORRIDOR",
+            "[■■□□□□□□□□] VALIDATING AGENT CREDENTIALS",
+            "[■■■■□□□□□□] EXCHANGE KEY HANDSHAKE IN PROGRESS",
+            "[■■■■■■□□□□] PARSING SECURITY PRIVILEGES",
+            "[■■■■■■■■□□] EXTRACTING DATA PAYLOAD PACKETS",
+            "[■■■■■■■■■■] STREAM SYNCHRONIZATION COMPLETE"
+        ]
+        
+        current_frame = frames[self.animation_step % len(frames)]
+        self.canvas.itemconfig(self.loader_text, text=current_frame)
+        self.animation_step += 1
+
+        # Force a loop callback every 180ms without freezing the main app thread
+        self.root.after(180, self._animate_loader)
+
+
+    def start_loader(self):
+        """Activates loading flag and boots canvas frame sequence."""
+        self.is_loading = True
+        self.animation_step = 0
+        self._animate_loader()
+
+
+    def stop_loader(self):
+        """Signals loader system to spin down and clear."""
+        self.is_loading = False
+
+    def _clear_screen(self):
+        """Removes all dynamic canvas elements and widgets to redraw the screen."""
+        for item in self.active_widgets:
+            self.canvas.delete(item)
+        self.active_widgets.clear()
+
+    # --- VIEW 1: LOGIN SCREEN ---
+    def show_login_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="AGENT AUTHENTICATION", fill="#00FF00")
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 130, text="Username:", fill="white", font=("Arial", 11)))
+        username_entry = tk.Entry(self.root, width=25, font=("Arial", 12))
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 160, window=username_entry))
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 210, text="Password:", fill="white", font=("Arial", 11)))
+        password_entry = tk.Entry(self.root, width=25, font=("Arial", 12), show="*")
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 240, window=password_entry))
+
+        login_btn = tk.Button(
+            self.root, text="Login", width=15, bg="#00FF00", fg="black", font=("Arial", 11, "bold"),
+            command=lambda: self.run_network_task(self._handle_login, username_entry.get(), password_entry.get())
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 300, window=login_btn))
+
+        register_link = tk.Button(
+            self.root, text="Need an account? Register here", fg="#0055ff", bg=config.CANVAS_BG_COLOR, 
+            bd=0, activebackground=config.CANVAS_BG_COLOR, font=("Arial", 10, "underline"), cursor="hand2",
+            command=self.show_register_screen
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 350, window=register_link))
+
+    # --- VIEW 2: REGISTRATION SCREEN ---
+    def show_register_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="AGENT ENROLLMENT", fill="#00AAFF")
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 130, text="Choose Username:", fill="white", font=("Arial", 11)))
+        reg_username_entry = tk.Entry(self.root, width=25, font=("Arial", 12))
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 160, window=reg_username_entry))
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 210, text="Choose Password:", fill="white", font=("Arial", 11)))
+        reg_password_entry = tk.Entry(self.root, width=25, font=("Arial", 12), show="*")
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 240, window=reg_password_entry))
+
+        register_btn = tk.Button(
+            self.root, text="Create Account", width=15, bg="#00AAFF", fg="black", font=("Arial", 11, "bold"),
+            command=lambda: self.run_network_task(self._handle_registration, reg_username_entry.get(), reg_password_entry.get())
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 300, window=register_btn))
+
+        login_link = tk.Button(
+            self.root, text="Already have an account? Sign in", fg="#00FF00", bg=config.CANVAS_BG_COLOR, 
+            bd=0, activebackground=config.CANVAS_BG_COLOR, font=("Arial", 10, "underline"), cursor="hand2",
+            command=self.show_login_screen
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 350, window=login_link))
+
+    # --- VIEW 3: SECURE DASHBOARD ---
+    def show_dashboard_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="ACCESS GRANTED", fill="#00FF00")
+        
+        self.active_widgets.append(self.canvas.create_text(
+            config.WINDOW_WIDTH // 2, 160, 
+            text="Welcome to the secure grid system.", fill="white", font=("Arial", 12)
+        ))
+
+        fetch_btn = tk.Button(
+            self.root, text="Fetch Core Intelligence", bg="#5500FF", fg="white", font=("Arial", 11, "bold"),
+            command=lambda: self.run_network_task(self._fetch_secure_data)
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 220, window=fetch_btn))
+
+    # --- ASYNC MULTI-THREADING HANDLER ---
+    def run_network_task(self, target_function, *args):
+        """Spawns network methods in a background worker thread to keep the Canvas running smoothly."""
+        if self.is_loading:
+            return  # Prevent rapid duplicate clicks
+
+        self.start_loader()
+
+    # Wrapper to stop the animation when the network operation completes
+    def worker_wrapper():
+        try:
+            target_function(*args)
+        finally:
+            self.root.after(0, self.stop_loader)
+
+        threading.Thread(target=worker_wrapper, daemon=True).start()
+
+    # --- BACKGROUND WORKER EXECUTIONS ---
+    def _handle_login(self, username, password):
+        if not username.strip() or not password.strip():
+            self.stop_loader()
+            messagebox.showwarning("Input Error", "Please enter both credentials.")
+            return
+
+        payload = {"username": username.strip(), "password": password.strip()}
 
         try:
-            # We use a context manager to execute a clean synchronous post block via httpx
             with httpx.Client() as client:
                 response = client.post(f"{self.backend_url}/token", data=payload)
                 
             if response.status_code == 200:
-                data = response.json()
-                self.access_token = data.get("access_token")
-                
-                # Update UI on success
-                self._clear_login_form()
-                self._display_secure_dashboard()
-                
+                self.access_token = response.json().get("access_token")
+                self.root.after(0, self.show_dashboard_screen)
             else:
-                error_detail = response.json().get("detail", "Authentication Failed.")
-                messagebox.showerror("Access Denied", f"Server responded: {error_detail}")
-
+                error_msg = response.json().get("detail", "Login failed.")
+                self.root.after(0, lambda: messagebox.showerror("Access Denied", error_msg))
         except httpx.RequestError as exc:
-            messagebox.showerror("Connection Error", f"Could not reach backend services: {exc}")
+            self.root.after(0, lambda: messagebox.showerror("Network Error", f"Server dropped link: {exc}"))
 
-    def _clear_login_form(self):
-        """Removes form elements from the active screen view."""
-        self.canvas.delete(self.username_window)
-        self.canvas.delete(self.password_window)
-        self.canvas.delete(self.button_window)
 
-    def _display_secure_dashboard(self):
-        """Renders secure assets once the client holds the active JWT authorization."""
-        self.canvas.itemconfig(self.title_text, text="ACCESS GRANTED - AGENT SESSION ACTIVE", fill="#00FF00")
-        
-        # Display success banner
-        self.canvas.create_text(
-            config.WINDOW_WIDTH // 2, 
-            180, 
-            text="✓ Authenticated securely via JWT token", 
-            fill="#888888", 
-            font=("Arial", 12, "italic")
-        )
+    def _handle_registration(self, username, password):
+        if len(username.strip()) < 3 or len(password.strip()) < 6:
+            self.stop_loader()
+            messagebox.showwarning("Validation Error", "Username must be ≥ 3 chars.\nPassword must be ≥ 6 chars.")
+            return
 
-        # Create a button to fetch data from the secure API endpoint
-        self.fetch_button = tk.Button(
-            self.root, 
-            text="Fetch Classified Payload", 
-            command=self._fetch_classified_data,
-            bg="#0055ff",
-            fg="white",
-            font=("Arial", 11, "bold")
-        )
-        self.canvas.create_window(config.WINDOW_WIDTH // 2, 240, window=self.fetch_button)
-
-    def _fetch_classified_data(self):
-        """Makes an authenticated call using the stored Bearer token."""
-        headers = {"Authorization": f"Bearer {self.access_token}"}
-        
+        json_payload = {"username": username.strip(), "password": password.strip()}
         try:
             with httpx.Client() as client:
-                response = client.get(f"{self.backend_url}/agent/secure-data", headers=headers)
+                response = client.post(f"{self.backend_url}/register", json=json_payload)
                 
-            if response.status_code == 200:
-                payload_data = response.json()
-                secret_msg = payload_data.get("secret_payload", "No payload recovered.")
-                messagebox.showinfo("Classified Intelligence Recovered", f"Payload: {secret_msg}")
+            if response.status_code == 201:
+                self.root.after(0, lambda: messagebox.showinfo("Success", "Agent enrolled! Please login."))
+                self.root.after(0, self.show_login_screen)
             else:
-                messagebox.showerror("Unauthorized", "Session expired or rejected by security server.")
+                error_msg = response.json().get("detail", "Registration rejected.")
+                self.root.after(0, lambda: messagebox.showerror("Registration Failed", error_msg))
         except httpx.RequestError as exc:
-            messagebox.showerror("Network Fault", f"Data stream interrupted: {exc}")
+            self.root.after(0, lambda: messagebox.showerror("Network Error", f"Server dropped link: {exc}"))
 
-    def run(self):
-        """Starts the main blocking UI thread loop."""
-        self.root.mainloop()
+
+	def _fetch_secure_data(self):
+		headers = {"Authorization": f"Bearer {self.access_token}"}
+		try:
+			with httpx.Client() as client:
+			    response = client.get(f"{self.backend_url}/agent/secure-data", headers=headers)
+			    if response.status_code == 200:
+			        payload = response.json().get("secret_payload")
+			        self.root.after(0, lambda: messagebox.showinfo("Classified Feed", f"System Data Recovered:\n{payload}"))
+			    else:
+			        self.root.after(0, lambda: messagebox.showerror("Unauthorized", "Session token signature expired."))
+		except httpx.RequestError as exc:
+			self.root.after(0, lambda: messagebox.showerror("Network Error", f"Data stream interrupted: {exc}"))
+		
+
+	def run(self):
+		self.root.mainloop()
+
+
+
+
+
+
