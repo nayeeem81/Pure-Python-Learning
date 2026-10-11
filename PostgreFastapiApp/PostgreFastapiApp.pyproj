@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>82a1e8eb-fd72-46af-8bde-5c9fcd94a3d4</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>fastapi\postgre_fastapi_app.py</StartupFile>
+    <StartupFile>api\postgre_fastapi_app.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,14 +22,18 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="fastapi\apiendpoints.py" />
-    <Compile Include="fastapi\__init__.py" />
+    <Compile Include="config.py" />
+    <Compile Include="api\endpoints.py" />
+    <Compile Include="api\__init__.py" />
     <Compile Include="main.py" />
-    <Compile Include="fastapi\postgre_fastapi_app.py" />
+    <Compile Include="api\postgre_fastapi_app.py" />
+    <Compile Include="security\auth.py" />
+    <Compile Include="ui\canvas_ui.py" />
+    <Compile Include="ui\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
-    <Content Include="Study\fastapiendpoints.md" />
+    <Content Include="study\fastapiendpoints.md" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -43,8 +47,10 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="fastapi\" />
-    <Folder Include="Study\" />
+    <Folder Include="api\" />
+    <Folder Include="security\" />
+    <Folder Include="ui\" />
+    <Folder Include="study\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

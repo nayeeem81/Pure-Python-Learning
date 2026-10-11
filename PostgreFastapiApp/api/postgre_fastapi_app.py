@@ -8,10 +8,6 @@ from jwt import exceptions, encode as jwt_encode, decode as jwt_decode
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
-# 1. Configuration Settings
-SECRET_KEY = "SUPER_SECRET_AGENT_KEY_CHANGE_THIS_IN_PRODUCTION" 
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # 2. Security Utilities
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
