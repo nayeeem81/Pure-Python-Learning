@@ -53,7 +53,7 @@ class AgentDesktopUI:
             return
 
         points = []
-        center_y = 530  # Shifted down slightly to leave breathing room for history panels
+        center_y = 550  # Shifted down slightly to leave breathing room for history panels
         width = config.WINDOW_WIDTH
         
         for x in range(0, width, 5):
@@ -141,7 +141,7 @@ class AgentDesktopUI:
             self.root, width=34, height=13, font=("Courier New", 9), bg="#151515", fg="#00FF00",
             selectbackground="#222222", selectforeground="white", highlightthickness=0, bd=1, relief="solid"
         )
-        listbox_window = self.canvas.create_window(460, 260, window=self.history_listbox, anchor="w")
+        listbox_window = self.canvas.create_window(460, 280, window=self.history_listbox, anchor="w")
         self.active_widgets.append(listbox_window)
         self.history_listbox.bind("<<ListboxSelect>>", self._handle_history_selection)
 
