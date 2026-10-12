@@ -1990,7 +1990,30 @@ pip install pyjwt
 (Note: Everything else in your code will continue to work exactly the same!)
 Let me know which approach you prefer (installing python-jose or switching to PyJWT). Once your server successfully boots up, would you like to build out the dashboard layout interface to display information on the canvas?
 
+## Error In Code (follwing error): Message=inconsistent use of tabs and spaces in indentation (canvas_ui.py, line 223) Source=C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\main.py StackTrace: File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\main.py", line 10, in <module> (Current frame) from ui.canvas_ui import AgentDesktopUI File "C:\Users\Naim\AppData\Local\Python\pythoncore-3.13-64\Lib\runpy.py", line 88, in _run_code exec(code, run_globals) File "C:\Users\Naim\AppData\Local\Python\pythoncore-3.13-64\Lib\runpy.py", line 203, in _run_module_as_main return _run_code(code, main_globals, None,TabError: inconsistent use of tabs and spaces in indentation (canvas_ui.py, line 223)
 
+Python throws a TabError when spaces and tabs are mixed within the same file. Copying and pasting code between different environments often introduces this issue because some editors use 4 spaces while others use hard tabs.
+## 🛠️ How to fix it instantly in Visual Studio 2026
+Visual Studio can automatically format the document and convert all tabs to spaces for you:
+
+   1. Open your ui/canvas_ui.py file.
+   2. Press Ctrl + K, then Ctrl + D (or go to Edit -> Advanced -> Format Document). This forces the editor to re-indent everything using a consistent format.
+   3. Save the file and rerun main.py.
+
+## Where the issue is located
+The error specifically points to line 223, which is right inside your dynamic dashboard view logic:
+
+# The mix-up happened right around here:
+self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 220, window=fetch_btn))
+
+## Direct Visual Verification
+If formatting the document does not clear the error immediately, you can turn on View White Space (Edit -> Advanced -> View White Space or Ctrl + R, Ctrl + W). Tabs will appear as small visual arrows (→), and spaces will show up as tiny dots (·). Simply erase the indent on line 223 and replace it entirely with standard space characters.
+Once the formatting is sorted out and your terminal interface boots up, would you like to build out the layout elements for the secure agent dashboard or hook up an asynchronous database logger to record every login attempt directly into PostgreSQL?
+
+
+
+
+## Error In Code (follwing error)
 	Message=Form data requires "python-multipart" to be installed. 
 	You can install "python-multipart" with: 
 
@@ -2085,15 +2108,452 @@ C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\env\Scripts\pip instal
 ## Pro-Tip: Update your requirements.txt
 To prevent these missing module errors in the future, add all your app dependencies to a requirements.txt file at your project's root:
 
-fastapi
-uvicorn[standard]
-sqlalchemy[asyncio]
-asyncpg
-python-jose[cryptography]
-python-multipart
-httpx
-pydantic-settings
+	fastapi
+	uvicorn[standard]
+	sqlalchemy[asyncio]
+	asyncpg
+	python-jose[cryptography]
+	python-multipart
+	httpx
+	pydantic-settings
 
 You can right-click your env inside Visual Studio and select Generate requirements.txt to snapshot this automatically.
 Once your application starts up cleanly after installing python-multipart, should we design a hacker-style grid dashboard view on your Tkinter canvas to display your data once an agent successfully logs in?
+
+## Error Troubleshooting
+This is the same formatting issue, just popping up at a different location—this time right around the _animate_loader framework near line 48.
+Instead of chasing individual indentation bugs line by line, let's fix the entire file at once so it's clean and uniform.
+## The Ultimate Fix: Replace canvas_ui.py with 100% Spaces
+Here is the complete, fully cleaned version of ui/canvas_ui.py. Every single indentation level has been explicitly converted to 4 spaces so it will compile flawlessly without any TabError.
+
+# ui/canvas_ui.pyimport tkinter as tkfrom tkinter import messageboximport httpximport threadingfrom config import config
+class AgentDesktopUI:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title(config.WINDOW_TITLE)
+        self.root.geometry(f"{config.WINDOW_WIDTH}x{config.WINDOW_HEIGHT}")
+        
+        # Core State
+        self.access_token = None
+        self.backend_url = f"http://{config.APP_HOST}:{config.APP_PORT}"
+        self.active_widgets = []  # Track dynamic elements
+        self.is_loading = False   # Loader flag
+        self.animation_step = 0   # Track frame index
+
+        self._create_canvas()
+        self.show_login_screen()
+
+    def _create_canvas(self):
+        """Builds the main background Canvas layer."""
+        self.canvas = tk.Canvas(
+            self.root, 
+            width=config.WINDOW_WIDTH, 
+            height=config.WINDOW_HEIGHT, 
+            bg=config.CANVAS_BG_COLOR
+        )
+        self.canvas.pack(fill="both", expand=True)
+
+        # Centered Persistent Title
+        self.title_text = self.canvas.create_text(
+            config.WINDOW_WIDTH // 2, 
+            50, 
+            text="CLASSIFIED AGENT TERMINAL", 
+            fill="#00FF00",  
+            font=("Courier New", 20, "bold")
+        )
+
+        # Persistent Loader Graphic (Hidden by default via empty text)
+        self.loader_text = self.canvas.create_text(
+            config.WINDOW_WIDTH // 2, 
+            420, 
+            text="", 
+            fill="#00AAFF", 
+            font=("Courier New", 12, "bold")
+        )
+
+    def _animate_loader(self):
+        """Asynchronous canvas animation loop for network activity."""
+        if not self.is_loading:
+            self.canvas.itemconfig(self.loader_text, text="")
+            return
+
+        # Simple cyber terminal loading bar sequence
+        frames = [
+            "[■□□□□□□□□□] CONNECTING VIA SECURE CORRIDOR",
+            "[■■□□□□□□□□] VALIDATING AGENT CREDENTIALS",
+            "[■■■■□□□□□□] EXCHANGE KEY HANDSHAKE IN PROGRESS",
+            "[■■■■■■□□□□] PARSING SECURITY PRIVILEGES",
+            "[■■■■■■■■□□] EXTRACTING DATA PAYLOAD PACKETS",
+            "[■■■■■■■■■■] STREAM SYNCHRONIZATION COMPLETE"
+        ]
+        
+        current_frame = frames[self.animation_step % len(frames)]
+        self.canvas.itemconfig(self.loader_text, text=current_frame)
+        self.animation_step += 1
+
+        # Force a loop callback every 180ms without freezing the main app thread
+        self.root.after(180, self._animate_loader)
+
+    def start_loader(self):
+        """Activates loading flag and boots canvas frame sequence."""
+        self.is_loading = True
+        self.animation_step = 0
+        self._animate_loader()
+
+    def stop_loader(self):
+        """Signals loader system to spin down and clear."""
+        self.is_loading = False
+
+    def _clear_screen(self):
+        """Removes all dynamic canvas elements and widgets to redraw the screen."""
+        for item in self.active_widgets:
+            self.canvas.delete(item)
+        self.active_widgets.clear()
+
+    # --- VIEW 1: LOGIN SCREEN ---
+    def show_login_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="AGENT AUTHENTICATION", fill="#00FF00")
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 130, text="Username:", fill="white", font=("Arial", 11)))
+        username_entry = tk.Entry(self.root, width=25, font=("Arial", 12))
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 160, window=username_entry))
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 210, text="Password:", fill="white", font=("Arial", 11)))
+        password_entry = tk.Entry(self.root, width=25, font=("Arial", 12), show="*")
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 240, window=password_entry))
+
+        login_btn = tk.Button(
+            self.root, text="Login", width=15, bg="#00FF00", fg="black", font=("Arial", 11, "bold"),
+            command=lambda: self.run_network_task(self._handle_login, username_entry.get(), password_entry.get())
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 300, window=login_btn))
+
+        register_link = tk.Button(
+            self.root, text="Need an account? Register here", fg="#0055ff", bg=config.CANVAS_BG_COLOR, 
+            bd=0, activebackground=config.CANVAS_BG_COLOR, font=("Arial", 10, "underline"), cursor="hand2",
+            command=self.show_register_screen
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 350, window=register_link))
+
+    # --- VIEW 2: REGISTRATION SCREEN ---
+    def show_register_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="AGENT ENROLLMENT", fill="#00AAFF")
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 130, text="Choose Username:", fill="white", font=("Arial", 11)))
+        reg_username_entry = tk.Entry(self.root, width=25, font=("Arial", 12))
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 160, window=reg_username_entry))
+
+        self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 210, text="Choose Password:", fill="white", font=("Arial", 11)))
+        reg_password_entry = tk.Entry(self.root, width=25, font=("Arial", 12), show="*")
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 240, window=reg_password_entry))
+
+        register_btn = tk.Button(
+            self.root, text="Create Account", width=15, bg="#00AAFF", fg="black", font=("Arial", 11, "bold"),
+            command=lambda: self.run_network_task(self._handle_registration, reg_username_entry.get(), reg_password_entry.get())
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 300, window=register_btn))
+
+        login_link = tk.Button(
+            self.root, text="Already have an account? Sign in", fg="#00FF00", bg=config.CANVAS_BG_COLOR, 
+            bd=0, activebackground=config.CANVAS_BG_COLOR, font=("Arial", 10, "underline"), cursor="hand2",
+            command=self.show_login_screen
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 350, window=login_link))
+
+    # --- VIEW 3: SECURE DASHBOARD ---
+    def show_dashboard_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="ACCESS GRANTED", fill="#00FF00")
+        
+        self.active_widgets.append(self.canvas.create_text(
+            config.WINDOW_WIDTH // 2, 160, 
+            text="Welcome to the secure grid system.", fill="white", font=("Arial", 12)
+        ))
+
+        fetch_btn = tk.Button(
+            self.root, text="Fetch Core Intelligence", bg="#5500FF", fg="white", font=("Arial", 11, "bold"),
+            command=lambda: self.run_network_task(self._fetch_secure_data)
+        )
+        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 220, window=fetch_btn))
+
+    # --- ASYNC MULTI-THREADING HANDLER ---
+    def run_network_task(self, target_function, *args):
+        """Spawns network methods in a background worker thread to keep the Canvas running smoothly."""
+        if self.is_loading:
+            return  # Prevent rapid duplicate clicks
+
+        self.start_loader()
+        
+        # Wrapper to stop the animation when the network operation completes
+        def worker_wrapper():
+            try:
+                target_function(*args)
+            finally:
+                self.root.after(0, self.stop_loader)
+
+        threading.Thread(target=worker_wrapper, daemon=True).start()
+
+    # --- BACKGROUND WORKER EXECUTIONS ---
+    def _handle_login(self, username, password):
+        if not username.strip() or not password.strip():
+            self.stop_loader()
+            messagebox.showwarning("Input Error", "Please enter both credentials.")
+            return
+
+        payload = {"username": username.strip(), "password": password.strip()}
+        try:
+            with httpx.Client() as client:
+                response = client.post(f"{self.backend_url}/token", data=payload)
+                
+            if response.status_code == 200:
+                self.access_token = response.json().get("access_token")
+                self.root.after(0, self.show_dashboard_screen)
+            else:
+                error_msg = response.json().get("detail", "Login failed.")
+                self.root.after(0, lambda: messagebox.showerror("Access Denied", error_msg))
+        except httpx.RequestError as exc:
+            self.root.after(0, lambda: messagebox.showerror("Network Error", f"Server dropped link: {exc}"))
+
+    def _handle_registration(self, username, password):
+        if len(username.strip()) < 3 or len(password.strip()) < 6:
+            self.stop_loader()
+            messagebox.showwarning("Validation Error", "Username must be ≥ 3 chars.\nPassword must be ≥ 6 chars.")
+            return
+
+        json_payload = {"username": username.strip(), "password": password.strip()}
+        try:
+            with httpx.Client() as client:
+                response = client.post(f"{self.backend_url}/register", json=json_payload)
+                
+            if response.status_code == 201:
+                self.root.after(0, lambda: messagebox.showinfo("Success", "Agent enrolled! Please login."))
+                self.root.after(0, self.show_login_screen)
+            else:
+                error_msg = response.json().get("detail", "Registration rejected.")
+                self.root.after(0, lambda: messagebox.showerror("Registration Failed", error_msg))
+        except httpx.RequestError as exc:
+            self.root.after(0, lambda: messagebox.showerror("Network Error", f"Server dropped link: {exc}"))
+
+
+	def _fetch_secure_data(self):
+	headers = {"Authorization": f"Bearer {self.access_token}"}
+	try:
+	with httpx.Client() as client:
+	response = client.get(f"{self.backend_url}/agent/secure-data", headers=headers)
+	if response.status_code == 200:
+	payload = response.json().get("secret_payload")
+	self.root.after(0, lambda: messagebox.showinfo("Classified Feed", f"System Data Recovered:\n{payload}"))
+	else:
+	self.root.after(0, lambda: messagebox.showerror("Unauthorized", "Session token signature expired."))
+	except httpx.RequestError as exc:
+	self.root.after(0, lambda: messagebox.showerror("Network Error", f"Data stream interrupted: {exc}"))
+	def run(self):
+	self.root.mainloop()
+
+
+### Visual Studio Configuration Check
+To stop Visual Studio from mixing tabs and spaces again in the future:
+1. Go to **Tools** ➔ **Options**.
+2. Expand **Text Editor** ➔ **Python** ➔ **Tabs**.
+3. Select **Insert spaces** and ensure the **Tab size** and **Indent size** are both set to **4**.
+
+<FollowUp>
+Swap your `canvas_ui.py` code out with this block and run `main.py` again. Let me know if it launches cleanly into the terminal dashboard interface, or if any other **Visual Studio build warnings** pop up!
+</FollowUp>
+
+## What is the best practice to keep the auth.py module? shoudit be in a folder?
+
+Yes, the best practice is to place auth.py inside a dedicated security/ or core/ folder.
+As a desktop application grows, authentication logic usually expands to include token cryptography, permission levels, password validation rules, and encryption helpers. Grouping these under a dedicated directory keeps your project structure clean and manageable.
+## Recommended Architectural Layout
+Here is how you should structure your directory to maintain clean separation of concerns:
+
+YourProject/
+│
+├── api/
+│   └── endpoints.py
+│
+├── data/
+│   └── database.py
+│
+├── models/
+│   └── user_model.py
+│
+├── repositories/
+│   └── user_repository.py
+│
+├── schemas/
+│   └── user_schema.py
+│
+├── security/            # BEST PRACTICE: Dedicated security module group
+│   ├── __init__.py      # Makes the folder an importable package
+│   └── auth.py          # Hashing, token generation, and dependencies
+│
+├── ui/
+│   └── canvas_ui.py
+│
+├── config.py
+└── main.py
+
+## Why this structure works best:
+
+   1. Separates Infrastructure from Core Business Logic: Your data/ folder manages database connections, while your security/ folder focuses entirely on identity protection and data safety.
+   2. Prevents Circular Imports: As your project expands, separating security operations into an independent module ensures your routes, repositories, and models can access auth helpers without creating dependency loops.
+   3. Improves Discoverability: Any developer (or future you) looking at the project can instantly find cryptography, security layers, or permission guards inside a single security/ folder rather than digging through the root file structure.
+
+## Updating Your Code Imports
+When you move auth.py into a security/ directory, you only need to update the import statements at the top of your api/endpoints.py file:
+
+# Change from this:# from auth import verify_password, get_password_hash, create_access_token
+# To this:from security.auth import verify_password, get_password_hash, create_access_token
+
+Would you like me to show you how to add role-based access control (RBAC) to your new security/auth.py module to differentiate between standard agents and administrators, or should we focus on implementing secure error logging across your folders next?
+
+The "Task was cancelled" exception usually happens because the background FastAPI server was abruptly shut down, or a running asynchronous network operation inside your desktop client was cut off before it could finish.
+Since your backend runs in a background thread (daemon=True) inside your desktop application, this error often pops up during one of these three common events:
+## 1. The Tkinter App Closed Unexpectedly
+When you close your main Tkinter UI window, the main thread exits immediately. Because your FastAPI server thread is marked as a daemon, Windows kills it instantly mid-operation. If the server was processing an active database query or network request when this happened, it will throw a Task was cancelled error in your Visual Studio output window.
+## 2. Database Connection Timeout
+If your PostgreSQL server drops the connection or takes too long to wake up from an idle state, SQLAlchemy's asyncio loop will cancel the request to prevent the application from hanging indefinitely.
+## 3. Rapid Duplicate Clicks on the UI
+If a user double-clicks the "Login" or "Fetch Core Intelligence" buttons very quickly, the first network request can conflict with the second one, causing the httpx client or the system event loop to cancel the initial pending task.
+------------------------------
+
+## Error (A task was calcelled)
+
+### How to Prevent and Handle It Safely
+To ensure your application shuts down cleanly without throwing noisy cancellation exceptions, update your main.py file to handle loop termination gracefully:
+
+	# main.pyimport threadingimport timeimport uvicornimport asynciofrom contextlib import asynccontextmanagerfrom fastapi import FastAPIfrom config import configfrom data.database import engine, Base
+	from api.endpoints import router as agent_routerfrom ui.canvas_ui import AgentDesktopUI
+
+	@asynccontextmanagerasync def lifespan(app: FastAPI):
+		# Automatically generate tables on boot
+		async with engine.begin() as conn:
+			await conn.run_sync(Base.metadata.create_all)
+		yield
+		# Clean shutdown logic: Dispose of PostgreSQL connection pools safely
+		await engine.dispose()
+	app = FastAPI(lifespan=lifespan)
+	app.include_router(agent_router)
+	def start_fastapi_server():
+		try:
+			uvicorn.run(app, host=config.APP_HOST, port=config.APP_PORT, log_level="warning")
+		except asyncio.CancelledError:
+			# Catch and suppress the cancelled task exception on window exit
+			pass
+	if __name__ == "__main__":
+		api_thread = threading.Thread(target=start_fastapi_server, daemon=True)
+		api_thread.start()
+
+		time.sleep(0.4) 
+
+		# Launch the Desktop UI
+		desktop_app = AgentDesktopUI()
+		desktop_app.run()
+
+Did this error occur right as you closed the desktop application window, or did it break midway through logging in / registering an agent?
+
+## Error: Tab Realated
+	File "c:\program files\microsoft visual studio\18\community\common7\ide\extensions\microsoft\python\core\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 310, in run_path
+		return _run_module_code(code, init_globals, run_name, pkg_name=pkg_name, script_name=fname)
+	  File "c:\program files\microsoft visual studio\18\community\common7\ide\extensions\microsoft\python\core\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 127, in _run_module_code
+		_run_code(code, mod_globals, init_globals, mod_name, mod_spec, pkg_name, script_name)
+		~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	  File "c:\program files\microsoft visual studio\18\community\common7\ide\extensions\microsoft\python\core\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_runpy.py", line 118, in _run_code
+		exec(code, run_globals)
+		~~~~^^^^^^^^^^^^^^^^^^^
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\main.py", line 12, in <module>
+		from ui.canvas_ui import AgentDesktopUI
+	  File "C:\VisualStudioPyProjects\PurePythonApp\PostgreFastapiApp\ui\canvas_ui.py", line 11
+		self.root.title(config.WINDOW_TITLE)
+	TabError: inconsistent use of tabs and spaces in indentation
+	Press any key to continue . . .
+
+This TabError at line 11 means that when you pasted the cleaned code into ui/canvas_ui.py, Visual Studio accidentally re-inserted a hard tab character somewhere inside the __init__ constructor method. Python is completely refusing to read the file until this structural mismatch is cleared.
+Let's fix this permanently using a built-in feature in Visual Studio.
+## The 10-Second Fix in Visual Studio 2026
+
+   1. Open ui/canvas_ui.py in Visual Studio.
+   2. Select everything in the file by pressing Ctrl + A.
+   3. Look at the very top menu bar and select Edit ➔ Advanced ➔ Untabify Selected Lines (or type "Untabify" in the global Visual Studio search bar at the top).
+   * This forces Visual Studio to scan the file and instantly convert every single tab character into clean, compliant spaces.
+   4. Press Ctrl + S to save your changes, then hit F5 to run the app.
+
+------------------------------
+## If the error persists (Visual Manual Clean)
+If your editor settings are aggressively overriding the untabify command, line 11 looks like this:
+
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title(config.WINDOW_TITLE)  # <--- ERROR IS HERE
+
+Simply move your flashing cursor to the very beginning of line 11 (self.root.title...), press Backspace until the text jumps all the way back to the left edge of the screen, and then press the Spacebar exactly 8 times to match the indentation of the line above it.
+Turn on View White Space (Ctrl + R, Ctrl + W) to double-check your work. You should only see tiny dots (·) before your code, with absolutely no arrows (→).
+Once the TabError clears, let me know if the application boots up to show your cyber terminal interface successfully! If you run into any database or network connection errors next, just paste the console dump right here.
+
+
+## Error:  Message=(sqlalchemy.dialects.postgresql.asyncpg.Error) database "agent_db" does not exist)
+
+This crash happens because SQLAlchemy cannot automatically create a database container catalog inside PostgreSQL. It requires the empty structural target shell—in this case, the database named agent_db—to exist on the server cluster before it can connect and map out your tables.
+## 🛠️ How to Fix This
+You need to create the database inside your PostgreSQL server manually. Choose the easiest method below:
+## Option 1: Via pgAdmin (Graphical Tool)
+
+   1. Open pgAdmin on your machine.
+   2. Connect to your server node on the left sidebar.
+   3. Right-click on Databases ➔ Create ➔ Database...
+   4. Enter agent_db exactly as the name and click Save.
+
+## Option 2: Via SQL Query (PSQL Terminal or pgAdmin Query Tool)
+Execute this command to provision the space:
+
+CREATE DATABASE agent_db;
+
+------------------------------
+## Alternative: Safe Structural Auto-Check
+If you want to ensure your code never crashes even if the database layout isn't created ahead of time, you can instruct your main.py lifespan block to boot up a temporary connection channel to the default administrative registry (postgres) first. This checks for and dynamically constructs agent_db before initializing the main repository model pool.
+
+Update your main.py boot structure with this safety check:
+
+	# main.pyimport threadingimport timeimport uvicornfrom contextlib import asynccontextmanagerfrom fastapi import FastAPIfrom sqlalchemy import textfrom sqlalchemy.ext.asyncio import create_async_engine
+	from config import configfrom data.database import engine, Basefrom api.endpoints import router as agent_routerfrom ui.canvas_ui import AgentDesktopUI
+
+	@asynccontextmanagerasync def lifespan(app: FastAPI):
+	# 1. Micro-handshake connection setup to provision database shell if missing
+	admin_url = f"postgresql+asyncpg://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}:{config.DB_PORT}/postgres"
+	temp_engine = create_async_engine(admin_url, isolation_level="AUTOCOMMIT")
+    
+    async with temp_engine.connect() as conn:
+        # Check if the database catalog target exists
+        query = text(f"SELECT 1 FROM pg_database WHERE datname='{config.DB_NAME}'")
+        result = await conn.execute(query)
+        if not result.scalar():
+            await conn.execute(text(f"CREATE DATABASE {config.DB_NAME}"))
+            
+    await temp_engine.dispose()
+
+    # 2. Proceed with primary mapping initialization loops
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    await engine.dispose()
+	app = FastAPI(lifespan=lifespan)
+	app.include_router(agent_router)
+	def start_fastapi_server():
+		uvicorn.run(app, host=config.APP_HOST, port=config.APP_PORT, log_level="warning")
+	if __name__ == "__main__":
+		api_thread = threading.Thread(target=start_fastapi_server, daemon=True)
+		api_thread.start()
+
+    time.sleep(0.4) 
+
+    desktop_app = AgentDesktopUI()
+    desktop_app.run()
+
+Once you create the database space or apply the safety handler, hit F5 in Visual Studio.
+Let me know: Did creating the database manually or applying the code check allow your terminal engine to establish its initialization connection link successfully?
+
 

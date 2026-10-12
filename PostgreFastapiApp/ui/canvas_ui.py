@@ -19,7 +19,6 @@ class AgentDesktopUI:
         self._create_canvas()
         self.show_login_screen()
 
-
     def _create_canvas(self):
         """Builds the main background Canvas layer."""
         self.canvas = tk.Canvas(
@@ -28,9 +27,7 @@ class AgentDesktopUI:
             height=config.WINDOW_HEIGHT, 
             bg=config.CANVAS_BG_COLOR
         )
-
         self.canvas.pack(fill="both", expand=True)
-
         # Centered Persistent Title
         self.title_text = self.canvas.create_text(
             config.WINDOW_WIDTH // 2, 
@@ -39,23 +36,19 @@ class AgentDesktopUI:
             fill="#00FF00",  
             font=("Courier New", 20, "bold")
         )
-
         # Persistent Loader Graphic (Hidden by default via empty text)
         self.loader_text = self.canvas.create_text(
             config.WINDOW_WIDTH // 2, 
             420, 
             text="", 
             fill="#00AAFF", 
-            font=("Courier New", 12, "bold")
-        )
-
+            font=("Courier New", 12, "bold"))
 
     def _animate_loader(self):
         """Asynchronous canvas animation loop for network activity."""
         if not self.is_loading:
             self.canvas.itemconfig(self.loader_text, text="")
             return
-
         # Simple cyber terminal loading bar sequence
         frames = [
             "[■□□□□□□□□□] CONNECTING VIA SECURE CORRIDOR",
@@ -69,17 +62,14 @@ class AgentDesktopUI:
         current_frame = frames[self.animation_step % len(frames)]
         self.canvas.itemconfig(self.loader_text, text=current_frame)
         self.animation_step += 1
-
         # Force a loop callback every 180ms without freezing the main app thread
         self.root.after(180, self._animate_loader)
-
 
     def start_loader(self):
         """Activates loading flag and boots canvas frame sequence."""
         self.is_loading = True
         self.animation_step = 0
         self._animate_loader()
-
 
     def stop_loader(self):
         """Signals loader system to spin down and clear."""
@@ -129,13 +119,11 @@ class AgentDesktopUI:
         self.active_widgets.append(self.canvas.create_text(config.WINDOW_WIDTH // 2, 210, text="Choose Password:", fill="white", font=("Arial", 11)))
         reg_password_entry = tk.Entry(self.root, width=25, font=("Arial", 12), show="*")
         self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 240, window=reg_password_entry))
-
         register_btn = tk.Button(
             self.root, text="Create Account", width=15, bg="#00AAFF", fg="black", font=("Arial", 11, "bold"),
             command=lambda: self.run_network_task(self._handle_registration, reg_username_entry.get(), reg_password_entry.get())
         )
         self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 300, window=register_btn))
-
         login_link = tk.Button(
             self.root, text="Already have an account? Sign in", fg="#00FF00", bg=config.CANVAS_BG_COLOR, 
             bd=0, activebackground=config.CANVAS_BG_COLOR, font=("Arial", 10, "underline"), cursor="hand2",
@@ -147,12 +135,10 @@ class AgentDesktopUI:
     def show_dashboard_screen(self):
         self._clear_screen()
         self.canvas.itemconfig(self.title_text, text="ACCESS GRANTED", fill="#00FF00")
-        
         self.active_widgets.append(self.canvas.create_text(
             config.WINDOW_WIDTH // 2, 160, 
             text="Welcome to the secure grid system.", fill="white", font=("Arial", 12)
         ))
-
         fetch_btn = tk.Button(
             self.root, text="Fetch Core Intelligence", bg="#5500FF", fg="white", font=("Arial", 11, "bold"),
             command=lambda: self.run_network_task(self._fetch_secure_data)
@@ -164,7 +150,6 @@ class AgentDesktopUI:
         """Spawns network methods in a background worker thread to keep the Canvas running smoothly."""
         if self.is_loading:
             return  # Prevent rapid duplicate clicks
-
         self.start_loader()
 
     # Wrapper to stop the animation when the network operation completes
@@ -173,7 +158,6 @@ class AgentDesktopUI:
             target_function(*args)
         finally:
             self.root.after(0, self.stop_loader)
-
         threading.Thread(target=worker_wrapper, daemon=True).start()
 
     # --- BACKGROUND WORKER EXECUTIONS ---
@@ -182,7 +166,6 @@ class AgentDesktopUI:
             self.stop_loader()
             messagebox.showwarning("Input Error", "Please enter both credentials.")
             return
-
         payload = {"username": username.strip(), "password": password.strip()}
 
         try:
@@ -198,13 +181,11 @@ class AgentDesktopUI:
         except httpx.RequestError as exc:
             self.root.after(0, lambda: messagebox.showerror("Network Error", f"Server dropped link: {exc}"))
 
-
     def _handle_registration(self, username, password):
         if len(username.strip()) < 3 or len(password.strip()) < 6:
             self.stop_loader()
             messagebox.showwarning("Validation Error", "Username must be ≥ 3 chars.\nPassword must be ≥ 6 chars.")
             return
-
         json_payload = {"username": username.strip(), "password": password.strip()}
         try:
             with httpx.Client() as client:
@@ -219,23 +200,21 @@ class AgentDesktopUI:
         except httpx.RequestError as exc:
             self.root.after(0, lambda: messagebox.showerror("Network Error", f"Server dropped link: {exc}"))
 
-
-	def _fetch_secure_data(self):
-		headers = {"Authorization": f"Bearer {self.access_token}"}
-		try:
-			with httpx.Client() as client:
-			    response = client.get(f"{self.backend_url}/agent/secure-data", headers=headers)
-			    if response.status_code == 200:
-			        payload = response.json().get("secret_payload")
-			        self.root.after(0, lambda: messagebox.showinfo("Classified Feed", f"System Data Recovered:\n{payload}"))
-			    else:
-			        self.root.after(0, lambda: messagebox.showerror("Unauthorized", "Session token signature expired."))
-		except httpx.RequestError as exc:
-			self.root.after(0, lambda: messagebox.showerror("Network Error", f"Data stream interrupted: {exc}"))
-		
-
-	def run(self):
-		self.root.mainloop()
+    def _fetch_secure_data(self):
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        try:
+            with httpx.Client() as client:
+                response = client.get(f"{self.backend_url}/agent/secure-data", headers=headers)
+            if response.status_code == 200:
+                payload = response.json().get("secret_payload")
+                self.root.after(0, lambda: messagebox.showinfo("Classified Feed", f"System Data Recovered:\n{payload}"))
+            else:
+                self.root.after(0, lambda: messagebox.showerror("Unauthorized", "Session token signature expired."))
+        except httpx.RequestError as exc:
+            self.root.after(0, lambda: messagebox.showerror("Network Error", f"Data stream interrupted: {exc}"))
+        
+    def run(self):
+        self.root.mainloop()
 
 
 

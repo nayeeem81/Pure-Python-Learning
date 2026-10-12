@@ -35,6 +35,7 @@
     <Compile Include="schemas\user_schema.py" />
     <Compile Include="schemas\__init__.py" />
     <Compile Include="security\auth.py" />
+    <Compile Include="security\__init__.py" />
     <Compile Include="ui\canvas_ui.py" />
     <Compile Include="ui\__init__.py" />
   </ItemGroup>
