@@ -30,10 +30,13 @@
     <Compile Include="main.py" />
     <Compile Include="chordapps\single_static_line.py" />
     <Compile Include="chordapps\simple_grid_app.py" />
+    <Compile Include="study\colorhistorygoogleplay.py" />
     <Compile Include="study\interactive_line_app.md" />
     <Compile Include="study\interactive_lineslope_app.md" />
     <Compile Include="chordapps\triad_chord_interference_app.py" />
     <Compile Include="ui\canvas_ui.py" />
+    <Compile Include="ui\textinput_canvas_ui.py" />
+    <Compile Include="ui\text_wavecoloroption_historylist_ui.py" />
     <Compile Include="ui\__init__.py" />
     <Compile Include="utility\audio.py" />
     <Compile Include="utility\__init__.py" />
@@ -48,6 +51,7 @@
     <Content Include="study\requirements.txt" />
     <Content Include="study\snglestaticline.md" />
     <Content Include="study\startcanvas.md" />
+    <Content Include="study\textaudiogoogleplay.md" />
     <Content Include="study\triad_chord_interference_app.md" />
     <Content Include="study\wave_interference_chord_app.md" />
   </ItemGroup>

@@ -1,7 +1,9 @@
 # main.py
 import sys
 from config import config
-from ui.canvas_ui import AgentDesktopUI
+## from ui.canvas_ui import AgentDesktopUI
+## from ui.textinput_canvas_ui import AgentDesktopUI
+from ui.text_wavecoloroption_historylist_ui import AgentDesktopUI
 
 def main():
     """Application entry point that initializes and boots the standalone Desktop console."""

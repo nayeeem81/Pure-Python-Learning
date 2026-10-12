@@ -50,7 +50,7 @@ class AgentDesktopUI:
         points = []
         center_y = 480  
         width = config.WINDOW_WIDTH
-        
+		       
         for x in range(0, width, 5):
             relative_x = x / 40.0
             sine_value = math.sin(relative_x - self.wave_phase)
@@ -102,7 +102,7 @@ class AgentDesktopUI:
             160, 
             text="Core application pipeline active. Monitoring incoming data stream.", 
             fill="white", 
-            font=("Arial", 12)
+            font=("Arial", 16) 
         ))
 
         # Sample Test Button to trigger voice and wave manually again

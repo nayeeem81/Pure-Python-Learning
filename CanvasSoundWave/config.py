@@ -26,8 +26,8 @@ class AppConfig:
 
     # Desktop UI Configuration (Tkinter Canvas)
     WINDOW_TITLE = "Agent Secure Desktop Platform"
-    WINDOW_WIDTH = 800
-    WINDOW_HEIGHT = 600
+    WINDOW_WIDTH = 1000
+    WINDOW_HEIGHT = 900
     CANVAS_BG_COLOR = "#1e1e1e"  # Dark theme hex code
 
     @classmethod
