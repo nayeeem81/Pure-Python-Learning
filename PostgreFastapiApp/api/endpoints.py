@@ -6,10 +6,19 @@ from typing import Annotated
 # Import database
 from data.database import get_db
 from repositories.user_repository import UserRepository
-# Import security
-from security.auth import verify_password, get_password_hash, create_access_token
 # Import your new validation structures
 from schemas import UserRegister, UserResponse, Token 
+# api/endpoints.py
+# Import security
+from security.auth import (
+    verify_password, 
+    get_password_hash, 
+    create_access_token, 
+    get_current_user  # <--- ADD THIS LINE
+)
+
+from schemas.user_schema import UserRegister, UserResponse, Token
+
 
 router = APIRouter()
 
@@ -30,7 +39,6 @@ async def register(user_data: UserRegister, db: AsyncSession = Depends(get_db)):
     hashed = get_password_hash(user_data.password)
     new_user = await user_repo.create_user(username=user_data.username, hashed_password=hashed)
     
-    # The endpoint safely filters out the password hash because response_model=UserResponse
     return new_user
 
 @router.post("/token", response_model=Token)
@@ -51,3 +59,46 @@ async def login_for_access_token(
     
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+# ... keep your existing /register and /token endpoints here ...
+
+@router.get("/users", response_model=list[UserResponse])
+async def read_all_users(
+    current_user: Annotated[str, Depends(get_current_user)], 
+    db: AsyncSession = Depends(get_db)
+):
+    """READ: Protected route to fetch all users."""
+    user_repo = UserRepository(db)
+    return await user_repo.get_all_users()
+
+@router.put("/users/{user_id}")
+async def update_user(
+    user_id: int, 
+    payload: dict,
+    current_user: Annotated[str, Depends(get_current_user)], 
+    db: AsyncSession = Depends(get_db)
+):
+    """UPDATE: Protected route to modify an agent's username."""
+    new_name = payload.get("username", "").strip()
+    if not new_name:
+        raise HTTPException(status_code=400, detail="Username cannot be empty")
+        
+    user_repo = UserRepository(db)
+    success = await user_repo.update_username(user_id, new_name)
+    if not success:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"status": "updated"}
+
+@router.delete("/users/{user_id}")
+async def delete_user_by_id(
+    user_id: int,
+    current_user: Annotated[str, Depends(get_current_user)], 
+    db: AsyncSession = Depends(get_db)
+):
+    """DELETE: Protected route to purge an agent profile."""
+    user_repo = UserRepository(db)
+    success = await user_repo.delete_user(user_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"status": "deleted"}

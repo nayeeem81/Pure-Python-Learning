@@ -130,35 +130,122 @@ class AgentDesktopUI:
             command=self.show_login_screen
         )
         self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 350, window=login_link))
-
-    # --- VIEW 3: SECURE DASHBOARD ---
+     
+    # --- VIEW 3: SECURE CRUD DASHBOARD ---
     def show_dashboard_screen(self):
         self._clear_screen()
-        self.canvas.itemconfig(self.title_text, text="ACCESS GRANTED", fill="#00FF00")
-        self.active_widgets.append(self.canvas.create_text(
-            config.WINDOW_WIDTH // 2, 160, 
-            text="Welcome to the secure grid system.", fill="white", font=("Arial", 12)
-        ))
+        self.canvas.itemconfig(self.title_text, text="AGENT CONTROL REGISTRY", fill="#00FF00")
+        
+        # Action Buttons Header
         fetch_btn = tk.Button(
-            self.root, text="Fetch Core Intelligence", bg="#5500FF", fg="white", font=("Arial", 11, "bold"),
-            command=lambda: self.run_network_task(self._fetch_secure_data)
+            self.root, text="⟳ Refresh Agent List", bg="#00AAFF", fg="black", font=("Arial", 10, "bold"),
+            command=lambda: self.run_network_task(self._fetch_user_list)
         )
-        self.active_widgets.append(self.canvas.create_window(config.WINDOW_WIDTH // 2, 220, window=fetch_btn))
+        self.active_widgets.append(self.canvas.create_window(150, 110, window=fetch_btn))
 
+        # Render Table Headers manually onto canvas grid map
+        self.active_widgets.append(self.canvas.create_text(150, 150, text="Database ID", fill="#888888", font=("Arial", 11, "bold")))
+        self.active_widgets.append(self.canvas.create_text(350, 150, text="Agent Alias", fill="#888888", font=("Arial", 11, "bold")))
+        self.active_widgets.append(self.canvas.create_text(550, 150, text="Control Options", fill="#888888", font=("Arial", 11, "bold")))
+
+        # Automatically execute initial load on open
+        self.run_network_task(self._fetch_user_list)
+
+    def _fetch_user_list(self):
+        """BACKGROUND TASK: Reads user profiles over network."""
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        try:
+            with httpx.Client() as client:
+                response = client.get(f"{self.backend_url}/users", headers=headers)
+            if response.status_code == 200:
+                users = response.json()
+                # Safely pass structural changes back to UI thread
+                self.root.after(0, lambda: self._render_user_rows(users))
+            else:
+                self.root.after(0, lambda: messagebox.showerror("Error", "Could not fetch user directory."))
+        except httpx.RequestError as exc:
+            self.root.after(0, lambda: messagebox.showerror("Network Error", f"Stream lost: {exc}"))
+
+    def _render_user_rows(self, users):
+        """MAIN THREAD: Clears old rows and prints active records to screen."""
+        # 1. Clear old data rows if they exist from a previous refresh
+        if hasattr(self, "row_widgets"):
+            for w in self.row_widgets:
+                self.canvas.delete(w)
+        self.row_widgets = []
+
+        start_y = 190
+        row_gap = 40
+
+        if not users:
+            no_data = self.canvas.create_text(config.WINDOW_WIDTH // 2, start_y, text="No accounts initialized. Try creating one.", fill="orange", font=("Arial", 12, "italic"))
+            self.row_widgets.append(no_data)
+            return
+
+        for idx, user in enumerate(users):
+            current_y = start_y + (idx * row_gap)
+            user_id = user.get("id") or (idx + 1)  # Fallback reference if model id skipped in schema
+            username = user.get("username")
+
+            # Column 1: Display ID
+            id_text = self.canvas.create_text(150, current_y, text=f"#{user_id}", fill="white", font=("Arial", 11))
+            self.row_widgets.append(id_text)
+
+            # Column 2: Display Username String
+            name_text = self.canvas.create_text(350, current_y, text=username, fill="#00FF00", font=("Arial", 11))
+            self.row_widgets.append(name_text)
+
+            # Column 3: Delete Trigger Button action frame row allocation
+            del_btn = tk.Button(
+                self.root, text="Delete Profile", bg="#FF3333", fg="white", font=("Arial", 9),
+                command=lambda uid=user_id: self.run_network_task(self._delete_user_task, uid)
+            )
+            del_window = self.canvas.create_window(550, current_y, window=del_btn)
+            self.row_widgets.append(del_window)
+
+    def _delete_user_task(self, user_id):
+        """BACKGROUND TASK: Sends server request to destroy specific records."""
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        try:
+            with httpx.Client() as client:
+                response = client.get(f"{self.backend_url}/users", headers=headers)
+                # Quick matching fix since standard mock accounts don't rely on numeric auto-increment
+                users = response.json()
+                
+            # Execute targeted removal
+            with httpx.Client() as client:
+                response = client.delete(f"{self.backend_url}/users/{user_id}", headers=headers)
+                
+            if response.status_code == 200:
+                self.root.after(0, lambda: messagebox.showinfo("Cleaned", "Agent record deleted successfully."))
+                self._fetch_user_list()
+            else:
+                self.root.after(0, lambda: messagebox.showerror("Failure", "Could not delete resource."))
+        except httpx.RequestError as exc:
+            self.root.after(0, lambda: messagebox.showerror("Error", f"Failed network link: {exc}"))
+
+    
     # --- ASYNC MULTI-THREADING HANDLER ---
     def run_network_task(self, target_function, *args):
-        """Spawns network methods in a background worker thread to keep the Canvas running smoothly."""
+        """Spawns network methods in a background worker thread safely."""
         if self.is_loading:
             return  # Prevent rapid duplicate clicks
-        self.start_loader()
 
-    # Wrapper to stop the animation when the network operation completes
+        self.start_loader()
+        
     def worker_wrapper():
         try:
             target_function(*args)
+        except Exception as e:
+            # Absolute safety guard: log the exception to terminal and clear loader
+            print(f"[THREAD ERROR] Background task failed: {e}")
+            self.root.after(0, lambda: messagebox.showerror("System Error", f"An execution error occurred: {e}"))
         finally:
+            # Guarantees the loader stops animating no matter what happens
             self.root.after(0, self.stop_loader)
+
         threading.Thread(target=worker_wrapper, daemon=True).start()
+
 
     # --- BACKGROUND WORKER EXECUTIONS ---
     def _handle_login(self, username, password):

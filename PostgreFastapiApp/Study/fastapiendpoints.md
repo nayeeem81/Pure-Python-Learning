@@ -2557,3 +2557,543 @@ Once you create the database space or apply the safety handler, hit F5 in Visual
 Let me know: Did creating the database manually or applying the code check allow your terminal engine to establish its initialization connection link successfully?
 
 
+That is fantastic news! Adding that dynamic database provisioning code makes your desktop application self-healing—it means anyone can run your application on their machine without needing to manually set up PostgreSQL catalogs beforehand.
+You have built a modular architecture for a hybrid Desktop UI + Local API Backend:
+
+* 🗄️ data/: Manages low-level infrastructure, connection runtimes, and self-creating database lifespan scripts.
+* 📋 models/ & repositories/: Decouples database schema layouts from transactional SQL execution code.
+* 🔒 security/ & schemas/: Encapsulates robust user identity checking and sanitizes input data streams.
+* 🖥️ ui/: Keeps your interactive Tkinter Canvas completely isolated and running smoothly on a separate thread.
+
+The setup looks great. What features are you planning to add to the application next? I can help you build interactive dashboard charts, add a user registration view, or set up a logging framework to track activity.
+Whenever you're ready to build the next module, let me know:
+
+* Would you like to expand the Tkinter interface with more agent panels (like a data-entry grid)?
+* Do you want to implement role-based access control (e.g., standard vs. admin agents) in your security folder?
+* Or should we focus on adding CRUD operations to store custom logs directly inside your new agent_db database?
+
+## I want to learn oAuth details (why the name is oAuth)?
+
+It is great that you want to dive deeper into the mechanics of security! Understanding the core concepts behind OAuth makes it much easier to work with frameworks like FastAPI.
+## Why is it named OAuth?
+The name OAuth stands for Open Authorization.
+
+* Open: It means it is an open-source, community-driven web standard. Anyone can read the specification and implement it without paying royalties.
+* Authorization: This is the most critical piece. OAuth was explicitly designed for Authorization (granting permission to access data), NOT Authentication (proving who you are).
+
+## The Real-World Analogy: The Valet Key
+The easiest way to understand OAuth is the Valet Key analogy:
+When you give your car to a valet driver at a restaurant, you don't give them your master car key (which opens your glove box, unlocks your trunk, and gives them total control over your vehicle). Instead, you give them a special valet key. This key only allows them to turn on the engine and park the car. It has restricted boundaries.
+In software, OAuth issues a Valet Key (known as an Access Token).
+Instead of typing your master account password into every desktop app or third-party website, you complete a handshake. The authentication server then hands the desktop application a secure token (like the JWT token you built into your security/ module). This token allows the app to perform specific actions on your behalf without ever knowing your actual password.
+## Key Terms You Need to Know
+
+| Term | Technical Role | Real-World Equivalent |
+|---|---|---|
+| Resource Owner | The End User | You (the car owner) |
+| Client | The Desktop/Web Application | The Valet Attendant |
+| Authorization Server | The Security Engine (Your FastAPI Auth code) | The Valet Key Issuer |
+| Resource Server | The Secure Data API (Your /agent/secure-data endpoint) | The Car Engine/Lock System |
+| Scope | Permissions (Read, Write, Admin) | Limitations of the key (Drive only) |
+
+## How It Works in Your Application
+When your Tkinter desktop client interacts with your FastAPI backend, you are executing a specific sub-type of OAuth called the Resource Owner Password Credentials Flow:
+
+   1. The Request: The user types their username and password directly into the Tkinter Canvas.
+   2. The Handshake: Your client sends this over the network via a POST request to the /token endpoint using form data.
+   3. The Validation: The FastAPI backend verifies the credentials against your PostgreSQL database.
+   4. The Key Issuance: Instead of keeping the password, FastAPI creates a signed JWT token containing an expiration date and sends it back.
+   5. The Verification: The desktop app saves that token in memory. Every time you click "Fetch Core Intelligence," the client attaches that token as a Bearer token inside the request headers to unlock the classified data.
+
+Would you like to explore OAuth 2.0 Scopes next so you can restrict certain endpoints (for example, allowing standard users to only read files while requiring an admin account to delete files)?
+
+
+## I ran the app. But my user is not created yet. I want to work on the crud with a list of users.
+
+To display and manage a list of users, we will build out a CRUD framework (Create, Read, Update, Delete). We will create a user management repository, add new API endpoints, and design a dynamic user grid directly on your Tkinter canvas.
+------------------------------
+## 1. Update the Repository Tier (repositories/user_repository.py)
+Add methods to retrieve all users, update a username, and delete users from your PostgreSQL instance:
+
+# repositories/user_repository.pyfrom sqlalchemy.ext.asyncio import AsyncSessionfrom sqlalchemy.future import selectfrom sqlalchemy import deletefrom models.user_model import UserModel
+class UserRepository:
+    def __init__(self, db: AsyncSession):
+        self.db = db
+
+    async def get_by_username(self, username: str) -> UserModel | None:
+        """Retrieves a single agent record by their unique username."""
+        result = await self.db.execute(select(UserModel).where(UserModel.username == username))
+        return result.scalars().first()
+
+    async def create_user(self, username: str, hashed_password: str) -> UserModel:
+        """Inserts a brand new agent credentials record into PostgreSQL."""
+        new_user = UserModel(username=username, hashed_password=hashed_password)
+        self.db.add(new_user)
+        return new_user
+
+    # --- NEW CRUD OPERATIONS ---
+    async def get_all_users(self) -> list[UserModel]:
+        """READ: Retrieves all users registered in the database."""
+        result = await self.db.execute(select(UserModel).order_by(UserModel.id))
+        return list(result.scalars().all())
+
+    async def update_username(self, user_id: int, new_username: str) -> bool:
+        """UPDATE: Modifies an existing user's username."""
+        result = await self.db.execute(select(UserModel).where(UserModel.id == user_id))
+        user = result.scalars().first()
+        if user:
+            user.username = new_username
+            return True
+        return False
+
+    async def delete_user(self, user_id: int) -> bool:
+        """DELETE: Removes an agent completely from the system."""
+        result = await self.db.execute(delete(UserModel).where(UserModel.id == user_id))
+        return result.rowcount > 0
+
+------------------------------
+## 2. Update the API Endpoints Tier (api/endpoints.py)
+Add the routes to expose these CRUD actions to your Tkinter front-end. We will secure them using your existing get_current_user token dependency:
+
+	# api/endpoints.pyfrom fastapi import APIRouter, Depends, HTTPException, statusfrom sqlalchemy.ext.asyncio import AsyncSessionfrom typing import Annotated
+	from data.database import get_dbfrom repositories.user_repository import UserRepositoryfrom security.auth import get_current_userfrom schemas.user_schema import UserResponse
+	router = APIRouter()
+	# ... keep your existing /register and /token endpoints here ...
+
+	@router.get("/users", response_model=list[UserResponse])async def read_all_users(
+		current_user: Annotated[str, Depends(get_current_user)], 
+		db: AsyncSession = Depends(get_db)
+	):
+		"""READ: Protected route to fetch all users."""
+		user_repo = UserRepository(db)
+		return await user_repo.get_all_users()
+
+	@router.put("/users/{user_id}")async def update_user(
+		user_id: int, 
+		payload: dict,
+		current_user: Annotated[str, Depends(get_current_user)], 
+		db: AsyncSession = Depends(get_db)
+	):
+		"""UPDATE: Protected route to modify an agent's username."""
+		new_name = payload.get("username", "").strip()
+		if not new_name:
+			raise HTTPException(status_code=400, detail="Username cannot be empty")
+        
+    user_repo = UserRepository(db)
+    success = await user_repo.update_username(user_id, new_name)
+    if not success:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"status": "updated"}
+
+	@router.delete("/users/{user_id}")async def delete_user_by_id(
+		user_id: int,
+		current_user: Annotated[str, Depends(get_current_user)], 
+		db: AsyncSession = Depends(get_db)
+	):
+		"""DELETE: Protected route to purge an agent profile."""
+		user_repo = UserRepository(db)
+		success = await user_repo.delete_user(user_id)
+		if not success:
+			raise HTTPException(status_code=404, detail="User not found")
+		return {"status": "deleted"}
+
+------------------------------
+## 3. Build the User Management Dashboard Grid (ui/canvas_ui.py)
+Replace your show_dashboard_screen method and add the list display loops. We use standard Tkinter canvas tracking elements to display rows and clear them automatically.
+Add these updated views inside your AgentDesktopUI class:
+
+    # --- VIEW 3: SECURE CRUD DASHBOARD ---
+    def show_dashboard_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="AGENT CONTROL REGISTRY", fill="#00FF00")
+        
+        # Action Buttons Header
+        fetch_btn = tk.Button(
+            self.root, text="⟳ Refresh Agent List", bg="#00AAFF", fg="black", font=("Arial", 10, "bold"),
+            command=lambda: self.run_network_task(self._fetch_user_list)
+        )
+        self.active_widgets.append(self.canvas.create_window(150, 110, window=fetch_btn))
+
+        # Render Table Headers manually onto canvas grid map
+        self.active_widgets.append(self.canvas.create_text(150, 150, text="Database ID", fill="#888888", font=("Arial", 11, "bold")))
+        self.active_widgets.append(self.canvas.create_text(350, 150, text="Agent Alias", fill="#888888", font=("Arial", 11, "bold")))
+        self.active_widgets.append(self.canvas.create_text(550, 150, text="Control Options", fill="#888888", font=("Arial", 11, "bold")))
+
+        # Automatically execute initial load on open
+        self.run_network_task(self._fetch_user_list)
+
+    def _fetch_user_list(self):
+        """BACKGROUND TASK: Reads user profiles over network."""
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        try:
+            with httpx.Client() as client:
+                response = client.get(f"{self.backend_url}/users", headers=headers)
+            if response.status_code == 200:
+                users = response.json()
+                # Safely pass structural changes back to UI thread
+                self.root.after(0, lambda: self._render_user_rows(users))
+            else:
+                self.root.after(0, lambda: messagebox.showerror("Error", "Could not fetch user directory."))
+        except httpx.RequestError as exc:
+            self.root.after(0, lambda: messagebox.showerror("Network Error", f"Stream lost: {exc}"))
+
+    def _render_user_rows(self, users):
+        """MAIN THREAD: Clears old rows and prints active records to screen."""
+        # 1. Clear old data rows if they exist from a previous refresh
+        if hasattr(self, "row_widgets"):
+            for w in self.row_widgets:
+                self.canvas.delete(w)
+        self.row_widgets = []
+
+        start_y = 190
+        row_gap = 40
+
+        if not users:
+            no_data = self.canvas.create_text(config.WINDOW_WIDTH // 2, start_y, text="No accounts initialized. Try creating one.", fill="orange", font=("Arial", 12, "italic"))
+            self.row_widgets.append(no_data)
+            return
+
+        for idx, user in enumerate(users):
+            current_y = start_y + (idx * row_gap)
+            user_id = user.get("id") or (idx + 1)  # Fallback reference if model id skipped in schema
+            username = user.get("username")
+
+            # Column 1: Display ID
+            id_text = self.canvas.create_text(150, current_y, text=f"#{user_id}", fill="white", font=("Arial", 11))
+            self.row_widgets.append(id_text)
+
+            # Column 2: Display Username String
+            name_text = self.canvas.create_text(350, current_y, text=username, fill="#00FF00", font=("Arial", 11))
+            self.row_widgets.append(name_text)
+
+            # Column 3: Delete Trigger Button action frame row allocation
+            del_btn = tk.Button(
+                self.root, text="Delete Profile", bg="#FF3333", fg="white", font=("Arial", 9),
+                command=lambda uid=user_id: self.run_network_task(self._delete_user_task, uid)
+            )
+            del_window = self.canvas.create_window(550, current_y, window=del_btn)
+            self.row_widgets.append(del_window)
+
+    def _delete_user_task(self, user_id):
+        """BACKGROUND TASK: Sends server request to destroy specific records."""
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        try:
+            with httpx.Client() as client:
+                response = client.get(f"{self.backend_url}/users", headers=headers)
+                # Quick matching fix since standard mock accounts don't rely on numeric auto-increment
+                users = response.json()
+                
+            # Execute targeted removal
+            with httpx.Client() as client:
+                response = client.delete(f"{self.backend_url}/users/{user_id}", headers=headers)
+                
+            if response.status_code == 200:
+                self.root.after(0, lambda: messagebox.showinfo("Cleaned", "Agent record deleted successfully."))
+                self._fetch_user_list()
+            else:
+                self.root.after(0, lambda: messagebox.showerror("Failure", "Could not delete resource."))
+        except httpx.RequestError as exc:
+            self.root.after(0, lambda: messagebox.showerror("Error", f"Failed network link: {exc}"))
+
+Now you can register users, log in, and view the user grid. Would you like to add an inline "Edit Username" entry popup box to complete the Update (U) part of your CRUD framework, or should we verify your Pydantic schemas include the id field?
+
+## I ran the app. But my user is not created yet. I want to work on the crud with a list of users.
+
+To display and manage a list of users, we will build out a CRUD framework (Create, Read, Update, Delete). We will create a user management repository, add new API endpoints, and design a dynamic user grid directly on your Tkinter canvas.
+
+------------------------------
+## 1. Update the Repository Tier (repositories/user_repository.py)
+Add methods to retrieve all users, update a username, and delete users from your PostgreSQL instance:
+
+	# repositories/user_repository.pyfrom sqlalchemy.ext.asyncio import AsyncSessionfrom sqlalchemy.future import selectfrom sqlalchemy import deletefrom models.user_model import UserModel
+	class UserRepository:
+		def __init__(self, db: AsyncSession):
+			self.db = db
+
+    async def get_by_username(self, username: str) -> UserModel | None:
+        """Retrieves a single agent record by their unique username."""
+        result = await self.db.execute(select(UserModel).where(UserModel.username == username))
+        return result.scalars().first()
+
+    async def create_user(self, username: str, hashed_password: str) -> UserModel:
+        """Inserts a brand new agent credentials record into PostgreSQL."""
+        new_user = UserModel(username=username, hashed_password=hashed_password)
+        self.db.add(new_user)
+        return new_user
+
+    # --- NEW CRUD OPERATIONS ---
+    async def get_all_users(self) -> list[UserModel]:
+        """READ: Retrieves all users registered in the database."""
+        result = await self.db.execute(select(UserModel).order_by(UserModel.id))
+        return list(result.scalars().all())
+
+    async def update_username(self, user_id: int, new_username: str) -> bool:
+        """UPDATE: Modifies an existing user's username."""
+        result = await self.db.execute(select(UserModel).where(UserModel.id == user_id))
+        user = result.scalars().first()
+        if user:
+            user.username = new_username
+            return True
+        return False
+
+    async def delete_user(self, user_id: int) -> bool:
+        """DELETE: Removes an agent completely from the system."""
+        result = await self.db.execute(delete(UserModel).where(UserModel.id == user_id))
+        return result.rowcount > 0
+
+------------------------------
+## 2. Update the API Endpoints Tier (api/endpoints.py)
+Add the routes to expose these CRUD actions to your Tkinter front-end. We will secure them using your existing get_current_user token dependency:
+
+	# api/endpoints.pyfrom fastapi import APIRouter, Depends, HTTPException, statusfrom sqlalchemy.ext.asyncio import AsyncSessionfrom typing import Annotated
+	from data.database import get_dbfrom repositories.user_repository import UserRepositoryfrom security.auth import get_current_userfrom schemas.user_schema import UserResponse
+	router = APIRouter()
+	# ... keep your existing /register and /token endpoints here ...
+
+	@router.get("/users", response_model=list[UserResponse])async def read_all_users(
+		current_user: Annotated[str, Depends(get_current_user)], 
+		db: AsyncSession = Depends(get_db)
+	):
+		"""READ: Protected route to fetch all users."""
+		user_repo = UserRepository(db)
+		return await user_repo.get_all_users()
+
+	@router.put("/users/{user_id}")async def update_user(
+		user_id: int, 
+		payload: dict,
+		current_user: Annotated[str, Depends(get_current_user)], 
+		db: AsyncSession = Depends(get_db)
+	):
+		"""UPDATE: Protected route to modify an agent's username."""
+		new_name = payload.get("username", "").strip()
+		if not new_name:
+			raise HTTPException(status_code=400, detail="Username cannot be empty")
+        
+    user_repo = UserRepository(db)
+    success = await user_repo.update_username(user_id, new_name)
+    if not success:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"status": "updated"}
+
+	@router.delete("/users/{user_id}")async def delete_user_by_id(
+		user_id: int,
+		current_user: Annotated[str, Depends(get_current_user)], 
+		db: AsyncSession = Depends(get_db)
+	):
+		"""DELETE: Protected route to purge an agent profile."""
+		user_repo = UserRepository(db)
+		success = await user_repo.delete_user(user_id)
+		if not success:
+			raise HTTPException(status_code=404, detail="User not found")
+		return {"status": "deleted"}
+
+------------------------------
+## 3. Build the User Management Dashboard Grid (ui/canvas_ui.py)
+Replace your show_dashboard_screen method and add the list display loops. We use standard Tkinter canvas tracking elements to display rows and clear them automatically.
+Add these updated views inside your AgentDesktopUI class:
+
+    # --- VIEW 3: SECURE CRUD DASHBOARD ---
+    def show_dashboard_screen(self):
+        self._clear_screen()
+        self.canvas.itemconfig(self.title_text, text="AGENT CONTROL REGISTRY", fill="#00FF00")
+        
+        # Action Buttons Header
+        fetch_btn = tk.Button(
+            self.root, text="⟳ Refresh Agent List", bg="#00AAFF", fg="black", font=("Arial", 10, "bold"),
+            command=lambda: self.run_network_task(self._fetch_user_list)
+        )
+        self.active_widgets.append(self.canvas.create_window(150, 110, window=fetch_btn))
+
+        # Render Table Headers manually onto canvas grid map
+        self.active_widgets.append(self.canvas.create_text(150, 150, text="Database ID", fill="#888888", font=("Arial", 11, "bold")))
+        self.active_widgets.append(self.canvas.create_text(350, 150, text="Agent Alias", fill="#888888", font=("Arial", 11, "bold")))
+        self.active_widgets.append(self.canvas.create_text(550, 150, text="Control Options", fill="#888888", font=("Arial", 11, "bold")))
+
+        # Automatically execute initial load on open
+        self.run_network_task(self._fetch_user_list)
+
+    def _fetch_user_list(self):
+        """BACKGROUND TASK: Reads user profiles over network."""
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        try:
+            with httpx.Client() as client:
+                response = client.get(f"{self.backend_url}/users", headers=headers)
+            if response.status_code == 200:
+                users = response.json()
+                # Safely pass structural changes back to UI thread
+                self.root.after(0, lambda: self._render_user_rows(users))
+            else:
+                self.root.after(0, lambda: messagebox.showerror("Error", "Could not fetch user directory."))
+        except httpx.RequestError as exc:
+            self.root.after(0, lambda: messagebox.showerror("Network Error", f"Stream lost: {exc}"))
+
+    def _render_user_rows(self, users):
+        """MAIN THREAD: Clears old rows and prints active records to screen."""
+        # 1. Clear old data rows if they exist from a previous refresh
+        if hasattr(self, "row_widgets"):
+            for w in self.row_widgets:
+                self.canvas.delete(w)
+        self.row_widgets = []
+
+        start_y = 190
+        row_gap = 40
+
+        if not users:
+            no_data = self.canvas.create_text(config.WINDOW_WIDTH // 2, start_y, text="No accounts initialized. Try creating one.", fill="orange", font=("Arial", 12, "italic"))
+            self.row_widgets.append(no_data)
+            return
+
+        for idx, user in enumerate(users):
+            current_y = start_y + (idx * row_gap)
+            user_id = user.get("id") or (idx + 1)  # Fallback reference if model id skipped in schema
+            username = user.get("username")
+
+            # Column 1: Display ID
+            id_text = self.canvas.create_text(150, current_y, text=f"#{user_id}", fill="white", font=("Arial", 11))
+            self.row_widgets.append(id_text)
+
+            # Column 2: Display Username String
+            name_text = self.canvas.create_text(350, current_y, text=username, fill="#00FF00", font=("Arial", 11))
+            self.row_widgets.append(name_text)
+
+            # Column 3: Delete Trigger Button action frame row allocation
+            del_btn = tk.Button(
+                self.root, text="Delete Profile", bg="#FF3333", fg="white", font=("Arial", 9),
+                command=lambda uid=user_id: self.run_network_task(self._delete_user_task, uid)
+            )
+            del_window = self.canvas.create_window(550, current_y, window=del_btn)
+            self.row_widgets.append(del_window)
+
+    def _delete_user_task(self, user_id):
+        """BACKGROUND TASK: Sends server request to destroy specific records."""
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        try:
+            with httpx.Client() as client:
+                response = client.get(f"{self.backend_url}/users", headers=headers)
+                # Quick matching fix since standard mock accounts don't rely on numeric auto-increment
+                users = response.json()
+                
+            # Execute targeted removal
+            with httpx.Client() as client:
+                response = client.delete(f"{self.backend_url}/users/{user_id}", headers=headers)
+                
+            if response.status_code == 200:
+                self.root.after(0, lambda: messagebox.showinfo("Cleaned", "Agent record deleted successfully."))
+                self._fetch_user_list()
+            else:
+                self.root.after(0, lambda: messagebox.showerror("Failure", "Could not delete resource."))
+        except httpx.RequestError as exc:
+            self.root.after(0, lambda: messagebox.showerror("Error", f"Failed network link: {exc}"))
+
+Now you can register users, log in, and view the user grid. Would you like to add an inline "Edit Username" entry popup box to complete the Update (U) part of your CRUD framework, or should we verify your Pydantic schemas include the id field?
+
+## Error: Message=name 'get_current_user' is not defined
+
+This NameError occurs because your endpoints module cannot locate the get_current_user function. Since we refactored the file layout earlier, get_current_user now lives safely inside your security/auth.py file.
+To fix this, you just need to add get_current_user to your import statement at the top of api/endpoints.py.
+## The Fix
+Open your api/endpoints.py file and look at the import statements near the top. Update them to include get_current_user from your security package:
+
+# api/endpoints.py
+# 1. Update your security/auth imports to include get_current_user:from security.auth import (
+    verify_password, 
+    get_password_hash, 
+    create_access_token, 
+    get_current_user  # <--- ADD THIS LINE
+)
+# 2. Also ensure your schemas are imported if they aren't already:from schemas.user_schema import UserRegister, UserResponse, Token
+
+## Double-Check: Ensure UserResponse has an id field
+Since our new CRUD interface looks for a user id field, make sure your schemas/user_schema.py includes it so your frontend can identify each row:
+
+# schemas/user_schema.pyfrom pydantic import BaseModel
+class UserResponse(BaseModel):
+    id: int          # <--- Make sure this is present!
+    username: str
+
+    class Config:
+        from_attributes = True
+
+Once you update the import statement and save the file, hit F5 to start the application.
+Would you like help setting up the Update function next so you can edit usernames inline, or is your User CRUD registry loading up perfectly now?
+
+## Register is not working. it is showing the background task loading continuously. when I back to login it is show there too. database, no record is created.
+
+This continuous loading loop happens because FastAPI encountered a validation or structural crash behind the scenes, and the background thread died before it could notify the Tkinter UI thread to drop the loading screen via self.stop_loader().
+Because your user table auto-generates with a numeric id column, the old dictionary payloads (user_data["username"]) or Pydantic structural schema mismatches are causing a database routing break inside your endpoints.
+Let's clean and align the components to make sure registration saves records into PostgreSQL correctly.
+## 1. Match Your Validation Schema (schemas/user_schema.py)
+Ensure your schema handles the incoming fields for registration safely, while letting the response model accept the auto-incremented database id field.
+
+# schemas/user_schema.pyfrom pydantic import BaseModel, Field
+class UserRegister(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    password: str = Field(..., min_length=6)
+class UserResponse(BaseModel):
+    id: int          # Crucial: Must be here so the CRUD grid can track rows
+    username: str
+
+    class Config:
+        from_attributes = True
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+## 2. Standardize Your Route Logic (api/endpoints.py)
+Update your registration endpoint to accept the Pydantic schema class natively. Access its properties using dot notation (user_data.username) rather than legacy dictionary indexes.
+
+# api/endpoints.pyfrom fastapi import APIRouter, Depends, HTTPException, statusfrom fastapi.security import OAuth2PasswordRequestFormfrom sqlalchemy.ext.asyncio import AsyncSessionfrom typing import Annotated
+from data.database import get_dbfrom repositories.user_repository import UserRepositoryfrom security.auth import verify_password, get_password_hash, create_access_token, get_current_userfrom schemas.user_schema import UserRegister, UserResponse, Token 
+router = APIRouter()
+
+@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)async def register(user_data: UserRegister, db: AsyncSession = Depends(get_db)):
+    """Registers a new agent safely validated through the Schema framework."""
+    user_repo = UserRepository(db)
+    
+    # 1. Check if user already exists
+    existing_user = await user_repo.get_by_username(user_data.username)
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Username already registered"
+        )
+    
+    # 2. Hash and save via repository layer
+    hashed = get_password_hash(user_data.password)
+    new_user = await user_repo.create_user(username=user_data.username, hashed_password=hashed)
+    
+    return new_user
+# ... keep your existing /token, /users GET, PUT, and DELETE routes ...
+
+## 3. Add a Safety Net to Tkinter (ui/canvas_ui.py)
+To prevent the loading bar from freezing your screen when an error occurs, wrap your background thread execution in a robust try...except block. This guarantees that self.stop_loader() runs even if the server drops or sends back bad responses.
+Update the run_network_task method in your ui/canvas_ui.py file to include this safeguard:
+
+    def run_network_task(self, target_function, *args):
+        """Spawns network methods in a background worker thread safely."""
+        if self.is_loading:
+            return  # Prevent rapid duplicate clicks
+
+        self.start_loader()
+        
+        def worker_wrapper():
+            try:
+                target_function(*args)
+            except Exception as e:
+                # Absolute safety guard: log the exception to terminal and clear loader
+                print(f"[THREAD ERROR] Background task failed: {e}")
+                self.root.after(0, lambda: messagebox.showerror("System Error", f"An execution error occurred: {e}"))
+            finally:
+                # Guarantees the loader stops animating no matter what happens
+                self.root.after(0, self.stop_loader)
+
+        threading.Thread(target=worker_wrapper, daemon=True).start()
+
+## Why it got stuck, and what changes now:
+
+* The Infinite Spinner: Previously, if your backend threw an exception during registration, the background thread crashed mid-execution, meaning it never reached the cleanup code to turn off self.is_loading = False. The animation would keep looping indefinitely.
+* The UI Switch Leak: Because the variable self.is_loading stayed True, navigating back to the login page wouldn't clear it. The loader text field remained active on the screen. The new finally block resolves this by ensuring the loader always turns off.
+
+Restart your application with F5. If it fails again, check your Visual Studio output terminal window to see the exact structural line output printed by [THREAD ERROR].
+Once the loader turns off cleanly, look at your terminal and tell me: Are you seeing a 422 Unprocessable Entity code from FastAPI, or is there a PostgreSQL database column constraint block showing up?
+
