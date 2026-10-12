@@ -117,7 +117,7 @@ class TriadChordInterferenceApp:
 
     def generate_and_play_wav(self):
         SAMPLE_RATE = 44100
-        DURATION = 1.5
+        DURATION = 4.5
         filename = "triad_chord.wav"
         
         hz1, vol1 = self.freq1.get() * 100.0, self.amp1.get() / 1.5

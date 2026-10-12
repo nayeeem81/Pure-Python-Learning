@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e4aa3778-d066-4e86-a928-48456662df3d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>dual_wave_chord_visualizer_player.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,27 +22,34 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="dual_signwave_app.py" />
-    <Compile Include="dual_wave_chord_visualizer_player.py" />
-    <Compile Include="interactive_line_app.py" />
-    <Compile Include="interactive_sine_waveapp.py" />
-    <Compile Include="single_static_line.py" />
-    <Compile Include="simple_grid_app.py" />
-    <Compile Include="Study\interactive_line_app.md" />
-    <Compile Include="Study\interactive_lineslope_app.md" />
-    <Compile Include="triad_chord_interference_app.py" />
-    <Compile Include="wave_interference_chord_app.py" />
+    <Compile Include="config.py" />
+    <Compile Include="chordapps\dual_signwave_app.py" />
+    <Compile Include="chordapps\dual_wave_chord_visualizer_player.py" />
+    <Compile Include="chordapps\interactive_line_app.py" />
+    <Compile Include="chordapps\interactive_sine_waveapp.py" />
+    <Compile Include="main.py" />
+    <Compile Include="chordapps\single_static_line.py" />
+    <Compile Include="chordapps\simple_grid_app.py" />
+    <Compile Include="study\interactive_line_app.md" />
+    <Compile Include="study\interactive_lineslope_app.md" />
+    <Compile Include="chordapps\triad_chord_interference_app.py" />
+    <Compile Include="ui\canvas_ui.py" />
+    <Compile Include="ui\__init__.py" />
+    <Compile Include="utility\audio.py" />
+    <Compile Include="utility\__init__.py" />
+    <Compile Include="chordapps\wave_interference_chord_app.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="interactive_lineslope_app.py" />
-    <Content Include="Study\dual_signwave_app.md" />
-    <Content Include="Study\dual_wave_chord_visualizer_player.md" />
-    <Content Include="Study\interactive_sine_waveapp.md" />
-    <Content Include="Study\requirements.txt" />
-    <Content Include="Study\snglestaticline.md" />
-    <Content Include="Study\startcanvas.md" />
-    <Content Include="Study\triad_chord_interference_app.md" />
-    <Content Include="Study\wave_interference_chord_app.md" />
+    <Content Include="chordapps\interactive_lineslope_app.py" />
+    <Content Include="requirements.txt" />
+    <Content Include="study\dual_signwave_app.md" />
+    <Content Include="study\dual_wave_chord_visualizer_player.md" />
+    <Content Include="study\interactive_sine_waveapp.md" />
+    <Content Include="study\requirements.txt" />
+    <Content Include="study\snglestaticline.md" />
+    <Content Include="study\startcanvas.md" />
+    <Content Include="study\triad_chord_interference_app.md" />
+    <Content Include="study\wave_interference_chord_app.md" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
@@ -56,7 +63,10 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Study\" />
+    <Folder Include="chordapps\" />
+    <Folder Include="ui\" />
+    <Folder Include="utility\" />
+    <Folder Include="study\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
