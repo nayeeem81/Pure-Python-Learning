@@ -37,6 +37,7 @@
     <Compile Include="ui\canvas_ui.py" />
     <Compile Include="ui\textinput_canvas_ui.py" />
     <Compile Include="ui\text_wavecoloroption_historylist_ui.py" />
+    <Compile Include="ui\video_improviser.py" />
     <Compile Include="ui\__init__.py" />
     <Compile Include="utility\audio.py" />
     <Compile Include="utility\__init__.py" />

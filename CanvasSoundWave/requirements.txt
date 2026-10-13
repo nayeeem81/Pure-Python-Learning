@@ -2,3 +2,5 @@ aiofiles
 pip
 gTTS 
 pygame
+moviepy
+Pillow
