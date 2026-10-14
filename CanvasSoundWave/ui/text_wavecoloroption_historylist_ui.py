@@ -111,9 +111,9 @@ class AgentDesktopUI:
         self.active_widgets.append(prompt_text)
 
         self.text_entry = tk.Entry(
-            self.root, width=35, font=("Arial", 12), bg="#2a2a2a", fg="white", insertbackground="white", bd=1, relief="solid"
+            self.root, width=80, font=("Arial", 12), bg="#2a2a2a", fg="white", insertbackground="white", bd=1, relief="solid"
         )
-        entry_window = self.canvas.create_window(220, 150, window=self.text_entry, anchor="w")
+        entry_window = self.canvas.create_window(225, 150, window=self.text_entry, anchor="w")
         self.active_widgets.append(entry_window)
         self.text_entry.focus_set()
         self.text_entry.bind("<Return>", lambda event: self._process_input_submission())
@@ -138,7 +138,7 @@ class AgentDesktopUI:
 
         # Listbox widget to store entries
         self.history_listbox = tk.Listbox(
-            self.root, width=34, height=13, font=("Courier New", 9), bg="#151515", fg="#00FF00",
+            self.root, width=70, height=13, font=("Courier New", 9), bg="#151515", fg="#00FF00",
             selectbackground="#222222", selectforeground="white", highlightthickness=0, bd=1, relief="solid"
         )
         listbox_window = self.canvas.create_window(460, 280, window=self.history_listbox, anchor="w")

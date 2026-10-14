@@ -1,0 +1,125 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>5294f0e7-6d7c-4488-a3e9-b81f04c1095a</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>main.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>WebFastapiGttsProject</Name>
+    <RootNamespace>WebFastapiGttsProject</RootNamespace>
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="api\agent.py" />
+    <Compile Include="api\dependencies.py" />
+    <Compile Include="api\routes.py" />
+    <Compile Include="api\__init__.py" />
+    <Compile Include="canvasapps\app_basiccanvas.py" />
+    <Compile Include="canvasapps\app_dragcell_geometry_gridcanvas.py" />
+    <Compile Include="canvasapps\app_engine_rotateing_particle_render.py" />
+    <Compile Include="canvasapps\app_eqnbased_circle.py" />
+    <Compile Include="canvasapps\app_mathshapes_gridcanvas.py" />
+    <Compile Include="canvasapps\shapes\base.py" />
+    <Compile Include="canvasapps\shapes\grid.py" />
+    <Compile Include="canvasapps\shapes\primitives.py" />
+    <Compile Include="canvasapps\shapes\__init__.py" />
+    <Compile Include="canvas_utility\grid.py" />
+    <Compile Include="canvas_utility\waveform.py" />
+    <Compile Include="canvas_utility\__init__.py" />
+    <Compile Include="chordapps\dual_signwave_app.py" />
+    <Compile Include="chordapps\dual_wave_chord_visualizer_player.py" />
+    <Compile Include="chordapps\interactive_lineslope_app.py" />
+    <Compile Include="chordapps\interactive_line_app.py" />
+    <Compile Include="chordapps\interactive_sine_waveapp.py" />
+    <Compile Include="chordapps\simple_grid_app.py" />
+    <Compile Include="chordapps\single_static_line.py" />
+    <Compile Include="chordapps\triad_chord_interference_app.py" />
+    <Compile Include="chordapps\wave_interference_chord_app.py" />
+    <Compile Include="config.py" />
+    <Compile Include="main.py" />
+    <Compile Include="studio_utility\processor.py" />
+    <Compile Include="studio_utility\storage.py" />
+    <Compile Include="studio_utility\__init__.py" />
+    <Compile Include="views\view_routes.py" />
+    <Compile Include="views\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="requirements.txt" />
+    <Content Include="static\content\bootstrap.css" />
+    <Content Include="static\content\bootstrap.min.css" />
+    <Content Include="static\css\site.css" />
+    <Content Include="static\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="static\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="static\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="static\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="static\js\studio.js" />
+    <Content Include="static\scripts\bootstrap.js" />
+    <Content Include="static\scripts\bootstrap.min.js" />
+    <Content Include="static\scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="static\scripts\jquery-1.10.2.js" />
+    <Content Include="static\scripts\jquery-1.10.2.min.js" />
+    <Content Include="static\scripts\jquery-1.10.2.min.map" />
+    <Content Include="static\scripts\jquery.validate-vsdoc.js" />
+    <Content Include="static\scripts\jquery.validate.js" />
+    <Content Include="static\scripts\jquery.validate.min.js" />
+    <Content Include="static\scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="static\scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="static\scripts\modernizr-2.6.2.js" />
+    <Content Include="static\scripts\respond.js" />
+    <Content Include="static\scripts\respond.min.js" />
+    <Content Include="static\scripts\_references.js" />
+    <Content Include="templates\about.html" />
+    <Content Include="templates\contact.html" />
+    <Content Include="templates\index.html" />
+    <Content Include="templates\layout.html" />
+    <Content Include="templates\studio.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="api\" />
+    <Folder Include="canvasapps\" />
+    <Folder Include="canvasapps\shapes\" />
+    <Folder Include="canvas_utility\" />
+    <Folder Include="chordapps\" />
+    <Folder Include="static\" />
+    <Folder Include="static\content\" />
+    <Folder Include="static\fonts\" />
+    <Folder Include="static\js\" />
+    <Folder Include="static\css\" />
+    <Folder Include="static\scripts\" />
+    <Folder Include="templates\" />
+    <Folder Include="views\" />
+    <Folder Include="studio_utility\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="env\">
+      <Id>env</Id>
+      <Version>3.13</Version>
+      <Description>env (Python 3.13.15)</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>

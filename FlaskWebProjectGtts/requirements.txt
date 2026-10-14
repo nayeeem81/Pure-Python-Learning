@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+httpx
+python-multipart
+pydantic-settings
+aiofiles
+pip
+gTTS 
+pygame
+moviepy
+Pillow
+orjson
+pydub 
+Flask

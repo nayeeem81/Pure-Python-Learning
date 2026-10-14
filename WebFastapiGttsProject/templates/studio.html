@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="studio-container">
+    <h1>🎙️ Interactive Audio Control Studio</h1>
+
+    <!-- SECTION 1: GENERATE NEW TEXT-TO-SPEECH -->
+    <div class="card">
+        <h3>1. Live Text-to-Speech (gTTS)</h3>
+        <input type="text" id="ttsText" value="Hello! This text is transformed into speech by FastAPI.">
+        <button onclick="handleLiveTTS()">Speak Now</button>
+    </div>
+
+    <!-- SECTION 2: PLAY EXISTING DISC FILES -->
+    <div class="card">
+        <h3>2. Play Existing Audio File From Disk</h3>
+        <!-- Replace track1.wav with an actual file name inside your folder -->
+        <button onclick="handlePlayExisting('track1.wav')">Play track1.wav</button>
+        <button onclick="handlePlayExisting('track2.wav')">Play track2.wav</button>
+    </div>
+
+    <!-- UNIFIED GLOBAL PLAYER LAYER -->
+    <div class="card">
+        <h3>🎵 Master Audio Player</h3>
+        <audio id="masterPlayer" controls style="width: 100%;"></audio>
+    </div>
+</div>
+
+<!-- Page-specific JavaScript loads cleanly at the end of the content block -->
+<script src="/static/js/studio.js" defer></script>
+{% endblock %}
