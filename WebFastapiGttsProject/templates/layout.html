@@ -3,11 +3,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} - My Fast API Application</title>
+    <title>{{ title if title else "Dashboard" }} - My FastAPI Application</title>
+    
+    <!-- Points to static/content/ folder -->
     <link rel="stylesheet" type="text/css" href="/static/content/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/content/site.css" />
+    
+    <!-- Points to static/scripts/ folder -->
     <script src="/static/scripts/modernizr-2.6.2.js"></script>
 </head>
+
 
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -29,18 +34,20 @@
         </div>
     </div>
 
-    <div class="container body-content">
-        {% block content %}{% endblock %}
+        <main class="container body-content">
+            {% block content %}{% endblock %}
+        </main>
+
         <hr />
-        <footer>
+
+        <footer class = "container">
             <p>&copy; {{ year }} - Fast API Application</p>
         </footer>
-    </div>
-
+       
+    {% block scripts %}
     <script src="/static/scripts/jquery-1.10.2.js"></script>
     <script src="/static/scripts/bootstrap.js"></script>
     <script src="/static/scripts/respond.js"></script>
-    {% block scripts %}{% endblock %}
-
+    {% endblock %}
 </body>
 </html>

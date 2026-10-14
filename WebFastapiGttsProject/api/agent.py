@@ -1,13 +1,31 @@
 import os
+from pathlib import Path
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from gtts import gTTS
 import io
 
-agent_router = APIRouter(prefix="/agent", tags=["Agent"])
+agent_router = APIRouter(prefix="/agent", tags=["Agent Operations"])
 
-# An example directory where you store your existing WAV/MP3 files
-AUDIO_STORAGE_DIR = "C:/VisualStudioPyProjects/PurePythonApp/audio_files"
+# 1. Get the absolute path of the directory main.py lives in
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# 2. Force it to target a folder named "audio_files" at the root level
+AUDIO_DIR = BASE_DIR / "audio_files"
+
+@agent_router.get("/play-file/{filename}")
+async def play_audio_file(filename: str):
+    file_path = AUDIO_DIR / filename
+    
+    # Debug print: This will print out exactly WHERE the server is looking in your terminal!
+    print(f"DEBUG: Looking for file at -> {file_path.resolve()}")
+    
+    if not file_path.exists() or not file_path.is_file():
+        raise HTTPException(status_code=404, detail="File missing on disk")
+        
+    # Make sure your media_type matches the file extension (.wav or .mp3)
+    media_type = "audio/mpeg" if filename.endswith(".mp3") else "audio/wav"
+    return FileResponse(path=file_path, media_type=media_type)
 
 @agent_router.get("/generate-tts")
 async def generate_tts(text: str):
@@ -23,18 +41,5 @@ async def generate_tts(text: str):
     return StreamingResponse(mp3_fp, media_type="audio/mp3")
 
 
-@agent_router.get("/play-file/{filename}")
-async def play_existing_file(filename: str):
-    """Reads an EXISTING file from your disk and streams it to the browser."""
-    file_path = os.path.join(AUDIO_STORAGE_DIR, filename)
-    
-    # Security check: prevent directory traversal attacks
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="Audio file not found on disk")
         
-    def iterfile():
-        with open(file_path, mode="rb") as file_like:
-            yield from file_like
-
-    # Stream the file chunk by chunk so it loads instantly in the player
-    return StreamingResponse(iterfile(), media_type="audio/wav")
+   
