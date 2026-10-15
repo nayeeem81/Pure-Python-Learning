@@ -15,11 +15,9 @@ function handleLiveTTS() {
     player.play();
 
     // 2. Trigger the background generation & file structure creation on your local disk
-    fetch('/api/process/generate-speech-processing', { // Using the frequency router path
+    fetch('/api/process/generate-speech-processing', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: textValue })
     })
     .then(response => response.json())

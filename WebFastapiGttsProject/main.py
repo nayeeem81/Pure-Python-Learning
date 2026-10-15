@@ -8,7 +8,6 @@ from views.view_routes import view_router
 app = FastAPI(title="Modern Audio Studio Backend")
 
 WORKSPACE_DIR = os.path.abspath("./project")
-STATIC_DIR = os.path.join(WORKSPACE_DIR, "audio") 
 GENERATED_DIR = os.path.join(WORKSPACE_DIR, "generated") 
 
 # Mount visual layer assets
