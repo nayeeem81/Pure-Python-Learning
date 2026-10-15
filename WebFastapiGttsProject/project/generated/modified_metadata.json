@@ -1,0 +1,88 @@
+{
+    "original_sentence": "Hello! This text is transformed into speech by FastAPI.",
+    "master_mp3_path": "generated/modified_sentence.mp3",
+    "total_duration_seconds": 7.145458333333333,
+    "words_timeline": [
+        {
+            "word_index": 0,
+            "text": "Hello!",
+            "start_time": 0.0,
+            "end_time": 0.61,
+            "segment_file": "generated/segments/word_000_hello.wav",
+            "applied_frequency_shift_hz": -0.6,
+            "applied_amplitude_db": 17.0
+        },
+        {
+            "word_index": 1,
+            "text": "This",
+            "start_time": 0.61,
+            "end_time": 1.21,
+            "segment_file": "generated/segments/word_001_this.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 20.0
+        },
+        {
+            "word_index": 2,
+            "text": "text",
+            "start_time": 1.21,
+            "end_time": 1.82,
+            "segment_file": "generated/segments/word_002_text.wav",
+            "applied_frequency_shift_hz": -0.6,
+            "applied_amplitude_db": 20.0
+        },
+        {
+            "word_index": 3,
+            "text": "is",
+            "start_time": 1.82,
+            "end_time": 2.42,
+            "segment_file": "generated/segments/word_003_is.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 20.0
+        },
+        {
+            "word_index": 4,
+            "text": "transformed",
+            "start_time": 2.42,
+            "end_time": 3.03,
+            "segment_file": "generated/segments/word_004_transformed.wav",
+            "applied_frequency_shift_hz": -0.6,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 5,
+            "text": "into",
+            "start_time": 3.03,
+            "end_time": 3.63,
+            "segment_file": "generated/segments/word_005_into.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 6,
+            "text": "speech",
+            "start_time": 3.63,
+            "end_time": 4.24,
+            "segment_file": "generated/segments/word_006_speech.wav",
+            "applied_frequency_shift_hz": -0.6,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 7,
+            "text": "by",
+            "start_time": 4.24,
+            "end_time": 4.84,
+            "segment_file": "generated/segments/word_007_by.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 8,
+            "text": "FastAPI.",
+            "start_time": 4.84,
+            "end_time": 5.45,
+            "segment_file": "generated/segments/word_008_fastapi.wav",
+            "applied_frequency_shift_hz": -0.8,
+            "applied_amplitude_db": 0.0
+        }
+    ]
+}

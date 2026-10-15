@@ -25,6 +25,7 @@
     <Compile Include="api\process.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="api\routerwords.py" />
     <Compile Include="api\studio.py" />
     <Compile Include="api\agent.py" />
     <Compile Include="api\dependencies.py" />
@@ -70,6 +71,7 @@
     <Content Include="static\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="static\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="static\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="static\js\studio_editor.js" />
     <Content Include="static\regions.min.js" />
     <Content Include="static\wavesurfer.min.js" />
     <Content Include="static\js\frequency.js" />
@@ -92,6 +94,7 @@
     <Content Include="study\textdisksave_bestpractice.md" />
     <Content Include="templates\about.html" />
     <Content Include="templates\contact.html" />
+    <Content Include="templates\editor.html" />
     <Content Include="templates\frequency.html" />
     <Content Include="templates\index.html" />
     <Content Include="templates\layout.html" />

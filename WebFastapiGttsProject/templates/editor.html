@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div class="jumbotron">
+        <h1>🎛️ Word Editor</h1>
+    </div>
+
+    <h3>Original Sentence Reference</h3>
+
+    <div class="wave-box">
+        <div id="original-waveform"></div>
+        <button onclick="wsOriginal.playPause()">Play Original</button>
+    </div>
+
+    <h3>Modified Preview</h3>
+    <div class="wave-box">
+        <div id="modified-waveform"></div>
+        <button onclick="wsModified.playPause()">Play Modified Track</button>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <button onclick="compileNewAudio()" style="background: #2b9348; font-size: 1.1em;">Consolidate and Render New MP3</button>
+    </div>
+
+    <h3>Individual Word Control Grid</h3>
+    <div id="control-grid"></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/wavesurfer.min.js"></script>
+<script src="/static/regions.min.js"></script>
+<script src="/static/js/studio_editor.js" defer></script>
+{% endblock %}

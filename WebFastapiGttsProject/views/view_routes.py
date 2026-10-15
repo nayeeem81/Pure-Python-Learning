@@ -34,3 +34,12 @@ def render_frequency_page(request: Request):
         name="frequency.html", 
         context={"page_title": "Workspace | Frequency"}
     )
+
+# 4. Existing dashboard workspace route
+@view_router.get("/word-editor", response_class=HTMLResponse)
+def render_editor_page(request: Request):
+    return templates.TemplateResponse(
+        request=request, 
+        name="editor.html", 
+        context={"page_title": "Workspace | Editor"}
+    )
