@@ -8,6 +8,7 @@ app = FastAPI(title="Modern Audio Studio Backend")
 
 # Mount visual layer assets
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/project", StaticFiles(directory="project"), name="project")
 
 # Stitch underlying application paths together
 app.include_router(view_router)                 # Renders the HTML templates

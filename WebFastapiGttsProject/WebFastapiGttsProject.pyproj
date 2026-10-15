@@ -57,6 +57,7 @@
     <Compile Include="views\__init__.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="api\frequency.py" />
     <Content Include="requirements.txt" />
     <Content Include="static\content\bootstrap.css" />
     <Content Include="static\content\bootstrap.min.css" />
@@ -65,6 +66,7 @@
     <Content Include="static\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="static\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="static\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="static\js\frequency.js" />
     <Content Include="static\js\studio.js" />
     <Content Include="static\scripts\bootstrap.js" />
     <Content Include="static\scripts\bootstrap.min.js" />
@@ -81,18 +83,25 @@
     <Content Include="static\scripts\respond.js" />
     <Content Include="static\scripts\respond.min.js" />
     <Content Include="static\scripts\_references.js" />
+    <Content Include="study\textdisksave_bestpractice.md" />
     <Content Include="templates\about.html" />
     <Content Include="templates\contact.html" />
+    <Content Include="templates\frequencyanalyzer.html" />
     <Content Include="templates\index.html" />
     <Content Include="templates\layout.html" />
     <Content Include="templates\studio.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="api\" />
+    <Folder Include="project\generated\segments\" />
     <Folder Include="canvasapps\" />
     <Folder Include="canvasapps\shapes\" />
     <Folder Include="canvas_utility\" />
     <Folder Include="chordapps\" />
+    <Folder Include="audio_files\" />
+    <Folder Include="project\" />
+    <Folder Include="project\generated\" />
+    <Folder Include="study\" />
     <Folder Include="static\" />
     <Folder Include="static\content\" />
     <Folder Include="static\fonts\" />

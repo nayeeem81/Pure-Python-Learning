@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+     <div class="jumbotron">
+        <h1>📊 Sentence Frequency Analyzer</h1>
+    </div>
+    <div id="waveform-container" class="card">
+        <div id="waveform"></div>
+    </div>
+    <button onclick="ws.playPause()">Play / Pause Sentence</button>
+    <div id="word-editor-panel" class=" class="card">
+        <!-- Target controls generated dynamically via JS -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Page-specific JavaScript loads cleanly at the end of the content block -->
+<script src="/static/js/frequency.js" defer></script>
+{% endblock %}
+
+
+
+    
+

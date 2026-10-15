@@ -66,3 +66,24 @@ input[type="checkbox"].input-validation-error {
     margin-bottom: 20px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
+
+.tts-text {
+    width: 100%;
+    border: 2px solid groove;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#waveform-container {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.word-controls {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
