@@ -6,7 +6,7 @@ from gtts import gTTS
 from pydub import AudioSegment
 
 # Assuming this is attached to your existing router file
-processor_router = APIRouter(prefix="/audio-processor", tags=["TTS Processor"])
+process_router = APIRouter(prefix="/audio-processor", tags=["TTS Processor"])
 
 WORKSPACE_DIR = os.path.abspath("./project")
 GENERATED_DIR = os.path.join(WORKSPACE_DIR, "generated")
@@ -81,7 +81,7 @@ def generate_tts_and_metadata(text: str):
     except Exception as e:
         print(f"❌ Error compiling background audio tasks: {str(e)}")
 
-@processor_router.post("/generate-speech")
+@process_router.post("/generate-speech-processing")
 async def generate_speech(payload: TTSRequest, background_tasks: BackgroundTasks):
     """
     Receives sentence text, passes processing workloads over to system background loops,

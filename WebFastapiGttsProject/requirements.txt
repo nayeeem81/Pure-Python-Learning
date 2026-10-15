@@ -12,3 +12,4 @@ Pillow
 orjson
 pydub 
 jinja2
+audioop-lts

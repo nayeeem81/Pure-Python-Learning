@@ -28,7 +28,9 @@ def apply_frequency_pitch_shift(audio_segment: AudioSegment, shift_amount: float
     shifted_audio = audio_segment._spawn(audio_segment.raw_data, overrides={'frame_rate': new_sample_rate})
     return shifted_audio.set_frame_rate(audio_segment.frame_rate)
 
-@frequency_router.post("/api/update-frequency")
+@frequency_router.post("/frequency")
+
+@frequency_router.post("/update-frequency")
 async def update_frequency(data: FrequencyUpdate):
     if not os.path.exists(JSON_PATH):
         raise HTTPException(status_code=404, detail="Project metadata.json file missing on disk.")
@@ -48,7 +50,7 @@ async def update_frequency(data: FrequencyUpdate):
     for word in project_data["words_timeline"]:
         word_wav_path = os.path.join(WORKSPACE_DIR, word["segment_file"])
         if not os.path.exists(word_wav_path):
-            raise HTTPException(status_code=404, detail=f"Missing word fragment file: {word_wav_path}"       
+            raise HTTPException(status_code=404, detail=f"Missing word fragment file: {word_wav_path}")       
         word_audio = AudioSegment.from_wav(word_wav_path)
         modified_word_audio = apply_frequency_pitch_shift(
             word_audio, 

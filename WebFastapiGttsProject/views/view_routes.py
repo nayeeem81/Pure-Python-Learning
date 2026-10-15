@@ -17,7 +17,6 @@ def render_home_page(request: Request):
         context={"page_title": "Welcome | Audio Engine"}
     )
 
-
 # 2. Existing dashboard workspace route
 @view_router.get("/audio-studio", response_class=HTMLResponse)
 def render_studio_page(request: Request):
@@ -25,4 +24,13 @@ def render_studio_page(request: Request):
         request=request, 
         name="studio.html", 
         context={"page_title": "Workspace | Audio Studio"}
+    )
+
+# 3. Existing dashboard workspace route
+@view_router.get("/audio-frequency", response_class=HTMLResponse)
+def render_frequency_page(request: Request):
+    return templates.TemplateResponse(
+        request=request, 
+        name="frequency.html", 
+        context={"page_title": "Workspace | Frequency"}
     )
