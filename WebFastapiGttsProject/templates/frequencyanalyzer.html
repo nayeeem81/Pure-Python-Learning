@@ -15,7 +15,9 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- Page-specific JavaScript loads cleanly at the end of the content block -->
+<!-- Use local static files instead of unpkg CDN links -->
+<script src="/static/wavesurfer.min.js"></script>
+<script src="/static/regions.min.js"></script>
 <script src="/static/js/frequency.js" defer></script>
 {% endblock %}
 
