@@ -61,9 +61,12 @@
     <Compile Include="views\__init__.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".gitignore" />
     <Content Include="api\frequency.py" />
     <Content Include="media\bangladesh.mp3" />
+    <Content Include="README.md" />
     <Content Include="requirements.txt" />
+    <Content Include="static\content\banner.png" />
     <Content Include="static\content\bootstrap.css" />
     <Content Include="static\content\bootstrap.min.css" />
     <Content Include="static\content\site.css" />

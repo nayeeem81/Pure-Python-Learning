@@ -8,19 +8,29 @@ body {
     padding-left: 15px;
     padding-right: 15px;
 }
+.jumbotron {
+    background-color: #468847 !important;
+}
+
+    .jumbotron img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
 textarea {
-    max-width: 280px;
+    border: 2px solid orange;
 }
 
-input[type="text"] {
-    width: 300px;
-    padding: 8px;
-}
-
+    input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        border: 2px solid orange;
+    }
+    
 button {
     padding: 10px 15px;
     background: #007bff;
@@ -67,11 +77,26 @@ input[type="checkbox"].input-validation-error {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.tts-text {
+
+input[type="text"].tts-text {
     width: 100%;
-    border: 2px solid groove;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 8px;
+    border: 2px solid orange;
+    margin-bottom:5px;
 }
+
+input[type="text"].tts-text:focus {
+    border-bottom: 2px solid blue;
+    background-color:lightblue;
+    color: black;
+}
+
+    input[type="text"].tts-text:active {
+        border-bottom: 2px solid blue;
+        background-color: lightblue;
+        color: black;
+    }
+
 
 #waveform-container {
     background: #1e1e1e;
