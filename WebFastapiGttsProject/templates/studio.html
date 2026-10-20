@@ -3,24 +3,18 @@
 {% block content %}
 
 <div class="container">
-     <div class="jumbotron">
+    <div class="jumbotron">
         <h1>🎙 Audio Studio</h1>
     </div>
     <div class="row">
         <div class="col-md-12">
             <!-- SECTION 1: GENERATE NEW TEXT-TO-SPEECH -->
             <div class="card">
-                <h3>1. Live Text-to-Speech (gTTS)</h3>
+                <h3>Live Text-to-Speech (gTTS)</h3>
                 <input class="tts-text" type="text" id="ttsText" value="Hello! This text is transformed into speech by FastAPI.">
                 <button onclick="handleLiveTTS()">Speak Now</button>
             </div>
-            <!-- SECTION 2: PLAY EXISTING DISC FILES -->
-            <div class="card">
-                <h3>2. Play Existing Audio File From Disk</h3>
-                <!-- Replace track1.wav with an actual file name inside your folder -->
-                <button onclick="handlePlayExisting('track1.wav')">Play track1.wav</button>
-                <button onclick="handlePlayExisting('track2.wav')">Play track2.wav</button>
-            </div>
+           
             <!-- UNIFIED GLOBAL PLAYER LAYER -->
             <div class="card">
                 <h3>🎵 Master Audio Player</h3>
@@ -30,8 +24,9 @@
     </div>
 </div>
 {% endblock %}
-
 {% block scripts %}
-<!-- Page-specific JavaScript loads cleanly at the end of the content block -->
-<script src="/static/js/studio.js" defer></script>
+<script src="/static/wavesurfer.min.js"></script>
+<script src="/static/regions.min.js"></script>
+<!-- 💡 IMPORTANT: Ensure this matches the exact file name you chose for your consolidated JS script -->
+<script src="/static/js/studio-engine.js" defer></script>
 {% endblock %}

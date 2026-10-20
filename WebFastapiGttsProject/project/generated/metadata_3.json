@@ -1,0 +1,70 @@
+{
+    "original_sentence": "Heloo how are you? it everything ok?",
+    "master_mp3_path": "generated/sentence_3.mp3",
+    "total_duration_seconds": 3.31,
+    "words_timeline": [
+        {
+            "word_index": 1,
+            "text": "Heloo",
+            "start_time": 0.0,
+            "end_time": 0.47,
+            "segment_file": "generated/segments/word_001_heloo.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 2,
+            "text": "how",
+            "start_time": 0.47,
+            "end_time": 0.95,
+            "segment_file": "generated/segments/word_002_how.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 3,
+            "text": "are",
+            "start_time": 0.95,
+            "end_time": 1.42,
+            "segment_file": "generated/segments/word_003_are.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 4,
+            "text": "you?",
+            "start_time": 1.42,
+            "end_time": 1.89,
+            "segment_file": "generated/segments/word_004_you.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 5,
+            "text": "it",
+            "start_time": 1.89,
+            "end_time": 2.37,
+            "segment_file": "generated/segments/word_005_it.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 6,
+            "text": "everything",
+            "start_time": 2.37,
+            "end_time": 2.84,
+            "segment_file": "generated/segments/word_006_everything.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 7,
+            "text": "ok?",
+            "start_time": 2.84,
+            "end_time": 3.31,
+            "segment_file": "generated/segments/word_007_ok.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        }
+    ]
+}

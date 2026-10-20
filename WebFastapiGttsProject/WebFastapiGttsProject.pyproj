@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="data\database.py" />
+    <Compile Include="data\model.py" />
+    <Compile Include="data\__init__.py" />
     <Compile Include="api\process.py">
       <SubType>Code</SubType>
     </Compile>
@@ -70,11 +73,11 @@
     <Content Include="static\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="static\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="static\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="static\js\studio_editor.js" />
+    <Content Include="static\js\studio-engine.js" />
+    <Content Include="static\logo.png" />
     <Content Include="static\regions.min.js" />
+    <Content Include="static\favicon.ico" />
     <Content Include="static\wavesurfer.min.js" />
-    <Content Include="static\js\frequency.js" />
-    <Content Include="static\js\studio.js" />
     <Content Include="static\scripts\bootstrap.js" />
     <Content Include="static\scripts\bootstrap.min.js" />
     <Content Include="static\scripts\jquery-1.10.2.intellisense.js" />
@@ -92,15 +95,14 @@
     <Content Include="static\scripts\_references.js" />
     <Content Include="study\textdisksave_bestpractice.md" />
     <Content Include="templates\about.html" />
-    <Content Include="templates\contact.html" />
     <Content Include="templates\editor.html" />
-    <Content Include="templates\frequency.html" />
     <Content Include="templates\index.html" />
     <Content Include="templates\layout.html" />
     <Content Include="templates\studio.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="api\" />
+    <Folder Include="data\" />
     <Folder Include="project\generated\segments\" />
     <Folder Include="views\canvasapps\" />
     <Folder Include="views\canvasapps\shapes\" />

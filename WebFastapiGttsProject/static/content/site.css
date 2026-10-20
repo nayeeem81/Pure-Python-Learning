@@ -8,6 +8,11 @@ body {
     padding-left: 15px;
     padding-right: 15px;
 }
+
+span.bullet {
+    margin-top: 20px;
+}
+
 .jumbotron {
     background-color: #468847 !important;
 }
@@ -18,126 +23,143 @@ body {
         object-fit: contain;
     }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    border: 2px solid orange;
-}
-
-    input[type="text"] {
+    .jumbotron p {
+        margin-top: 30px;
         width: 100%;
-        padding: 8px;
-        border: 2px solid orange;
-    }
-    
-button {
-    padding: 10px 15px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-    button:hover {
-        background: #0056b3;
+        height: auto;
+        text-align: justify;
+        line-height: 1.6;
     }
 
-/* styles for validation helpers */
-.field-validation-error {
-    color: #b94a48;
-}
-
-.field-validation-valid {
-    display: none;
-}
-
-input.input-validation-error {
-    border: 1px solid #b94a48;
-}
-
-input[type="checkbox"].input-validation-error {
-    border: 0 none;
-}
-
-.validation-summary-errors {
-    color: #b94a48;
-}
-
-.validation-summary-valid {
-    display: none;
-}
-
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-
-input[type="text"].tts-text {
-    width: 100%;
-    padding: 8px;
-    border: 2px solid orange;
-    margin-bottom:5px;
-}
-
-input[type="text"].tts-text:focus {
-    border-bottom: 2px solid blue;
-    background-color:lightblue;
-    color: black;
-}
-
-    input[type="text"].tts-text:active {
-        border-bottom: 2px solid blue;
-        background-color: lightblue;
-        color: black;
+    .jumbotron h2 {
+        margin-bottom:35px;
     }
 
+        .logo {
+            width: 28px;
+            height: 28px;
+        }
 
-#waveform-container {
-    background: #1e1e1e;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-}
+        /* Set width on the form input elements since they're 100% wide by default */
+        input,
+        select,
+        textarea {
+            border: 2px solid orange;
+        }
 
-.word-controls {
-    display: inline-block;
-    margin: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
+            input[type="text"] {
+                width: 100%;
+                padding: 8px;
+                border: 2px solid orange;
+            }
 
-.wave-box {
-    background: #1e1e1e;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
+        button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
-.word-card {
-    background: #2a2a2a;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color:aliceblue;
-}
+            button:hover {
+                background: #0056b3;
+            }
 
-.slider-group {
-    display: flex;
-    gap: 20px;
-}
+        /* styles for validation helpers */
+        .field-validation-error {
+            color: #b94a48;
+        }
 
-.slider-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        .field-validation-valid {
+            display: none;
+        }
+
+        input.input-validation-error {
+            border: 1px solid #b94a48;
+        }
+
+        input[type="checkbox"].input-validation-error {
+            border: 0 none;
+        }
+
+        .validation-summary-errors {
+            color: #b94a48;
+        }
+
+        .validation-summary-valid {
+            display: none;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+
+        input[type="text"].tts-text {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid orange;
+            margin-bottom: 5px;
+        }
+
+            input[type="text"].tts-text:focus {
+                border-bottom: 2px solid blue;
+                background-color: lightblue;
+                color: black;
+            }
+
+            input[type="text"].tts-text:active {
+                border-bottom: 2px solid blue;
+                background-color: lightblue;
+                color: black;
+            }
+
+
+        #waveform-container {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .word-controls {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .wave-box {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .word-card {
+            background: #2a2a2a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: aliceblue;
+        }
+
+        .slider-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .slider-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }

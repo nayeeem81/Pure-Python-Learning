@@ -1,0 +1,139 @@
+{
+    "words_timeline": [
+        {
+            "word_index": 1,
+            "text": "Hello!",
+            "start_time": 0.0,
+            "end_time": 0.38,
+            "segment_file": "generated/segments/word_001_hello.wav",
+            "applied_frequency_shift_hz": 0.1,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 2,
+            "text": "How",
+            "start_time": 0.38,
+            "end_time": 0.76,
+            "segment_file": "generated/segments/word_002_how.wav",
+            "applied_frequency_shift_hz": 0.2,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 3,
+            "text": "are",
+            "start_time": 0.76,
+            "end_time": 1.14,
+            "segment_file": "generated/segments/word_003_are.wav",
+            "applied_frequency_shift_hz": 0.1,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 4,
+            "text": "you?",
+            "start_time": 1.14,
+            "end_time": 1.52,
+            "segment_file": "generated/segments/word_004_you.wav",
+            "applied_frequency_shift_hz": 0.3,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 5,
+            "text": "I",
+            "start_time": 1.52,
+            "end_time": 1.9,
+            "segment_file": "generated/segments/word_005_i.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 6,
+            "text": "am",
+            "start_time": 1.9,
+            "end_time": 2.28,
+            "segment_file": "generated/segments/word_006_am.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 7,
+            "text": "fie",
+            "start_time": 2.28,
+            "end_time": 2.65,
+            "segment_file": "generated/segments/word_007_fie.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 8,
+            "text": "But",
+            "start_time": 2.65,
+            "end_time": 3.03,
+            "segment_file": "generated/segments/word_008_but.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 9,
+            "text": "Idonnot",
+            "start_time": 3.03,
+            "end_time": 3.41,
+            "segment_file": "generated/segments/word_009_idonnot.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 10,
+            "text": "see",
+            "start_time": 3.41,
+            "end_time": 3.79,
+            "segment_file": "generated/segments/word_010_see.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 11,
+            "text": "you",
+            "start_time": 3.79,
+            "end_time": 4.17,
+            "segment_file": "generated/segments/word_011_you.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 12,
+            "text": "for",
+            "start_time": 4.17,
+            "end_time": 4.55,
+            "segment_file": "generated/segments/word_012_for.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 13,
+            "text": "a",
+            "start_time": 4.55,
+            "end_time": 4.93,
+            "segment_file": "generated/segments/word_013_a.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 14,
+            "text": "long",
+            "start_time": 4.93,
+            "end_time": 5.31,
+            "segment_file": "generated/segments/word_014_long.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 15,
+            "text": "time.",
+            "start_time": 5.31,
+            "end_time": 5.69,
+            "segment_file": "generated/segments/word_015_time.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        }
+    ]
+}

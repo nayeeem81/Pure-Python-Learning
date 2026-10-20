@@ -13,8 +13,8 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 def render_home_page(request: Request):
     return templates.TemplateResponse(
         request=request, 
-        name="index.html",  # <-- Change this from "home.html" to "index.html"
-        context={"page_title": "Welcome | Audio Engine"}
+        name="index.html", 
+        context={"page_title": "Welcome | Dsp Engine"}
     )
 
 # 2. Existing dashboard workspace route
@@ -23,23 +23,23 @@ def render_studio_page(request: Request):
     return templates.TemplateResponse(
         request=request, 
         name="studio.html", 
-        context={"page_title": "Workspace | Audio Studio"}
+        context={"page_title": "Gtts | Speak"}
     )
 
 # 3. Existing dashboard workspace route
-@view_router.get("/audio-frequency", response_class=HTMLResponse)
-def render_frequency_page(request: Request):
-    return templates.TemplateResponse(
-        request=request, 
-        name="frequency.html", 
-        context={"page_title": "Workspace | Frequency"}
-    )
-
-# 4. Existing dashboard workspace route
 @view_router.get("/word-editor", response_class=HTMLResponse)
 def render_editor_page(request: Request):
     return templates.TemplateResponse(
         request=request, 
         name="editor.html", 
         context={"page_title": "Workspace | Editor"}
+    )
+
+# 4. Existing dashboard workspace route
+@view_router.get("/about", response_class=HTMLResponse)
+def render_about_page(request: Request):
+    return templates.TemplateResponse(
+        request=request, 
+        name="about.html", 
+        context={"page_title": "About | Contact"}
     )

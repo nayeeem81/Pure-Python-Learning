@@ -1,0 +1,262 @@
+// ==========================================
+// 1. GLOBAL INSTANCES & STATE CONTAINERS
+// ==========================================
+let wsOriginal = null;
+let wsModified = null;
+let wsRegionsOriginal = null;
+let wordTimelineData = [];
+
+// Track active transaction contexts securely across modules
+window.currentSentenceId = null;
+
+// Initialize layout elements as soon as the DOM loads
+document.addEventListener("DOMContentLoaded", () => {
+    const originalContainer = document.getElementById('original-waveform');
+    const modifiedContainer = document.getElementById('modified-waveform');
+
+    if (originalContainer && modifiedContainer) {
+        initWaveSurferEngines();
+    } else {
+        console.warn("WaveSurfer target container nodes missing in active DOM view layer.");
+    }
+});
+
+// ==========================================
+// 2. WAVESURFER INITIALIZATION LOGIC
+// ==========================================
+function initWaveSurferEngines() {
+    // Primary Pristine Audio Wave Viewport
+    wsOriginal = WaveSurfer.create({
+        container: '#original-waveform',
+        waveColor: '#4f4a85',
+        progressColor: '#383351',
+        height: 100
+    });
+
+    // 💡 Modern WaveSurfer v7+ Regions Plugin Initialization Fix
+    if (window.WaveSurfer && window.WaveSurfer.Regions) {
+        wsRegionsOriginal = wsOriginal.registerPlugin(window.WaveSurfer.Regions.create());
+    } else {
+        try {
+            wsRegionsOriginal = wsOriginal.registerPlugin(WaveSurfer.plugins.regions.create());
+        } catch (e) {
+            console.warn("WaveSurfer Regions plugin not loaded natively. Check script tags.");
+        }
+    }
+
+    // Modified Real-Time Processing Audio Output Viewport
+    wsModified = WaveSurfer.create({
+        container: '#modified-waveform',
+        waveColor: '#00b4d8',
+        progressColor: '#0077b6',
+        height: 100
+    });
+
+    console.log("WaveSurfer processing layers provisioned successfully.");
+}
+
+// ==========================================
+// 3. TTS SPEECH INPUT & WORKSPACE ROUTINES
+// ==========================================
+function handleLiveTTS() {
+    const textInput = document.getElementById('ttsText');
+    const player = document.getElementById('masterPlayer');
+
+    if (!textInput || !textInput.value.trim()) {
+        alert("Please enter some text first!");
+        return;
+    }
+
+    const textValue = textInput.value;
+
+    if (player) {
+        player.src = `/api/agent/generate-tts?text=${encodeURIComponent(textValue)}`;
+        player.play().catch(err => console.log("Direct audio streaming interrupted:", err));
+    }
+
+    fetch('/api/process/generate-speech-processing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: textValue })
+    })
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP transaction status error: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            console.log("Background preparation complete:", data);
+            if (data.sentence_id) {
+                loadSentenceWorkspace(data.sentence_id, 0); // 💡 Explicit clean entry with retry track tracking
+            }
+        })
+        .catch(error => console.error("Error executing background speech compiler:", error));
+}
+
+/**
+ * Clean Consolidated Workspace Mounter with Intelligent Retries and Fallbacks
+ */
+function loadSentenceWorkspace(sentenceId, retryCount = 0) {
+    if (!sentenceId) return;
+    window.currentSentenceId = sentenceId;
+
+    const targetJsonPath = `/project/generated/metadata_${sentenceId}.json`;
+
+    fetch(targetJsonPath)
+        .then(res => {
+            if (!res.ok) {
+                // If backend file writing isn't complete, enter a retry block loop
+                if (retryCount < 10) {
+                    console.log(`⏳ File writing in progress... retrying connection mapping cycle (${retryCount + 1}/10)`);
+                    throw new Error("building");
+                }
+                // If completely timed out, switch over to local default models fallback
+                return fetch('/project/generated/metadata.json').then(fallback => fallback.json());
+            }
+            return res.json();
+        })
+        .then(projectData => {
+            // Handle standard format vs fallback schema layouts safely
+            wordTimelineData = projectData.words_timeline || projectData;
+
+            // Mount the specific generated audio assets securely
+            wsOriginal.load(`/project/generated/sentence_${sentenceId}.mp3`);
+            wsModified.load(`/project/generated/sentence_${sentenceId}.mp3`);
+
+            // Refresh UI grids and region canvases
+            renderWordRegions(wordTimelineData);
+            buildControlGrid(wordTimelineData);
+        })
+        .catch(err => {
+            if (err.message === "building" && retryCount < 10) {
+                setTimeout(() => loadSentenceWorkspace(sentenceId, retryCount + 1), 500);
+            } else {
+                console.error("❌ Workspace setup failed entirely:", err);
+            }
+        });
+}
+
+// ==========================================
+// 4. UI ELEMENT LAYOUT BUILDERS & UTILITIES
+// ==========================================
+function renderWordRegions(words) {
+    if (!wsRegionsOriginal) return;
+
+    // 💡 FIX 1: Modern WaveSurfer v7 method to wipe out previous region entities safely
+    try {
+        const existingRegions = wsRegionsOriginal.getRegions();
+        if (existingRegions && existingRegions.length > 0) {
+            existingRegions.forEach(region => region.destroy());
+        }
+    } catch (e) {
+        console.warn("Could not sweep previous regional vectors:", e);
+    }
+
+    // Map region blocks across the timeline canvas graph coordinates
+    words.forEach(word => {
+        // 💡 FIX 2: Modern WaveSurfer v7 layout declaration structure
+        wsRegionsOriginal.addRegion({
+            start: parseFloat(word.start_time),
+            end: parseFloat(word.end_time),
+            content: word.text,
+            color: 'rgba(79, 74, 133, 0.2)',
+            drag: false,
+            resize: false,
+            id: `region-${word.word_index}`
+        });
+    });
+    console.log(`🎯 Rendered ${words.length} timeline word markers.`);
+}
+
+function buildControlGrid(words) {
+    const grid = document.getElementById('control-grid');
+    if (!grid) return;
+
+    grid.innerHTML = ''; // Wipe panel container bounds cleanly
+
+    words.forEach(word => {
+        const card = document.createElement('div');
+        card.className = 'word-card';
+        card.innerHTML = `
+            <strong style="font-size: 1.1em; display: inline-block; margin-bottom: 8px;">"${word.text}"</strong>
+            <div class="slider-group">
+                <div class="slider-item">
+                    <label style="font-size: 0.85em; color: #aaa;">Tone (Pitch Shift)</label>
+                    <input type="range" min="-1.0" max="1.0" step="0.1" 
+                           value="${word.applied_frequency_shift_hz || 0.0}" 
+                           id="pitch-${word.word_index}" 
+                           oninput="updateLabel('p-val-${word.word_index}', this.value)">
+                    <span id="p-val-${word.word_index}" style="font-size: 0.85em; font-weight: bold; margin-left: 5px;">
+                        ${(word.applied_frequency_shift_hz || 0.0).toFixed(1)}
+                    </span>
+                </div>
+                <div class="slider-item" style="margin-top: 5px;">
+                    <label style="font-size: 0.85em; color: #aaa;">Amplitude (Volume dB)</label>
+                    <input type="range" min="-20.0" max="20.0" step="1" 
+                           value="${word.applied_amplitude_db || 0.0}" 
+                           id="vol-${word.word_index}" 
+                           oninput="updateLabel('v-val-${word.word_index}', this.value + ' dB')">
+                    <span id="v-val-${word.word_index}" style="font-size: 0.85em; font-weight: bold; margin-left: 5px;">
+                        ${word.applied_amplitude_db || 0} dB
+                    </span>
+                </div>
+            </div>
+        `; // 💡 FIXED: Added closing template literal strings and tags here
+        grid.appendChild(card);
+    });
+}
+
+// 💡 Helper function to update the slider numerical value text dynamically
+function updateLabel(elementId, value) {
+    const label = document.getElementById(elementId);
+    if (label) label.innerText = value;
+}
+// ==========================================
+// 5. DSP CONSOLIDATION POST TRANSFERS
+// ==========================================
+function compileNewAudio() {
+    if (!window.currentSentenceId) {
+        alert("Operation denied: No active sentence payload context is currently loaded.");
+        return;
+    }
+
+    // Map matching parameters out of current grid configurations elements
+    const adjustments = wordTimelineData.map(word => {
+        const pitchEl = document.getElementById(`pitch-${word.word_index}`);
+        const volEl = document.getElementById(`vol-${word.word_index}`);
+
+        return {
+            word_index: word.word_index,
+            pitch_shift: pitchEl ? parseFloat(pitchEl.value) : 0.0,
+            volume_db: volEl ? parseFloat(volEl.value) : 0.0
+        };
+    });
+
+    const requestPayload = {
+        sentence_id: parseInt(window.currentSentenceId, 10),
+        adjustments: adjustments
+    };
+
+    fetch('/api/words/consolidate-modifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestPayload)
+    })
+        .then(res => {
+            if (!res.ok) throw new Error("Database transaction operations returned error statuses.");
+            return res.json();
+        })
+        .then(data => {
+            if (data.status === 'success' || data.database_sync === 'complete') {
+                alert("New custom processing track synchronized & rendered inside database successfully!");
+
+                // 💡 FIX: Explicitly derive path from active context ID to bypass missing backend keys
+                const freshTrackUrl = `/project/generated/sentence_${window.currentSentenceId}.mp3`;
+
+                // Reload the modified waveform canvas view wrapper utilizing timestamp cache-busting keys
+                wsModified.load(`${freshTrackUrl}?t=${new Date().getTime()}`);
+            } else {
+                alert("Error running background audio mixing pipelines.");
+            }
+        })
+        .catch(err => console.error("DSP Pipeline processing failure error logs:", err));
+}

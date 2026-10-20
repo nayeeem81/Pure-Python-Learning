@@ -1,9 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+
     <meta charset="utf-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title if title else "Dashboard" }} - FastAPI Web App</title>
+
+
+    <title>
+        {{ title if title else "Dashboard" }} - DSP FastAPI App
+    </title>
+
+
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
     <!-- Points to static/content/ folder -->
     <link rel="stylesheet" type="text/css" href="/static/content/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/content/site.css" />
@@ -19,15 +29,27 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="/" class="navbar-brand">🚀 fast api audio</a>
+               
+                <a href="/" class="navbar-brand">
+                    <img src="/static/logo.png" class="logo" alt="FastAPI DSP Logo" />
+                    <span>FastAPI DSP</span>
+                </a>
             </div>
+
             <div class="navbar-collapse collapse">
+
                 <ul class="nav navbar-nav">
-                   <li><a href="/">Home</a></li>
-                   <li><a href="/audio-studio">Text to Speech</a></li>
-                   <li><a href="/audio-frequency">Text Waveform</a></li>
-                   <li><a href="/word-editor">Word Waveform Editor</a></li>
+
+                    <li><a href="/">Home</a></li>
+
+                    <li><a href="/audio-studio">Text to Speech</a></li>
+
+                    <li><a href="/word-editor">DSP Studio</a></li>
+
+                    <li><a href="/about">Code & Contact</a></li>
+
                 </ul>
+
             </div>
         </div>
     </div>

@@ -2,32 +2,55 @@
 {% block content %}
 <div class="container">
     <div class="jumbotron">
-        <h1>🎛️ Word Editor</h1>
+        <h1>🎛️ Editor & DSP Studio</h1>
     </div>
 
-    <h3>Original Sentence Reference</h3>
+    <!-- 💡 CRUCIAL ADDITION: Input Field Workspace Engine Core -->
+    <div class="workspace-input-card" style="background: #1e1e2f; padding: 20px; border-radius: 8px; margin-bottom: 30px; color: white;">
+        <h3>Generate Live Speech Pipeline</h3>
+        <textarea id="ttsText" placeholder="Type a sentence here to analyze and cut up..." style="width: 100%; height: 80px; padding: 10px; border-radius: 4px; border: 1px solid #444; background: #2a2a40; color: #fff; font-size: 1.1em; resize: none;"></textarea>
+        <div style="margin-top: 10px;">
+            <button onclick="handleLiveTTS()" style="background: #0077b6; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                🔊 Synthesize and Load Workspace
+            </button>
+        </div>
+    </div>
 
-    <div class="wave-box">
+    <!-- Hidden audio element used by handleLiveTTS to stream instant audio -->
+    <audio id="masterPlayer" style="display: none;"></audio>
+
+    <h3>Original Sentence Reference</h3>
+    <div class="wave-box" style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ddd;">
         <div id="original-waveform"></div>
-        <button onclick="wsOriginal.playPause()">Play Original</button>
+        <div style="margin-top: 10px;">
+            <button onclick="wsOriginal.playPause()" style="padding: 6px 12px; cursor: pointer;">Play Original</button>
+        </div>
     </div>
 
     <h3>Modified Preview</h3>
-    <div class="wave-box">
+    <div class="wave-box" style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ddd;">
         <div id="modified-waveform"></div>
-        <button onclick="wsModified.playPause()">Play Modified Track</button>
+        <div style="margin-top: 10px;">
+            <button onclick="wsModified.playPause()" style="padding: 6px 12px; cursor: pointer;">Play Modified Track</button>
+        </div>
     </div>
 
-    <div style="margin-bottom: 20px;">
-        <button onclick="compileNewAudio()" style="background: #2b9348; font-size: 1.1em;">Consolidate and Render New MP3</button>
+    <div style="margin-bottom: 30px;">
+        <button onclick="compileNewAudio()" style="background: #2b9348; color: white; font-size: 1.2em; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%;">
+            🔀 Consolidate and Render New MP3 Changes
+        </button>
     </div>
 
     <h3>Individual Word Control Grid</h3>
-    <div id="control-grid"></div>
+    <!-- 💡 Updated Grid Configuration for single-row word layouts without overflow scrollbars -->
+    <div id="control-grid" style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px; width: 100%; box-sizing: border-box; overflow-x: hidden;"></div>
+
 </div>
 {% endblock %}
+
 {% block scripts %}
 <script src="/static/wavesurfer.min.js"></script>
 <script src="/static/regions.min.js"></script>
-<script src="/static/js/studio_editor.js" defer></script>
+<!-- 💡 IMPORTANT: Ensure this matches the exact file name you chose for your consolidated JS script -->
+<script src="/static/js/studio-engine.js" defer></script>
 {% endblock %}
