@@ -18,3 +18,4 @@ pyjwt[crypto]
 sqlalchemy[asyncio] 
 asyncpg
 python-jose[cryptography]
+sqlmodel

@@ -1,37 +1,38 @@
 # =====================================================================
-# MUST BE AT THE ABSOLUTE TOP OF MAIN.PY - BEFORE ANY OTHER IMPORTS!
+# FORCE ENVIRONMENT OVERRIDES AT THE ABSOLUTE TOP OF MAIN.PY
 # =====================================================================
 import os
 import sys
 
-# 1. Point directly to your extracted ffmpeg folder binary bin path
+# 1. Direct path to your working bin folder
 ffmpeg_path = r"C:\ffmpeg\bin"
 
-# 2. Inject it immediately into the environment path before pydub triggers
+# 2. Inject it into the runtime path environment array immediately
 if ffmpeg_path not in os.environ["PATH"]:
     os.environ["PATH"] = ffmpeg_path + os.pathsep + os.environ["PATH"]
 
-# 3. Explicitly intercept pydub utilities setup references
+# 3. Inform pydub exactly where the binaries sit before other files import it
 try:
-    from pydub import AudioSegment
-    AudioSegment.converter = os.path.join(ffmpeg_path, "ffmpeg.exe")
-    AudioSegment.ffprobe = os.path.join(ffmpeg_path, "ffprobe.exe")
+    import pydub
+    pydub.AudioSegment.converter = os.path.join(ffmpeg_path, "ffmpeg.exe")
+    pydub.AudioSegment.ffprobe = os.path.join(ffmpeg_path, "ffprobe.exe")
 except ImportError:
     pass
 # =====================================================================
-# main.py
-import os
-import sys
+# The rest of your main.py remains exactly as it was
+# =====================================================================
 from pathlib import Path
 from contextlib import asynccontextmanager 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text  
 from sqlalchemy.ext.asyncio import create_async_engine  
+from sqlmodel import SQLModel  
+
 from api.routes import api_router
 from views.view_routes import view_router
 from config import config  
-from data.database import engine, Base
+from data.database import engine
 from data.model import Sentence, Word, SentenceHistory, WordHistory
 
 @asynccontextmanager
@@ -48,10 +49,9 @@ async def lifespan(app: FastAPI):
             
     await temp_engine.dispose()
 
-    
     print("Verifying structural tables exist inside PostgreSQL...")
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(SQLModel.metadata.create_all)
     print("Tables sync complete.")
     
     yield
@@ -66,8 +66,10 @@ GENERATED_DIR = os.path.join(WORKSPACE_DIR, "generated")
 
 os.makedirs(GENERATED_DIR, exist_ok=True)
 os.makedirs(os.path.abspath("./static"), exist_ok=True)
+
 app.mount("/project", StaticFiles(directory="project"), name="project")
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 app.include_router(view_router)  
 app.include_router(api_router, prefix="/api")
 

@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+    <div class="jumbotron">
+        <h1>🎛️ Text Editor & DSP</h1>
+    </div>
+
+    <button id="loadDataBtn" class="btn btn-primary load-sentence">Load Sentences</button>
+   
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Serial No</th>
+                <th>Sentence Text</th>
+                <th>Master Audio (.mp3)</th>
+                <th>Duration</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+            <tr>
+                <td colspan="6" style="text-align: center; color: #666;">
+                    Click "Load Sentences" to populate grid.
+                </td>
+            </tr>
+        </tbody>
+        <div class="pagination-wrapper" style="margin: 20px 0; display: flex; justify-content: center; align-items: center; gap: 15px; font-family: sans-serif;">
+            <!-- Pagination UI Controls Container -->
+            <button id="prevPageBtn" class="btn btn-secondary" style="padding: 6px 12px; cursor: pointer;" disabled>
+                ⏮️ Previous
+            </button>
+
+            <span id="pageInfo" style="font-weight: 600; color: #444; font-size: 14px;">
+                Page 1
+            </span>
+
+            <button id="nextPageBtn" class="btn btn-secondary" style="padding: 6px 12px; cursor: pointer;" disabled>
+                Next ⏭️
+            </button>
+        </div>
+    </table>
+</div> 
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/wavesurfer.min.js"></script>
+<script src="/static/regions.min.js"></script>
+<script src="/static/js/studio-engine.js" defer></script>
+{% endblock %}

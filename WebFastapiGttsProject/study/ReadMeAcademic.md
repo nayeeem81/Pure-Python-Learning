@@ -1,6 +1,3 @@
-
-Below is a polished academic/project presentation version for reference only. It is not applied to the repository.
-
 # WebFastapiGttsProject
 
 A full-stack text-to-speech and audio engineering web application built with FastAPI, PostgreSQL, and Google Text-to-Speech (gTTS). The system converts textual input into spoken audio, segments the generated audio into word-level components, stores sentence and word metadata in a relational database, and exposes a browser-based interface for speech generation and modification workflows.
@@ -362,8 +359,3 @@ WebFastapiGttsProject represents a practical demonstration of how to combine web
 The project is particularly valuable as an educational prototype because it shows how a text-to-speech system can evolve from a simple voice-generation tool into a more structured audio-processing platform with database-backed asset management and user interaction.
 
 This version is designed for academic presentation and project storytelling, and it intentionally emphasizes the technical and conceptual value of the overall system.
-
-If you want, I can also produce:
-- a one-page project summary for a portfolio,
-- a slide-style presentation version,
-- or a shorter executive summary for academic submission.

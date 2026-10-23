@@ -260,3 +260,106 @@ function compileNewAudio() {
         })
         .catch(err => console.error("DSP Pipeline processing failure error logs:", err));
 }
+
+
+// ==========================================
+// 6. Text Editor & DSP State Management
+// ==========================================
+// 🛠️ ADD THESE LINES AT THE VERY TOP OF THE FILE:
+let currentSkip = 0;
+const recordsPerPage = 10;
+let totalRecords = 0;
+
+// Connect the main action button
+document.getElementById('loadDataBtn').addEventListener('click', () => {
+    currentSkip = 0; // Reset to the first page on a fresh click
+    fetchSentences();
+});
+
+// Connect Next/Previous Pagination Elements
+document.getElementById('prevPageBtn').addEventListener('click', () => {
+    if (currentSkip >= recordsPerPage) {
+        currentSkip -= recordsPerPage;
+        fetchSentences();
+    }
+});
+
+document.getElementById('nextPageBtn').addEventListener('click', () => {
+    if (currentSkip + recordsPerPage < totalRecords) {
+        currentSkip += recordsPerPage;
+        fetchSentences();
+    }
+});
+
+document.getElementById('loadDataBtn').addEventListener('click', fetchSentences);
+
+async function fetchSentences() {
+    const tableBody = document.getElementById('userTableBody');
+    // Updated colspan to match the 4 columns we are rendering
+    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Querying ORM...</td></tr>';
+
+    try {
+        // Inside studio-engine.js - update these lines inside fetchSentences():
+
+        const response = await fetch(`/api/sentences?skip=${currentSkip}&limit=${recordsPerPage}`);
+        if (!response.ok) throw new Error(`Server connection failed: ${response.status}`);
+
+        const result = await response.json();
+        // 🛠️ FIX: Extract the actual array from the data property container
+        const sentences = result.data;
+        totalRecords = result.total;
+
+        tableBody.innerHTML = ''; // Clear fallback loading row
+
+        if (!sentences || sentences.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No database rows found.</td></tr>';
+            updatePaginationUI();
+            return;
+        }
+
+        // 🛠️ FIX: Loop through the 'sentences' array variable instead of the root 'data' object
+        sentences.forEach((sentence, index) => {
+            const row = document.createElement('tr');
+            const duration = sentence.total_duration_seconds ? `${sentence.total_duration_seconds}s` : '2.88s';
+            const mp3Url = sentence.master_mp3_path ? `/project/${sentence.master_mp3_path}` : '#';
+
+            row.innerHTML = `
+                <td><strong>${sentence.id}</strong></td>
+                <td>#${currentSkip + index + 1}</td>
+                <td>${sentence.text_content || 'No Text'}</td>
+                <td>
+                    ${sentence.master_mp3_path
+                            ? `<audio controls preload="none"><source src="${mp3Url}" type="audio/mpeg"></audio>`
+                            : '<span class="badge badge-warning">Missing MP3</span>'}
+                </td>
+                <td><code>${duration}</code></td>
+                <td><span class="status-indicator ready">Ready</span></td>
+            `;
+            tableBody.appendChild(row);
+        });
+        updatePaginationUI();
+    } catch (error) {
+        console.error(error);
+        tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">Error: ${error.message}</td></tr>`;
+    }
+}
+
+// Pageing
+function updatePaginationUI() {
+    const currentPage = Math.floor(currentSkip / recordsPerPage) + 1;
+    const totalPages = Math.ceil(totalRecords / recordsPerPage) || 1;
+
+    // Log calculation data to your browser console to verify values
+    console.log(`Pagination Diagnostics -> Total Rows: ${totalRecords}, Current Skip: ${currentSkip}`);
+
+    // Update text node layout
+    document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${totalPages} (Total: ${totalRecords})`;
+
+    // Select DOM nodes
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+
+    // 🛠️ FIX: Explicit boolean calculations
+    prevBtn.disabled = (currentSkip === 0);
+    nextBtn.disabled = (currentSkip + recordsPerPage >= totalRecords);
+}

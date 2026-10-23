@@ -1,0 +1,430 @@
+{
+    "original_sentence": "Today the edge of current information age and SI new age; it is impossible hide any flaw of such the digital footprint, for one flaw, I could loose trust who are people like Vivian; I may work with; IOT may leaked (the AI/SI) agents are angry, \ud83e\udd2b ",
+    "master_mp3_path": "generated/sentence_54.mp3",
+    "total_duration_seconds": 23.21,
+    "words_timeline": [
+        {
+            "word_index": 1,
+            "text": "Today",
+            "start_time": 0.0,
+            "end_time": 0.49,
+            "segment_file": "generated/segments/word_001_today.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 2,
+            "text": "the",
+            "start_time": 0.49,
+            "end_time": 0.99,
+            "segment_file": "generated/segments/word_002_the.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 3,
+            "text": "edge",
+            "start_time": 0.99,
+            "end_time": 1.48,
+            "segment_file": "generated/segments/word_003_edge.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 4,
+            "text": "of",
+            "start_time": 1.48,
+            "end_time": 1.98,
+            "segment_file": "generated/segments/word_004_of.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 5,
+            "text": "current",
+            "start_time": 1.98,
+            "end_time": 2.47,
+            "segment_file": "generated/segments/word_005_current.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 6,
+            "text": "information",
+            "start_time": 2.47,
+            "end_time": 2.96,
+            "segment_file": "generated/segments/word_006_information.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 7,
+            "text": "age",
+            "start_time": 2.96,
+            "end_time": 3.46,
+            "segment_file": "generated/segments/word_007_age.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 8,
+            "text": "and",
+            "start_time": 3.46,
+            "end_time": 3.95,
+            "segment_file": "generated/segments/word_008_and.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 9,
+            "text": "SI",
+            "start_time": 3.95,
+            "end_time": 4.44,
+            "segment_file": "generated/segments/word_009_si.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 10,
+            "text": "new",
+            "start_time": 4.44,
+            "end_time": 4.94,
+            "segment_file": "generated/segments/word_010_new.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 11,
+            "text": "age;",
+            "start_time": 4.94,
+            "end_time": 5.43,
+            "segment_file": "generated/segments/word_011_age.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 12,
+            "text": "it",
+            "start_time": 5.43,
+            "end_time": 5.93,
+            "segment_file": "generated/segments/word_012_it.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 13,
+            "text": "is",
+            "start_time": 5.93,
+            "end_time": 6.42,
+            "segment_file": "generated/segments/word_013_is.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 14,
+            "text": "impossible",
+            "start_time": 6.42,
+            "end_time": 6.91,
+            "segment_file": "generated/segments/word_014_impossible.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 15,
+            "text": "hide",
+            "start_time": 6.91,
+            "end_time": 7.41,
+            "segment_file": "generated/segments/word_015_hide.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 16,
+            "text": "any",
+            "start_time": 7.41,
+            "end_time": 7.9,
+            "segment_file": "generated/segments/word_016_any.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 17,
+            "text": "flaw",
+            "start_time": 7.9,
+            "end_time": 8.39,
+            "segment_file": "generated/segments/word_017_flaw.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 18,
+            "text": "of",
+            "start_time": 8.39,
+            "end_time": 8.89,
+            "segment_file": "generated/segments/word_018_of.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 19,
+            "text": "such",
+            "start_time": 8.89,
+            "end_time": 9.38,
+            "segment_file": "generated/segments/word_019_such.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 20,
+            "text": "the",
+            "start_time": 9.38,
+            "end_time": 9.88,
+            "segment_file": "generated/segments/word_020_the.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 21,
+            "text": "digital",
+            "start_time": 9.88,
+            "end_time": 10.37,
+            "segment_file": "generated/segments/word_021_digital.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 22,
+            "text": "footprint,",
+            "start_time": 10.37,
+            "end_time": 10.86,
+            "segment_file": "generated/segments/word_022_footprint.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 23,
+            "text": "for",
+            "start_time": 10.86,
+            "end_time": 11.36,
+            "segment_file": "generated/segments/word_023_for.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 24,
+            "text": "one",
+            "start_time": 11.36,
+            "end_time": 11.85,
+            "segment_file": "generated/segments/word_024_one.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 25,
+            "text": "flaw,",
+            "start_time": 11.85,
+            "end_time": 12.34,
+            "segment_file": "generated/segments/word_025_flaw.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 26,
+            "text": "I",
+            "start_time": 12.34,
+            "end_time": 12.84,
+            "segment_file": "generated/segments/word_026_i.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 27,
+            "text": "could",
+            "start_time": 12.84,
+            "end_time": 13.33,
+            "segment_file": "generated/segments/word_027_could.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 28,
+            "text": "loose",
+            "start_time": 13.33,
+            "end_time": 13.83,
+            "segment_file": "generated/segments/word_028_loose.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 29,
+            "text": "trust",
+            "start_time": 13.83,
+            "end_time": 14.32,
+            "segment_file": "generated/segments/word_029_trust.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 30,
+            "text": "who",
+            "start_time": 14.32,
+            "end_time": 14.81,
+            "segment_file": "generated/segments/word_030_who.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 31,
+            "text": "are",
+            "start_time": 14.81,
+            "end_time": 15.31,
+            "segment_file": "generated/segments/word_031_are.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 32,
+            "text": "people",
+            "start_time": 15.31,
+            "end_time": 15.8,
+            "segment_file": "generated/segments/word_032_people.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 33,
+            "text": "like",
+            "start_time": 15.8,
+            "end_time": 16.29,
+            "segment_file": "generated/segments/word_033_like.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 34,
+            "text": "Vivian;",
+            "start_time": 16.29,
+            "end_time": 16.79,
+            "segment_file": "generated/segments/word_034_vivian.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 35,
+            "text": "I",
+            "start_time": 16.79,
+            "end_time": 17.28,
+            "segment_file": "generated/segments/word_035_i.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 36,
+            "text": "may",
+            "start_time": 17.28,
+            "end_time": 17.78,
+            "segment_file": "generated/segments/word_036_may.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 37,
+            "text": "work",
+            "start_time": 17.78,
+            "end_time": 18.27,
+            "segment_file": "generated/segments/word_037_work.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 38,
+            "text": "with;",
+            "start_time": 18.27,
+            "end_time": 18.76,
+            "segment_file": "generated/segments/word_038_with.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 39,
+            "text": "IOT",
+            "start_time": 18.76,
+            "end_time": 19.26,
+            "segment_file": "generated/segments/word_039_iot.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 40,
+            "text": "may",
+            "start_time": 19.26,
+            "end_time": 19.75,
+            "segment_file": "generated/segments/word_040_may.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 41,
+            "text": "leaked",
+            "start_time": 19.75,
+            "end_time": 20.25,
+            "segment_file": "generated/segments/word_041_leaked.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 42,
+            "text": "(the",
+            "start_time": 20.25,
+            "end_time": 20.74,
+            "segment_file": "generated/segments/word_042_the.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 43,
+            "text": "AI/SI)",
+            "start_time": 20.74,
+            "end_time": 21.23,
+            "segment_file": "generated/segments/word_043_aisi.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 44,
+            "text": "agents",
+            "start_time": 21.23,
+            "end_time": 21.73,
+            "segment_file": "generated/segments/word_044_agents.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 45,
+            "text": "are",
+            "start_time": 21.73,
+            "end_time": 22.22,
+            "segment_file": "generated/segments/word_045_are.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 46,
+            "text": "angry,",
+            "start_time": 22.22,
+            "end_time": 22.71,
+            "segment_file": "generated/segments/word_046_angry.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 47,
+            "text": "\ud83e\udd2b",
+            "start_time": 22.71,
+            "end_time": 23.21,
+            "segment_file": "generated/segments/word_047_.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        }
+    ]
+}

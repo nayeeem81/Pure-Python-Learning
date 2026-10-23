@@ -163,3 +163,43 @@ span.bullet {
             flex-direction: column;
             align-items: center;
         }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+th, td {
+    border: 1px solid #eee;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #007BFF;
+    color: white;
+}
+
+.pagination-wrapper button {
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+    .pagination-wrapper button:hover:not([disabled]) {
+        background-color: #f0f0f0;
+        border-color: #999;
+    }
+
+    .pagination-wrapper button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #eaeded;
+    }
+
+.load-sentence {
+    margin-bottom: 20px;
+}

@@ -22,7 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="api\texteditor.py" />
     <Compile Include="data\database.py" />
+    <Compile Include="data\init_env.py" />
     <Compile Include="data\model.py" />
     <Compile Include="data\__init__.py" />
     <Compile Include="api\process.py">
@@ -46,7 +48,7 @@
     <Content Include=".gitignore" />
     <Content Include="api\frequency.py" />
     <Content Include="README.md" />
-    <Content Include="ReadMeAcademic.md" />
+    <Content Include="study\ReadMeAcademic.md" />
     <Content Include="requirements.txt" />
     <Content Include="static\content\banner.png" />
     <Content Include="static\content\bootstrap.css" />
@@ -77,11 +79,13 @@
     <Content Include="static\scripts\respond.min.js" />
     <Content Include="static\scripts\_references.js" />
     <Content Include="study\textdisksave_bestpractice.md" />
+    <Content Include="study\texteditor.md" />
     <Content Include="templates\about.html" />
     <Content Include="templates\editor.html" />
     <Content Include="templates\index.html" />
     <Content Include="templates\layout.html" />
     <Content Include="templates\studio.html" />
+    <Content Include="templates\texteditor.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="api\" />

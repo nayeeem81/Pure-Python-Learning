@@ -1,0 +1,97 @@
+{
+    "original_sentence": "I he asked me few questions over the object-oriented programming.",
+    "master_mp3_path": "generated/sentence_33.mp3",
+    "total_duration_seconds": 4.75,
+    "words_timeline": [
+        {
+            "word_index": 1,
+            "text": "I",
+            "start_time": 0.0,
+            "end_time": 0.48,
+            "segment_file": "generated/segments/word_001_i.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 2,
+            "text": "he",
+            "start_time": 0.48,
+            "end_time": 0.95,
+            "segment_file": "generated/segments/word_002_he.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 3,
+            "text": "asked",
+            "start_time": 0.95,
+            "end_time": 1.43,
+            "segment_file": "generated/segments/word_003_asked.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 4,
+            "text": "me",
+            "start_time": 1.43,
+            "end_time": 1.9,
+            "segment_file": "generated/segments/word_004_me.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 5,
+            "text": "few",
+            "start_time": 1.9,
+            "end_time": 2.38,
+            "segment_file": "generated/segments/word_005_few.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 6,
+            "text": "questions",
+            "start_time": 2.38,
+            "end_time": 2.85,
+            "segment_file": "generated/segments/word_006_questions.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 7,
+            "text": "over",
+            "start_time": 2.85,
+            "end_time": 3.33,
+            "segment_file": "generated/segments/word_007_over.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 8,
+            "text": "the",
+            "start_time": 3.33,
+            "end_time": 3.8,
+            "segment_file": "generated/segments/word_008_the.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 9,
+            "text": "object-oriented",
+            "start_time": 3.8,
+            "end_time": 4.28,
+            "segment_file": "generated/segments/word_009_objectoriented.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 10,
+            "text": "programming.",
+            "start_time": 4.28,
+            "end_time": 4.75,
+            "segment_file": "generated/segments/word_010_programming.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        }
+    ]
+}

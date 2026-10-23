@@ -43,3 +43,13 @@ def render_about_page(request: Request):
         name="about.html", 
         context={"page_title": "About | Contact"}
     )
+
+
+# 5. Existing dashboard workspace route
+@view_router.get("/text-editor", response_class=HTMLResponse)
+def render_texteditor_page(request: Request):
+    return templates.TemplateResponse(
+        request=request, 
+        name="texteditor.html", 
+        context={"page_title": "Text - DSP"}
+    )

@@ -1,0 +1,322 @@
+{
+    "original_sentence": "At end I thought; it is just a paper. Let me write that by someone. I paid and got the dissertation ready and at hand. I did may small assignments for few under grad students.",
+    "master_mp3_path": "generated/sentence_49.mp3",
+    "total_duration_seconds": 13.37,
+    "words_timeline": [
+        {
+            "word_index": 1,
+            "text": "At",
+            "start_time": 0.0,
+            "end_time": 0.38,
+            "segment_file": "generated/segments/word_001_at.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 2,
+            "text": "end",
+            "start_time": 0.38,
+            "end_time": 0.76,
+            "segment_file": "generated/segments/word_002_end.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 3,
+            "text": "I",
+            "start_time": 0.76,
+            "end_time": 1.15,
+            "segment_file": "generated/segments/word_003_i.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 4,
+            "text": "thought;",
+            "start_time": 1.15,
+            "end_time": 1.53,
+            "segment_file": "generated/segments/word_004_thought.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 5,
+            "text": "it",
+            "start_time": 1.53,
+            "end_time": 1.91,
+            "segment_file": "generated/segments/word_005_it.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 6,
+            "text": "is",
+            "start_time": 1.91,
+            "end_time": 2.29,
+            "segment_file": "generated/segments/word_006_is.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 7,
+            "text": "just",
+            "start_time": 2.29,
+            "end_time": 2.67,
+            "segment_file": "generated/segments/word_007_just.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 8,
+            "text": "a",
+            "start_time": 2.67,
+            "end_time": 3.06,
+            "segment_file": "generated/segments/word_008_a.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 9,
+            "text": "paper.",
+            "start_time": 3.06,
+            "end_time": 3.44,
+            "segment_file": "generated/segments/word_009_paper.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 10,
+            "text": "Let",
+            "start_time": 3.44,
+            "end_time": 3.82,
+            "segment_file": "generated/segments/word_010_let.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 11,
+            "text": "me",
+            "start_time": 3.82,
+            "end_time": 4.2,
+            "segment_file": "generated/segments/word_011_me.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 12,
+            "text": "write",
+            "start_time": 4.2,
+            "end_time": 4.58,
+            "segment_file": "generated/segments/word_012_write.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 13,
+            "text": "that",
+            "start_time": 4.58,
+            "end_time": 4.97,
+            "segment_file": "generated/segments/word_013_that.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 14,
+            "text": "by",
+            "start_time": 4.97,
+            "end_time": 5.35,
+            "segment_file": "generated/segments/word_014_by.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 15,
+            "text": "someone.",
+            "start_time": 5.35,
+            "end_time": 5.73,
+            "segment_file": "generated/segments/word_015_someone.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 16,
+            "text": "I",
+            "start_time": 5.73,
+            "end_time": 6.11,
+            "segment_file": "generated/segments/word_016_i.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 17,
+            "text": "paid",
+            "start_time": 6.11,
+            "end_time": 6.49,
+            "segment_file": "generated/segments/word_017_paid.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 18,
+            "text": "and",
+            "start_time": 6.49,
+            "end_time": 6.87,
+            "segment_file": "generated/segments/word_018_and.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 19,
+            "text": "got",
+            "start_time": 6.87,
+            "end_time": 7.26,
+            "segment_file": "generated/segments/word_019_got.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 20,
+            "text": "the",
+            "start_time": 7.26,
+            "end_time": 7.64,
+            "segment_file": "generated/segments/word_020_the.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 21,
+            "text": "dissertation",
+            "start_time": 7.64,
+            "end_time": 8.02,
+            "segment_file": "generated/segments/word_021_dissertation.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 22,
+            "text": "ready",
+            "start_time": 8.02,
+            "end_time": 8.4,
+            "segment_file": "generated/segments/word_022_ready.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 23,
+            "text": "and",
+            "start_time": 8.4,
+            "end_time": 8.78,
+            "segment_file": "generated/segments/word_023_and.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 24,
+            "text": "at",
+            "start_time": 8.78,
+            "end_time": 9.17,
+            "segment_file": "generated/segments/word_024_at.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 25,
+            "text": "hand.",
+            "start_time": 9.17,
+            "end_time": 9.55,
+            "segment_file": "generated/segments/word_025_hand.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 26,
+            "text": "I",
+            "start_time": 9.55,
+            "end_time": 9.93,
+            "segment_file": "generated/segments/word_026_i.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 27,
+            "text": "did",
+            "start_time": 9.93,
+            "end_time": 10.31,
+            "segment_file": "generated/segments/word_027_did.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 28,
+            "text": "may",
+            "start_time": 10.31,
+            "end_time": 10.69,
+            "segment_file": "generated/segments/word_028_may.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 29,
+            "text": "small",
+            "start_time": 10.69,
+            "end_time": 11.08,
+            "segment_file": "generated/segments/word_029_small.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 30,
+            "text": "assignments",
+            "start_time": 11.08,
+            "end_time": 11.46,
+            "segment_file": "generated/segments/word_030_assignments.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 31,
+            "text": "for",
+            "start_time": 11.46,
+            "end_time": 11.84,
+            "segment_file": "generated/segments/word_031_for.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 32,
+            "text": "few",
+            "start_time": 11.84,
+            "end_time": 12.22,
+            "segment_file": "generated/segments/word_032_few.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 33,
+            "text": "under",
+            "start_time": 12.22,
+            "end_time": 12.6,
+            "segment_file": "generated/segments/word_033_under.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 34,
+            "text": "grad",
+            "start_time": 12.6,
+            "end_time": 12.99,
+            "segment_file": "generated/segments/word_034_grad.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 35,
+            "text": "students.",
+            "start_time": 12.99,
+            "end_time": 13.37,
+            "segment_file": "generated/segments/word_035_students.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        }
+    ]
+}

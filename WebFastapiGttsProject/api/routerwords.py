@@ -3,11 +3,14 @@ import os
 import json
 import re
 from io import BytesIO
+from datetime import datetime, timezone  # 💡 Added timezone support to fix transaction crashes
 from fastapi import APIRouter, HTTPException, Depends, status
 from pydantic import BaseModel
 from pydub import AudioSegment
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+
+# 💡 Import select from sqlmodel uniformly to keep driver calls safe
+from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 # Database dependencies and ORM Models
 from data.database import get_db
@@ -48,16 +51,17 @@ async def parse_sentence_into_words(sentence_id: int, db: AsyncSession = Depends
     """
     try:
         stmt = select(Sentence).where(Sentence.id == sentence_id)
-        result = await db.execute(stmt)
-        sentence = result.scalar_one_or_none()
+        result = await db.exec(stmt)
+        sentence = result.one_or_none()  # 💡 FIX: Changed from .scalar_one_or_none()
+
         
         if not sentence:
             raise HTTPException(status_code=404, detail=f"Sentence ID {sentence_id} not found.")
 
         # Clear out any existing parsed words for this sentence to prevent duplicates
         clear_stmt = select(Word).where(Word.sentence_id == sentence_id)
-        clear_res = await db.execute(clear_stmt)
-        existing_words = clear_res.scalars().all()
+        clear_res = await db.exec(clear_stmt)
+        existing_words = clear_res.all()
         for w in existing_words:
             await db.delete(w)
 
@@ -77,7 +81,7 @@ async def parse_sentence_into_words(sentence_id: int, db: AsyncSession = Depends
             new_words.append(word_item)
         
         db.add_all(new_words)
-        await db.commit() # Ensure commits save word allocations safely
+        await db.commit() 
         return {"message": f"Successfully compiled {len(new_words)} words for Sentence #{sentence_id}."}
 
     except Exception as e:
@@ -93,14 +97,16 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
     try:
         # Fetch targeting parent sentence from database context
         sentence_stmt = select(Sentence).where(Sentence.id == payload.sentence_id)
-        sentence_res = await db.execute(sentence_stmt)
-        sentence = sentence_res.scalar_one_or_none()
+        sentence_res = await db.exec(sentence_stmt)  
+        # 💡 FIX 1: Switched from scalar_one_or_none() to one_or_none() for SQLModel ScalarResult compatibility
+        sentence = sentence_res.one_or_none()  
         
         if not sentence:
             raise HTTPException(status_code=404, detail=f"Sentence ID {payload.sentence_id} missing in DB.")
 
-        # Target the unique dynamic sentence JSON file instead of global metadata.json
         dynamic_json_path = os.path.join(GENERATED_DIR, f"metadata_{payload.sentence_id}.json")
+        dynamic_master_mp3_path = os.path.join(GENERATED_DIR, f"sentence_{payload.sentence_id}.mp3")
+        
         if not os.path.exists(dynamic_json_path):
             raise HTTPException(status_code=404, detail=f"Original analysis metadata map missing for sentence {payload.sentence_id}")
 
@@ -113,10 +119,9 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
 
         # --- ARCHIVE RUN: SAVE HISTORICAL SNAPSHOT BEFORE MODIFICATION ---
         sentence_hist_stmt = select(SentenceHistory).where(SentenceHistory.sentence_id == sentence.id)
-        s_hist_res = await db.execute(sentence_hist_stmt)
-        next_s_version = len(s_hist_res.scalars().all()) + 1
+        s_hist_res = await db.exec(sentence_hist_stmt)  
+        next_s_version = len(s_hist_res.all()) + 1
 
-        # 💡 FIX: Removed fields that were causing mapping crashes since they don't exist in SentenceHistory
         old_sentence_snapshot = SentenceHistory(
             sentence_id=sentence.id,
             text_content=sentence.text_content,
@@ -124,7 +129,6 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
         )
         db.add(old_sentence_snapshot)
 
-        # Ensure individual word target folders exist safely
         segments_dir = os.path.join(WORKSPACE_DIR, "generated", "segments")
         os.makedirs(segments_dir, exist_ok=True)
 
@@ -144,23 +148,20 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
             processed_word_audio = apply_dsp_tweaks(raw_word_audio, pitch_val, volume_val)
             consolidated_track += processed_word_audio
             
-            # Build raw binary outputs for individual database records
             word_buffer = BytesIO()
             processed_word_audio.export(word_buffer, format="wav")
             word_raw_bytes = word_buffer.getvalue()
 
-            # Update specific child word entries in database or archive if modified
+            # 💡 FIX 2: Corrected the target query path variable name and indentation to fetch the matching Word entity
             word_stmt = select(Word).where(Word.sentence_id == sentence.id, Word.word_order == idx)
-            word_res = await db.execute(word_stmt)
-            live_word = word_res.scalar_one_or_none()
-            
-            if live_word:
-                # Archive old word configuration fields before rewriting
-                word_hist_stmt = select(WordHistory).where(WordHistory.word_id == live_word.id)
-                w_hist_res = await db.execute(word_hist_stmt)
-                next_w_version = len(w_hist_res.scalars().all()) + 1
+            word_res = await db.exec(word_stmt)
+            live_word = word_res.one_or_none()  # Switched to .one_or_none()
 
-                # 💡 FIX: Matches exact WordHistory schema properties from model.py safely
+            if live_word:
+                word_hist_stmt = select(WordHistory).where(WordHistory.word_id == live_word.id)
+                w_hist_res = await db.exec(word_hist_stmt)  
+                next_w_version = len(w_hist_res.all()) + 1
+
                 old_word_snapshot = WordHistory(
                     word_id=live_word.id,
                     text_content=live_word.text_content,
@@ -168,11 +169,9 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
                 )
                 db.add(old_word_snapshot)
 
-                # Assign new operational metrics to live table record row
                 live_word.audio_bytes = word_raw_bytes
                 live_word.mp3_file_path = f"generated/segments/word_{idx:03d}_mod.wav"
 
-                # Export modified segment file back out to local drive
                 word_absolute_path = os.path.join(WORKSPACE_DIR, live_word.mp3_file_path)
                 processed_word_audio.export(word_absolute_path, format="wav")
 
@@ -182,30 +181,46 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
             modified_word_entry["applied_amplitude_db"] = volume_val
             modified_timeline.append(modified_word_entry)
 
-        # 💡 FIX: Completed the missing file export and data persistence block here
-        dynamic_mp3_path = os.path.join(GENERATED_DIR, f"sentence_{payload.sentence_id}.mp3")
-        consolidated_track.export(dynamic_mp3_path, format="mp3")
-
-        # Build raw binary memory segment bytes for parent model updates
-        sentence_buffer = BytesIO()
-        consolidated_track.export(sentence_buffer, format="mp3")
-        
-        # Update main operational tracking values inside your parent Sentence table context
-        sentence.audio_bytes = sentence_buffer.getvalue()
-        sentence.version += 1
-        sentence.modified_sentence_json = {"words_timeline": modified_timeline}
-
-        # Write fresh updated JSON metadata back out to disk map configs securely
+        # Complete the missing file writers and commit layout tree elements safely
+        original_data["words_timeline"] = modified_timeline
         with open(dynamic_json_path, "w", encoding="utf-8") as f:
-            json.dump({"words_timeline": modified_timeline}, f, indent=4, ensure_ascii=False)
+            json.dump(original_data, f, indent=4)
 
-        # Save all transaction changes to PostgreSQL database instances safely
+        # Export completed soundscape track out to drive metrics
+        consolidated_track.export(dynamic_master_mp3_path, format="mp3")
+        master_buffer = BytesIO()
+        consolidated_track.export(master_buffer, format="mp3")
+
+        # Sync changes back down onto PostgreSQL tables
+        sentence.audio_bytes = master_buffer.getvalue()
+        sentence.modified_sentence_json = original_data
+        
+        # Bind timezone-aware clock wrapper to clear value errors
+        sentence.modified_at = datetime.now(timezone.utc)
+        sentence.version += 1
+
         await db.commit()
-        return {"status": "success", "message": f"Sentence ID {payload.sentence_id} consolidated and updated successfully."}
+                # Upgraded metadata payload response
+        return {
+            "status": "success",
+            "code": status.HTTP_200_OK,
+            "message": "DSP pipeline rendering complete. Database synchronized successfully.",
+            "data": {
+                "sentence_id": payload.sentence_id,
+                "version": sentence.version,
+                "total_words_processed": len(modified_timeline),
+                "modified_at": sentence.modified_at.isoformat(),
+                "assets": {
+                    "master_mp3": f"generated/sentence_{payload.sentence_id}.mp3",
+                    "metadata_json": f"generated/metadata_{payload.sentence_id}.json"
+                }
+            }
+        }
 
     except Exception as e:
         await db.rollback()
+        print(f"❌ Consolidation Error: {str(e)}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Database transaction operations returned error statuses: {str(e)}"
+            status_code=500, 
+            detail=f"Database transaction operations failure: {str(e)}"
         )

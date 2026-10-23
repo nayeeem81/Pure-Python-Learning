@@ -1,0 +1,808 @@
+{
+    "original_sentence": "There I meet few people who were government officials from different countries. Two was there. One was from Iruq and Kazakhstan. Reaming all are working in good technology companies (Dell). Then, at the end of second semester, I got wo certificates. Together a new work which is Management Science Associates (Focus). I joined there as fulltime ad with work visa. I never submit the dissertation. Two times, my boss Walter wrote to the university that he is my primary member, please extend the period for the submission. They extended.",
+    "master_mp3_path": "generated/sentence_45.mp3",
+    "total_duration_seconds": 43.03,
+    "words_timeline": [
+        {
+            "word_index": 1,
+            "text": "There",
+            "start_time": 0.0,
+            "end_time": 0.48,
+            "segment_file": "generated/segments/word_001_there.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 2,
+            "text": "I",
+            "start_time": 0.48,
+            "end_time": 0.97,
+            "segment_file": "generated/segments/word_002_i.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 3,
+            "text": "meet",
+            "start_time": 0.97,
+            "end_time": 1.45,
+            "segment_file": "generated/segments/word_003_meet.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 4,
+            "text": "few",
+            "start_time": 1.45,
+            "end_time": 1.93,
+            "segment_file": "generated/segments/word_004_few.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 5,
+            "text": "people",
+            "start_time": 1.93,
+            "end_time": 2.42,
+            "segment_file": "generated/segments/word_005_people.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 6,
+            "text": "who",
+            "start_time": 2.42,
+            "end_time": 2.9,
+            "segment_file": "generated/segments/word_006_who.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 7,
+            "text": "were",
+            "start_time": 2.9,
+            "end_time": 3.38,
+            "segment_file": "generated/segments/word_007_were.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 8,
+            "text": "government",
+            "start_time": 3.38,
+            "end_time": 3.87,
+            "segment_file": "generated/segments/word_008_government.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 9,
+            "text": "officials",
+            "start_time": 3.87,
+            "end_time": 4.35,
+            "segment_file": "generated/segments/word_009_officials.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 10,
+            "text": "from",
+            "start_time": 4.35,
+            "end_time": 4.84,
+            "segment_file": "generated/segments/word_010_from.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 11,
+            "text": "different",
+            "start_time": 4.84,
+            "end_time": 5.32,
+            "segment_file": "generated/segments/word_011_different.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 12,
+            "text": "countries.",
+            "start_time": 5.32,
+            "end_time": 5.8,
+            "segment_file": "generated/segments/word_012_countries.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 13,
+            "text": "Two",
+            "start_time": 5.8,
+            "end_time": 6.29,
+            "segment_file": "generated/segments/word_013_two.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 14,
+            "text": "was",
+            "start_time": 6.29,
+            "end_time": 6.77,
+            "segment_file": "generated/segments/word_014_was.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 15,
+            "text": "there.",
+            "start_time": 6.77,
+            "end_time": 7.25,
+            "segment_file": "generated/segments/word_015_there.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 16,
+            "text": "One",
+            "start_time": 7.25,
+            "end_time": 7.74,
+            "segment_file": "generated/segments/word_016_one.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 17,
+            "text": "was",
+            "start_time": 7.74,
+            "end_time": 8.22,
+            "segment_file": "generated/segments/word_017_was.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 18,
+            "text": "from",
+            "start_time": 8.22,
+            "end_time": 8.7,
+            "segment_file": "generated/segments/word_018_from.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 19,
+            "text": "Iruq",
+            "start_time": 8.7,
+            "end_time": 9.19,
+            "segment_file": "generated/segments/word_019_iruq.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 20,
+            "text": "and",
+            "start_time": 9.19,
+            "end_time": 9.67,
+            "segment_file": "generated/segments/word_020_and.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 21,
+            "text": "Kazakhstan.",
+            "start_time": 9.67,
+            "end_time": 10.15,
+            "segment_file": "generated/segments/word_021_kazakhstan.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 22,
+            "text": "Reaming",
+            "start_time": 10.15,
+            "end_time": 10.64,
+            "segment_file": "generated/segments/word_022_reaming.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 23,
+            "text": "all",
+            "start_time": 10.64,
+            "end_time": 11.12,
+            "segment_file": "generated/segments/word_023_all.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 24,
+            "text": "are",
+            "start_time": 11.12,
+            "end_time": 11.6,
+            "segment_file": "generated/segments/word_024_are.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 25,
+            "text": "working",
+            "start_time": 11.6,
+            "end_time": 12.09,
+            "segment_file": "generated/segments/word_025_working.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 26,
+            "text": "in",
+            "start_time": 12.09,
+            "end_time": 12.57,
+            "segment_file": "generated/segments/word_026_in.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 27,
+            "text": "good",
+            "start_time": 12.57,
+            "end_time": 13.05,
+            "segment_file": "generated/segments/word_027_good.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 28,
+            "text": "technology",
+            "start_time": 13.05,
+            "end_time": 13.54,
+            "segment_file": "generated/segments/word_028_technology.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 29,
+            "text": "companies",
+            "start_time": 13.54,
+            "end_time": 14.02,
+            "segment_file": "generated/segments/word_029_companies.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 30,
+            "text": "(Dell).",
+            "start_time": 14.02,
+            "end_time": 14.51,
+            "segment_file": "generated/segments/word_030_dell.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 31,
+            "text": "Then,",
+            "start_time": 14.51,
+            "end_time": 14.99,
+            "segment_file": "generated/segments/word_031_then.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 32,
+            "text": "at",
+            "start_time": 14.99,
+            "end_time": 15.47,
+            "segment_file": "generated/segments/word_032_at.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 33,
+            "text": "the",
+            "start_time": 15.47,
+            "end_time": 15.96,
+            "segment_file": "generated/segments/word_033_the.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 34,
+            "text": "end",
+            "start_time": 15.96,
+            "end_time": 16.44,
+            "segment_file": "generated/segments/word_034_end.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 35,
+            "text": "of",
+            "start_time": 16.44,
+            "end_time": 16.92,
+            "segment_file": "generated/segments/word_035_of.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 36,
+            "text": "second",
+            "start_time": 16.92,
+            "end_time": 17.41,
+            "segment_file": "generated/segments/word_036_second.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 37,
+            "text": "semester,",
+            "start_time": 17.41,
+            "end_time": 17.89,
+            "segment_file": "generated/segments/word_037_semester.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 38,
+            "text": "I",
+            "start_time": 17.89,
+            "end_time": 18.37,
+            "segment_file": "generated/segments/word_038_i.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 39,
+            "text": "got",
+            "start_time": 18.37,
+            "end_time": 18.86,
+            "segment_file": "generated/segments/word_039_got.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 40,
+            "text": "wo",
+            "start_time": 18.86,
+            "end_time": 19.34,
+            "segment_file": "generated/segments/word_040_wo.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 41,
+            "text": "certificates.",
+            "start_time": 19.34,
+            "end_time": 19.82,
+            "segment_file": "generated/segments/word_041_certificates.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 42,
+            "text": "Together",
+            "start_time": 19.82,
+            "end_time": 20.31,
+            "segment_file": "generated/segments/word_042_together.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 43,
+            "text": "a",
+            "start_time": 20.31,
+            "end_time": 20.79,
+            "segment_file": "generated/segments/word_043_a.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 44,
+            "text": "new",
+            "start_time": 20.79,
+            "end_time": 21.27,
+            "segment_file": "generated/segments/word_044_new.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 45,
+            "text": "work",
+            "start_time": 21.27,
+            "end_time": 21.76,
+            "segment_file": "generated/segments/word_045_work.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 46,
+            "text": "which",
+            "start_time": 21.76,
+            "end_time": 22.24,
+            "segment_file": "generated/segments/word_046_which.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 47,
+            "text": "is",
+            "start_time": 22.24,
+            "end_time": 22.72,
+            "segment_file": "generated/segments/word_047_is.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 48,
+            "text": "Management",
+            "start_time": 22.72,
+            "end_time": 23.21,
+            "segment_file": "generated/segments/word_048_management.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 49,
+            "text": "Science",
+            "start_time": 23.21,
+            "end_time": 23.69,
+            "segment_file": "generated/segments/word_049_science.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 50,
+            "text": "Associates",
+            "start_time": 23.69,
+            "end_time": 24.18,
+            "segment_file": "generated/segments/word_050_associates.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 51,
+            "text": "(Focus).",
+            "start_time": 24.18,
+            "end_time": 24.66,
+            "segment_file": "generated/segments/word_051_focus.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 52,
+            "text": "I",
+            "start_time": 24.66,
+            "end_time": 25.14,
+            "segment_file": "generated/segments/word_052_i.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 53,
+            "text": "joined",
+            "start_time": 25.14,
+            "end_time": 25.63,
+            "segment_file": "generated/segments/word_053_joined.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 54,
+            "text": "there",
+            "start_time": 25.63,
+            "end_time": 26.11,
+            "segment_file": "generated/segments/word_054_there.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 55,
+            "text": "as",
+            "start_time": 26.11,
+            "end_time": 26.59,
+            "segment_file": "generated/segments/word_055_as.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 56,
+            "text": "fulltime",
+            "start_time": 26.59,
+            "end_time": 27.08,
+            "segment_file": "generated/segments/word_056_fulltime.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 57,
+            "text": "ad",
+            "start_time": 27.08,
+            "end_time": 27.56,
+            "segment_file": "generated/segments/word_057_ad.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 58,
+            "text": "with",
+            "start_time": 27.56,
+            "end_time": 28.04,
+            "segment_file": "generated/segments/word_058_with.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 59,
+            "text": "work",
+            "start_time": 28.04,
+            "end_time": 28.53,
+            "segment_file": "generated/segments/word_059_work.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 60,
+            "text": "visa.",
+            "start_time": 28.53,
+            "end_time": 29.01,
+            "segment_file": "generated/segments/word_060_visa.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 61,
+            "text": "I",
+            "start_time": 29.01,
+            "end_time": 29.49,
+            "segment_file": "generated/segments/word_061_i.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 62,
+            "text": "never",
+            "start_time": 29.49,
+            "end_time": 29.98,
+            "segment_file": "generated/segments/word_062_never.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 63,
+            "text": "submit",
+            "start_time": 29.98,
+            "end_time": 30.46,
+            "segment_file": "generated/segments/word_063_submit.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 64,
+            "text": "the",
+            "start_time": 30.46,
+            "end_time": 30.94,
+            "segment_file": "generated/segments/word_064_the.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 65,
+            "text": "dissertation.",
+            "start_time": 30.94,
+            "end_time": 31.43,
+            "segment_file": "generated/segments/word_065_dissertation.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 66,
+            "text": "Two",
+            "start_time": 31.43,
+            "end_time": 31.91,
+            "segment_file": "generated/segments/word_066_two.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 67,
+            "text": "times,",
+            "start_time": 31.91,
+            "end_time": 32.39,
+            "segment_file": "generated/segments/word_067_times.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 68,
+            "text": "my",
+            "start_time": 32.39,
+            "end_time": 32.88,
+            "segment_file": "generated/segments/word_068_my.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 69,
+            "text": "boss",
+            "start_time": 32.88,
+            "end_time": 33.36,
+            "segment_file": "generated/segments/word_069_boss.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 70,
+            "text": "Walter",
+            "start_time": 33.36,
+            "end_time": 33.85,
+            "segment_file": "generated/segments/word_070_walter.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 71,
+            "text": "wrote",
+            "start_time": 33.85,
+            "end_time": 34.33,
+            "segment_file": "generated/segments/word_071_wrote.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 72,
+            "text": "to",
+            "start_time": 34.33,
+            "end_time": 34.81,
+            "segment_file": "generated/segments/word_072_to.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 73,
+            "text": "the",
+            "start_time": 34.81,
+            "end_time": 35.3,
+            "segment_file": "generated/segments/word_073_the.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 74,
+            "text": "university",
+            "start_time": 35.3,
+            "end_time": 35.78,
+            "segment_file": "generated/segments/word_074_university.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 75,
+            "text": "that",
+            "start_time": 35.78,
+            "end_time": 36.26,
+            "segment_file": "generated/segments/word_075_that.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 76,
+            "text": "he",
+            "start_time": 36.26,
+            "end_time": 36.75,
+            "segment_file": "generated/segments/word_076_he.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 77,
+            "text": "is",
+            "start_time": 36.75,
+            "end_time": 37.23,
+            "segment_file": "generated/segments/word_077_is.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 78,
+            "text": "my",
+            "start_time": 37.23,
+            "end_time": 37.71,
+            "segment_file": "generated/segments/word_078_my.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 79,
+            "text": "primary",
+            "start_time": 37.71,
+            "end_time": 38.2,
+            "segment_file": "generated/segments/word_079_primary.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 80,
+            "text": "member,",
+            "start_time": 38.2,
+            "end_time": 38.68,
+            "segment_file": "generated/segments/word_080_member.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 81,
+            "text": "please",
+            "start_time": 38.68,
+            "end_time": 39.16,
+            "segment_file": "generated/segments/word_081_please.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 82,
+            "text": "extend",
+            "start_time": 39.16,
+            "end_time": 39.65,
+            "segment_file": "generated/segments/word_082_extend.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 83,
+            "text": "the",
+            "start_time": 39.65,
+            "end_time": 40.13,
+            "segment_file": "generated/segments/word_083_the.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 84,
+            "text": "period",
+            "start_time": 40.13,
+            "end_time": 40.61,
+            "segment_file": "generated/segments/word_084_period.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 85,
+            "text": "for",
+            "start_time": 40.61,
+            "end_time": 41.1,
+            "segment_file": "generated/segments/word_085_for.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 86,
+            "text": "the",
+            "start_time": 41.1,
+            "end_time": 41.58,
+            "segment_file": "generated/segments/word_086_the.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 87,
+            "text": "submission.",
+            "start_time": 41.58,
+            "end_time": 42.06,
+            "segment_file": "generated/segments/word_087_submission.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 88,
+            "text": "They",
+            "start_time": 42.06,
+            "end_time": 42.55,
+            "segment_file": "generated/segments/word_088_they.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        },
+        {
+            "word_index": 89,
+            "text": "extended.",
+            "start_time": 42.55,
+            "end_time": 43.03,
+            "segment_file": "generated/segments/word_089_extended.wav",
+            "applied_frequency_shift_hz": 0.0,
+            "applied_amplitude_db": 0.0
+        }
+    ]
+}

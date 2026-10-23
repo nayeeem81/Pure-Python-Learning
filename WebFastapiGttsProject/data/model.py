@@ -1,65 +1,86 @@
 # data/model.py
-from datetime import datetime
+from datetime import datetime, timezone  # 💡 Added timezone import
 from typing import List, Optional
-from sqlalchemy import String, Text, LargeBinary, Integer, ForeignKey
+from sqlmodel import Field, SQLModel, Relationship
+from sqlalchemy import String, Text, LargeBinary, Column
 from sqlalchemy.dialects.postgresql import JSONB  
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-# Import the Base instance from database.py to maintain the shared metadata loop
-from data.database import Base
-
-class Sentence(Base):
+# =====================================================================
+# 1. SENTENCE MODEL
+# =====================================================================
+class Sentence(SQLModel, table=True): 
     __tablename__ = "sentence"
-    
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    
-    # Structural fields 
-    text_content: Mapped[str] = mapped_column(Text, nullable=False)
-    audio_bytes: Mapped[Optional[bytes]] = mapped_column(LargeBinary, nullable=True) 
-    mp3_file_path: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    original_sentence_json: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
-    modified_sentence_json: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
-    
-    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
-    modified_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
-    modified_by: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
 
-    # Relationships linked properly to the singular table name context
-    words: Mapped[List["Word"]] = relationship("Word", back_populates="sentence", cascade="all, delete-orphan")
-    history_records: Mapped[List["SentenceHistory"]] = relationship("SentenceHistory", back_populates="sentence", cascade="all, delete-orphan")
+    id: Optional[int] = Field(default=None, primary_key=True)
+    
+    # Text content mapped to PostgreSQL long Text type
+    text_content: str = Field(sa_column=Column(Text, nullable=False))
+    
+    # Binary media and paths
+    audio_bytes: Optional[bytes] = Field(default=None, sa_column=Column(LargeBinary, nullable=True)) 
+    mp3_file_path: Optional[str] = Field(default=None, sa_column=Column(String(500), nullable=True))
+    
+    # Complex JSON trees mapped using native PostgreSQL JSONB columns
+    original_sentence_json: Optional[dict] = Field(default=None, sa_column=Column(JSONB, nullable=True))
+    modified_sentence_json: Optional[dict] = Field(default=None, sa_column=Column(JSONB, nullable=True))
+    
+    # Tracking parameters
+    version: int = Field(default=1)
+    
+    # 💡 FIX: Force timezone tracking into the default factory loop to clear the ValueError
+    modified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    
+    modified_by: Optional[str] = Field(default=None, max_length=100)
 
-class Word(Base):
+    # Relationships linked seamlessly across tables
+    words: List["Word"] = Relationship(back_populates="sentence", cascade_delete=True)
+    history_records: List["SentenceHistory"] = Relationship(back_populates="sentence", cascade_delete=True)
+
+
+# =====================================================================
+# 2. WORD MODEL (Verified & Unchanged)
+# =====================================================================
+class Word(SQLModel, table=True):
     __tablename__ = "words"
     
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    sentence_id: Mapped[int] = mapped_column(ForeignKey("sentence.id", ondelete="CASCADE"), nullable=False) # 💡 Fixed to 'sentence.id'
-    text_content: Mapped[str] = mapped_column(String(100), nullable=False)
-    word_order: Mapped[int] = mapped_column(Integer, nullable=False)
-    audio_bytes: Mapped[Optional[bytes]] = mapped_column(LargeBinary, nullable=True)
-    mp3_file_path: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    sentence_id: int = Field(foreign_key="sentence.id", ondelete="CASCADE")
+    
+    text_content: str = Field(max_length=100, nullable=False)
+    word_order: int = Field(nullable=False)
+    audio_bytes: Optional[bytes] = Field(default=None, sa_column=Column(LargeBinary, nullable=True))
+    mp3_file_path: Optional[str] = Field(default=None, sa_column=Column(String(500), nullable=True))
     
     # Relationships
-    sentence: Mapped["Sentence"] = relationship("Sentence", back_populates="words")
-    history_records: Mapped[List["WordHistory"]] = relationship("WordHistory", back_populates="word", cascade="all, delete-orphan")
+    sentence: "Sentence" = Relationship(back_populates="words")
+    history_records: List["WordHistory"] = Relationship(back_populates="word", cascade_delete=True)
 
-class SentenceHistory(Base):
+
+# =====================================================================
+# 3. SENTENCE HISTORY MODEL
+# =====================================================================
+class SentenceHistory(SQLModel, table=True):
     __tablename__ = "sentence_history"
     
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    sentence_id: Mapped[int] = mapped_column(ForeignKey("sentence.id", ondelete="CASCADE"), nullable=False) # 💡 Fixed to 'sentence.id'
-    text_content: Mapped[str] = mapped_column(Text, nullable=False)
-    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    sentence_id: int = Field(foreign_key="sentence.id", ondelete="CASCADE")
+    text_content: str = Field(sa_column=Column(Text, nullable=False))
+    version: int = Field(default=1)
     
     # Relationships
-    sentence: Mapped["Sentence"] = relationship("Sentence", back_populates="history_records")
+    sentence: "Sentence" = Relationship(back_populates="history_records")
 
-class WordHistory(Base):
+
+# =====================================================================
+# 4. WORD HISTORY MODEL
+# =====================================================================
+class WordHistory(SQLModel, table=True):
     __tablename__ = "word_history"
     
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    word_id: Mapped[int] = mapped_column(ForeignKey("words.id", ondelete="CASCADE"), nullable=False)
-    text_content: Mapped[str] = mapped_column(String(100), nullable=False)
-    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    word_id: int = Field(foreign_key="words.id", ondelete="CASCADE")
+    text_content: str = Field(max_length=100, nullable=False)
+    version: int = Field(default=1)
     
     # Relationships
-    word: Mapped["Word"] = relationship("Word", back_populates="history_records")
+    word: "Word" = Relationship(back_populates="history_records")
