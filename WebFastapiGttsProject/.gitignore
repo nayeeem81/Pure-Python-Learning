@@ -24,3 +24,5 @@ Thumbs.db
 *.wav
 *.ogg
 
+# Ignore a specific folder (and everything inside it)
+/project/
