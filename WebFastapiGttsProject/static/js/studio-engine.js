@@ -92,9 +92,7 @@ function handleLiveTTS() {
         .catch(error => console.error("Error executing background speech compiler:", error));
 }
 
-/**
- * Clean Consolidated Workspace Mounter with Intelligent Retries and Fallbacks
- */
+
 function loadSentenceWorkspace(sentenceId, retryCount = 0) {
     if (!sentenceId) return;
     window.currentSentenceId = sentenceId;
@@ -296,7 +294,7 @@ document.getElementById('loadDataBtn').addEventListener('click', fetchSentences)
 async function fetchSentences() {
     const tableBody = document.getElementById('userTableBody');
     // Updated colspan to match the 4 columns we are rendering
-    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Querying ORM...</td></tr>';
+    tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Querying ORM...</td></tr>';
 
     try {
         // Inside studio-engine.js - update these lines inside fetchSentences():
@@ -323,19 +321,26 @@ async function fetchSentences() {
             const duration = sentence.total_duration_seconds ? `${sentence.total_duration_seconds}s` : '2.88s';
             const mp3Url = sentence.master_mp3_path ? `/project/${sentence.master_mp3_path}` : '#';
 
-            row.innerHTML = `
-                <td><strong>${sentence.id}</strong></td>
-                <td>#${currentSkip + index + 1}</td>
-                <td>${sentence.text_content || 'No Text'}</td>
-                <td>
-                    ${sentence.master_mp3_path
-                            ? `<audio controls preload="none"><source src="${mp3Url}" type="audio/mpeg"></audio>`
-                            : '<span class="badge badge-warning">Missing MP3</span>'}
+            // Example of how your row template string should look when appending to userTableBody
+            const rowHtml = `
+                    <tr data-id="${sentence.id}">
+                        <td style="text-align: center;">
+                            <input type="checkbox" class="row-checkbox" value="${sentence.id}">
+                        </td>
+                        <td>${sentence.id}</td>
+                        <td>#${currentSkip + index + 1}</td>
+                        <td>${sentence.text_content || 'No Text'}</td>
+                         <td>
+                    <audio controls preload="none"><source src="${mp3Url}" type="audio/mpeg"></audio>
+                  
                 </td>
-                <td><code>${duration}</code></td>
-                <td><span class="status-indicator ready">Ready</span></td>
-            `;
-            tableBody.appendChild(row);
+                        <td>${sentence.total_duration_seconds}s</td>
+                        <td><span class="status-indicator ready">Ready</span></td>
+                    </tr>
+                `;
+                 
+           
+            userTableBody.insertAdjacentHTML('beforeend', rowHtml);
         });
         updatePaginationUI();
     } catch (error) {
