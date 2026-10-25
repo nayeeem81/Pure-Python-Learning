@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
     const selectedCountSpan = document.getElementById('selectedCount');
 
-    // 1. Update the Visibility and Count of the Delete Button
+    // 1. Dynamic visibility toggle & count calculation
     function updateDeleteButtonState() {
         const checkedBoxes = userTableBody.querySelectorAll('.row-checkbox:checked');
         const count = checkedBoxes.length;
@@ -37,14 +37,14 @@ document.addEventListener("DOMContentLoaded", () => {
             deleteSelectedBtn.style.display = 'none';
         }
 
-        // Keep master checkbox synced if rows are manually unchecked
+        // Auto-check/uncheck master header box based on individual row status
         const allBoxes = userTableBody.querySelectorAll('.row-checkbox');
         if (allBoxes.length > 0) {
             selectAllCheckbox.checked = (checkedBoxes.length === allBoxes.length);
         }
     }
 
-    // 2. Master Checkbox Event (Select/Deselect All)
+    // 2. Master Checkbox Event (Toggle all rows)
     selectAllCheckbox.addEventListener('change', () => {
         const rowCheckboxes = userTableBody.querySelectorAll('.row-checkbox');
         rowCheckboxes.forEach(cb => {
@@ -53,19 +53,18 @@ document.addEventListener("DOMContentLoaded", () => {
         updateDeleteButtonState();
     });
 
-    // 3. Row Checkbox Event (Delegated to the table body)
+    // 3. Delegated Listener for row checkboxes (supports dynamically added rows)
     userTableBody.addEventListener('change', (e) => {
         if (e.target.classList.contains('row-checkbox')) {
             updateDeleteButtonState();
         }
     });
-
-    // 4. Delete Action
+    // 4. Executing Bulk Deletion against your FastAPI backend
     deleteSelectedBtn.addEventListener('click', async () => {
         const checkedBoxes = userTableBody.querySelectorAll('.row-checkbox:checked');
 
-        // Extract IDs from the checked rows (assuming data-id attribute is used on the checkbox)
-        const idsToDelete = Array.from(checkedBoxes).map(cb => cb.dataset.id);
+        // Match your grid template: Read value directly from the checked checkbox element
+        const idsToDelete = Array.from(checkedBoxes).map(cb => parseInt(cb.value, 10)).filter(id => !isNaN(id));
 
         if (idsToDelete.length === 0) return;
 
@@ -73,39 +72,48 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!confirmDelete) return;
 
         try {
-            // --- REPLACE WITH YOUR ACTUAL API URL AND CONFIGURATION ---
-            const response = await fetch('/api/sentences/delete-bulk', {
-                method: 'POST', // Or 'DELETE' depending on your backend setup
+            const response = await fetch('/api/sentences/bulk-delete', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ids: idsToDelete })
+                body: JSON.stringify({ ids: idsToDelete }) // Sends: {"ids":}
             });
 
-            if (response.ok) {
-                // Success: Remove rows from the DOM or reload the grid
+            if (!response.ok) {
+                const errData = await response.json();
+                console.error('Validation details:', errData);
+                throw new Error(errData.detail ? JSON.stringify(errData.detail) : 'Server rejected request');
+            }
+
+            const result = await response.json();
+
+            if (result.status === 'success' || result.status === 'ignored') {
+                // UI Cleanup: Remove matching rows locally from the DOM tree
                 checkedBoxes.forEach(cb => {
                     const row = cb.closest('tr');
                     row.remove();
                 });
 
-                // Reset master checkbox and hide delete button
+                // Reset master checkbox header state
                 selectAllCheckbox.checked = false;
                 updateDeleteButtonState();
 
-                // Optional: Show empty state message if no rows left
-                if (userTableBody.children.length === 0) {
+                // Show grid placeholder text if the table has been fully cleared out
+                if (userTableBody.querySelectorAll('.row-checkbox').length === 0) {
                     userTableBody.innerHTML = `
                         <tr>
-                            <td colspan="7" style="text-align: center; color: #666;">No records found.</td>
+                            <td colspan="7" style="text-align: center; color: #666;">
+                                Click "Load Sentences" to populate grid.
+                            </td>
                         </tr>`;
                 }
             } else {
-                alert('Failed to delete selected items. Please try again.');
+                alert(`Notice: ${result.message}`);
             }
         } catch (error) {
-            console.error('Error during deletion:', error);
-            alert('An error occurred while connecting to the server.');
+            console.error('Error during bulk deletion processing:', error);
+            alert(`Failed to delete records: ${error.message}`);
         }
     });
 
