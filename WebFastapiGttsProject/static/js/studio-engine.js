@@ -19,6 +19,96 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         console.warn("WaveSurfer target container nodes missing in active DOM view layer.");
     }
+
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const userTableBody = document.getElementById('userTableBody');
+    const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+    const selectedCountSpan = document.getElementById('selectedCount');
+
+    // 1. Update the Visibility and Count of the Delete Button
+    function updateDeleteButtonState() {
+        const checkedBoxes = userTableBody.querySelectorAll('.row-checkbox:checked');
+        const count = checkedBoxes.length;
+
+        if (count > 0) {
+            deleteSelectedBtn.style.display = 'inline-block';
+            selectedCountSpan.textContent = count;
+        } else {
+            deleteSelectedBtn.style.display = 'none';
+        }
+
+        // Keep master checkbox synced if rows are manually unchecked
+        const allBoxes = userTableBody.querySelectorAll('.row-checkbox');
+        if (allBoxes.length > 0) {
+            selectAllCheckbox.checked = (checkedBoxes.length === allBoxes.length);
+        }
+    }
+
+    // 2. Master Checkbox Event (Select/Deselect All)
+    selectAllCheckbox.addEventListener('change', () => {
+        const rowCheckboxes = userTableBody.querySelectorAll('.row-checkbox');
+        rowCheckboxes.forEach(cb => {
+            cb.checked = selectAllCheckbox.checked;
+        });
+        updateDeleteButtonState();
+    });
+
+    // 3. Row Checkbox Event (Delegated to the table body)
+    userTableBody.addEventListener('change', (e) => {
+        if (e.target.classList.contains('row-checkbox')) {
+            updateDeleteButtonState();
+        }
+    });
+
+    // 4. Delete Action
+    deleteSelectedBtn.addEventListener('click', async () => {
+        const checkedBoxes = userTableBody.querySelectorAll('.row-checkbox:checked');
+
+        // Extract IDs from the checked rows (assuming data-id attribute is used on the checkbox)
+        const idsToDelete = Array.from(checkedBoxes).map(cb => cb.dataset.id);
+
+        if (idsToDelete.length === 0) return;
+
+        const confirmDelete = confirm(`Are you sure you want to delete ${idsToDelete.length} selected item(s)?`);
+        if (!confirmDelete) return;
+
+        try {
+            // --- REPLACE WITH YOUR ACTUAL API URL AND CONFIGURATION ---
+            const response = await fetch('/api/sentences/delete-bulk', {
+                method: 'POST', // Or 'DELETE' depending on your backend setup
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ids: idsToDelete })
+            });
+
+            if (response.ok) {
+                // Success: Remove rows from the DOM or reload the grid
+                checkedBoxes.forEach(cb => {
+                    const row = cb.closest('tr');
+                    row.remove();
+                });
+
+                // Reset master checkbox and hide delete button
+                selectAllCheckbox.checked = false;
+                updateDeleteButtonState();
+
+                // Optional: Show empty state message if no rows left
+                if (userTableBody.children.length === 0) {
+                    userTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #666;">No records found.</td>
+                        </tr>`;
+                }
+            } else {
+                alert('Failed to delete selected items. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error during deletion:', error);
+            alert('An error occurred while connecting to the server.');
+        }
+    });
+
 });
 
 // ==========================================
