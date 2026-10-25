@@ -91,10 +91,7 @@
   <ItemGroup>
     <Folder Include="api\" />
     <Folder Include="data\" />
-    <Folder Include="project\generated\segments\" />
     <Folder Include="views\canvas_utility\" />
-    <Folder Include="project\" />
-    <Folder Include="project\generated\" />
     <Folder Include="study\" />
     <Folder Include="static\" />
     <Folder Include="static\content\" />
