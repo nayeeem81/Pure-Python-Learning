@@ -53,3 +53,11 @@ def render_texteditor_page(request: Request):
         name="texteditor.html", 
         context={"page_title": "Text - DSP"}
     )
+
+@view_router.get("/slideshow", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse(
+        request=request, 
+        name="slideshow.html", 
+        context={"page_title": "Image slideshow"}
+    )

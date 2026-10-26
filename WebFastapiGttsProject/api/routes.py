@@ -6,6 +6,7 @@ from api.frequency import frequency_router
 from api.process import process_router
 from api.routerwords import router_words
 from api.texteditor import router_texteditor
+from api.slideshow import slideshow_router
 
 api_router = APIRouter()
 
@@ -15,3 +16,4 @@ api_router.include_router(studio_router)
 api_router.include_router(frequency_router)
 api_router.include_router(router_words)
 api_router.include_router(router_texteditor)
+api_router.include_router(slideshow_router)

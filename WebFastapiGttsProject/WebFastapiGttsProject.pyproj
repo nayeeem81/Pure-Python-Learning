@@ -23,6 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="api\fix_tabs.py" />
+    <Compile Include="api\slideshow.py" />
     <Compile Include="api\texteditor.py" />
     <Compile Include="data\database.py" />
     <Compile Include="data\init_env.py" />
@@ -86,6 +87,7 @@
     <Content Include="templates\index.html" />
     <Content Include="templates\layout.html" />
     <Content Include="templates\studio.html" />
+    <Content Include="templates\slideshow.html" />
     <Content Include="templates\texteditor.html" />
   </ItemGroup>
   <ItemGroup>

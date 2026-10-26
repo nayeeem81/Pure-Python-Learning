@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+
+    <div class="jumbotron">
+
+        <h1>🎛️  </h1>
+
+    </div>
+    <!-- Fullscreen Background Canvas -->
+    <div id="canvas-container">
+        <div id="slide1" class="bg-slide"></div>
+        <div id="slide2" class="bg-slide"></div>
+    </div>
+
+    <!-- Configuration Panel (Setup Paths) -->
+    <div id="config-panel" class="floating-panel">
+        <div class="panel-header" id="config-header">
+            <span>⚙️ Path Configuration</span>
+        </div>
+        <div class="panel-body">
+            <div>
+                <label>Absolute Image Folder Path:</label>
+                <input type="text" id="img-path-input" placeholder="e.g., C:/Users/Name/Pictures or /home/pics">
+            </div>
+            <div>
+                <label>Absolute MP3 File Path:</label>
+                <input type="text" id="mp3-path-input" placeholder="e.g., C:/Music/track.mp3 or /home/track.mp3">
+            </div>
+            <button class="save-btn" onclick="savePaths()">Apply Media Sources</button>
+        </div>
+    </div>
+
+    <!-- Music Player Window Overlay -->
+    <div id="floating-player" class="floating-panel">
+        <div class="panel-header" id="player-header">
+            <span>🎵 Music Player</span>
+            <button class="close-btn" onclick="togglePlayer(false)">X</button>
+        </div>
+        <div class="panel-body">
+            <audio id="audio-element" controls loop></audio>
+        </div>
+    </div>
+
+    <div id="hud-hint">Press <strong>"M"</strong> to toggle player widget visibility.</div>
+
+    <script>
+        let images = [];
+        let currentIdx = 0;
+        const slides = [document.getElementById('slide1'), document.getElementById('slide2')];
+        let activeSlideIdx = 0;
+        let slideshowInterval = null;
+
+        // Fetch current saved state configurations on load
+        async function loadCurrentConfig() {
+            try {
+                const res = await fetch('/api/config');
+                const config = await res.json();
+                if(config.image_folder) document.getElementById('img-path-input').value = config.image_folder;
+                if(config.mp3_file_path) document.getElementById('mp3-path-input').value = config.mp3_file_path;
+
+                if (config.image_folder || config.mp3_file_path) {
+                    initializeMedia();
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        // Post new folder layouts to FastAPI
+        async function savePaths() {
+            const image_folder = document.getElementById('img-path-input').value;
+            const mp3_file_path = document.getElementById('mp3-path-input').value;
+
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image_folder, mp3_file_path })
+                });
+
+                if(response.ok) {
+                    alert("Paths initialized successfully!");
+                    initializeMedia();
+                } else {
+                    const errData = await response.json();
+                    alert("Error: " + errData.detail);
+                }
+            } catch (err) { alert("Failed to connect to API."); }
+        }
+
+        async function initializeMedia() {
+            // Stop existing timeline loop if active
+            if(slideshowInterval) clearInterval(slideshowInterval);
+
+            // 1. Refresh & Boot Music
+            const audioPlayer = document.getElementById('audio-element');
+            audioPlayer.src = `/api/audio?t=${new Date().getTime()}`; // cache bust
+            document.getElementById('floating-player').style.display = 'block';
+
+            // 2. Fetch image slideshow names
+            try {
+                const response = await fetch('/api/images');
+                const data = await response.json();
+                images = data.images || [];
+
+                if(images.length > 0) {
+                    // Quick setup array mix
+                    for (let i = images.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [images[i], images[j]] = [images[j], images[i]];
+                    }
+                    currentIdx = 0;
+                    changeImage();
+                    slideshowInterval = setInterval(changeImage, 5000);
+                }
+            } catch (err) { console.error("Error setting up canvas images:", err); }
+        }
+
+        function changeImage() {
+            if (images.length === 0) return;
+            const nextSlideIdx = 1 - activeSlideIdx;
+            const imgUrl = `/api/images/${images[currentIdx]}?t=${new Date().getTime()}`;
+
+            slides[nextSlideIdx].style.backgroundImage = `url('${imgUrl}')`;
+            slides[nextSlideIdx].classList.add('active');
+            slides[activeSlideIdx].classList.remove('active');
+
+            activeSlideIdx = nextSlideIdx;
+            currentIdx = (currentIdx + 1) % images.length;
+        }
+
+        // Generic panel dragging assignment utility logic
+        function makeElementDraggable(panel, header) {
+            let isDragging = false, offsetX = 0, offsetY = 0;
+            header.addEventListener('mousedown', (e) => {
+                if(e.target.classList.contains('close-btn')) return;
+                isDragging = true;
+                offsetX = e.clientX - panel.offsetLeft;
+                offsetY = e.clientY - panel.offsetTop;
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                panel.style.left = `${e.clientX - offsetX}px`;
+                panel.style.top = `${e.clientY - offsetY}px`;
+            });
+            document.addEventListener('mouseup', () => isDragging = false);
+        }
+
+        makeElementDraggable(document.getElementById('config-panel'), document.getElementById('config-header'));
+        makeElementDraggable(document.getElementById('floating-player'), document.getElementById('player-header'));
+
+        function togglePlayer(show) {
+            document.getElementById('floating-player').style.display = show ? 'block' : 'none';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'm') {
+                const p = document.getElementById('floating-player');
+                togglePlayer(p.style.display === 'none');
+            }
+        });
+
+        loadCurrentConfig();
+    </script>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/wavesurfer.min.js"></script>
+<script src="/static/regions.min.js"></script>
+<script src="/static/js/studio-engine.js" defer></script>
+{% endblock %}
