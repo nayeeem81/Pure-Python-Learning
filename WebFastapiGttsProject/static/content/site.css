@@ -40,137 +40,137 @@ span.bullet {
     }
 
     .jumbotron h2 {
-        margin-bottom:35px;
+        margin-bottom: 35px;
     }
 
-        .logo {
-            width: 28px;
-            height: 28px;
-        }
+.logo {
+    width: 28px;
+    height: 28px;
+}
 
-        /* Set width on the form input elements since they're 100% wide by default */
-        input,
-        select,
-        textarea {
-            border: 2px solid orange;
-        }
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    border: 2px solid orange;
+}
 
-            input[type="text"] {
-                width: 100%;
-                padding: 8px;
-                border: 2px solid orange;
-            }
+    input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        border: 2px solid orange;
+    }
 
-        button {
-            padding: 10px 15px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+button {
+    padding: 10px 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
 
-            button:hover {
-                background: #0056b3;
-            }
+    button:hover {
+        background: #0056b3;
+    }
 
-        /* styles for validation helpers */
-        .field-validation-error {
-            color: #b94a48;
-        }
+/* styles for validation helpers */
+.field-validation-error {
+    color: #b94a48;
+}
 
-        .field-validation-valid {
-            display: none;
-        }
+.field-validation-valid {
+    display: none;
+}
 
-        input.input-validation-error {
-            border: 1px solid #b94a48;
-        }
+input.input-validation-error {
+    border: 1px solid #b94a48;
+}
 
-        input[type="checkbox"].input-validation-error {
-            border: 0 none;
-        }
+input[type="checkbox"].input-validation-error {
+    border: 0 none;
+}
 
-        .validation-summary-errors {
-            color: #b94a48;
-        }
+.validation-summary-errors {
+    color: #b94a48;
+}
 
-        .validation-summary-valid {
-            display: none;
-        }
+.validation-summary-valid {
+    display: none;
+}
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-
-        input[type="text"].tts-text {
-            width: 100%;
-            padding: 8px;
-            border: 2px solid orange;
-            margin-bottom: 5px;
-        }
-
-            input[type="text"].tts-text:focus {
-                border-bottom: 2px solid blue;
-                background-color: lightblue;
-                color: black;
-            }
-
-            input[type="text"].tts-text:active {
-                border-bottom: 2px solid blue;
-                background-color: lightblue;
-                color: black;
-            }
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
 
 
-        #waveform-container {
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
+input[type="text"].tts-text {
+    width: 100%;
+    padding: 8px;
+    border: 2px solid orange;
+    margin-bottom: 5px;
+}
 
-        .word-controls {
-            display: inline-block;
-            margin: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
+    input[type="text"].tts-text:focus {
+        border-bottom: 2px solid blue;
+        background-color: lightblue;
+        color: black;
+    }
 
-        .wave-box {
-            background: #1e1e1e;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
+    input[type="text"].tts-text:active {
+        border-bottom: 2px solid blue;
+        background-color: lightblue;
+        color: black;
+    }
 
-        .word-card {
-            background: #2a2a2a;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: aliceblue;
-        }
 
-        .slider-group {
-            display: flex;
-            gap: 20px;
-        }
+#waveform-container {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
 
-        .slider-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+.word-controls {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.wave-box {
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.word-card {
+    background: #2a2a2a;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: aliceblue;
+}
+
+.slider-group {
+    display: flex;
+    gap: 20px;
+}
+
+.slider-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 table {
     width: 100%;
