@@ -188,6 +188,11 @@ function togglePlayer(show) {
 // Fullscreen functionality
 function requestFullscreen() {
     const container = document.getElementById('canvas-container');
+
+    // Hide both panels when entering fullscreen
+    document.getElementById('floating-player').style.display = 'none';
+    document.getElementById('config-panel').style.display = 'none';
+
     if (container.requestFullscreen) {
         container.requestFullscreen().catch(err => {
             console.error('Fullscreen request failed:', err.message);
@@ -214,7 +219,14 @@ function updateFullscreenUI() {
                         document.mozFullScreenElement || 
                         document.msFullscreenElement;
 
+    // Show exit button only in fullscreen
     exitBtn.style.display = isFullscreen ? 'block' : 'none';
+
+    // Show panels again when exiting fullscreen
+    if (!isFullscreen) {
+        document.getElementById('floating-player').style.display = 'block';
+        document.getElementById('config-panel').style.display = 'block';
+    }
 }
 
 // Exit fullscreen handler
@@ -237,13 +249,56 @@ document.addEventListener('keydown', (e) => {
                           e.target.contentEditable === 'true';
     if (isInputElement) return;
 
+    if (e.key.toLowerCase() === 'f') {
+        // F key: Toggle fullscreen
+        const isFullscreen = document.fullscreenElement || 
+                            document.webkitFullscreenElement || 
+                            document.mozFullScreenElement || 
+                            document.msFullscreenElement;
+
+        if (isFullscreen) {
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        } else {
+            // Enter fullscreen
+            requestFullscreen();
+        }
+    }
+
     if (e.key.toLowerCase() === 'm') {
-        const playerPanel = document.getElementById('floating-player');
-        const configPanel = document.getElementById('config-panel');
-        // Toggle both panels together
-        const shouldShow = playerPanel.style.display === 'none';
-        playerPanel.style.display = shouldShow ? 'block' : 'none';
-        configPanel.style.display = shouldShow ? 'block' : 'none';
+        // M key: Exit fullscreen if active, otherwise toggle panels
+        const isFullscreen = document.fullscreenElement || 
+                            document.webkitFullscreenElement || 
+                            document.mozFullScreenElement || 
+                            document.msFullscreenElement;
+
+        if (isFullscreen) {
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        } else {
+            // Normal mode: toggle both panels
+            const playerPanel = document.getElementById('floating-player');
+            const configPanel = document.getElementById('config-panel');
+            const shouldShow = playerPanel.style.display === 'none';
+            playerPanel.style.display = shouldShow ? 'block' : 'none';
+            configPanel.style.display = shouldShow ? 'block' : 'none';
+        }
     }
 
     // ESC key exits fullscreen (browser handles this natively, but we ensure it works)
