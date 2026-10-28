@@ -50,6 +50,7 @@
     <Content Include=".gitignore" />
     <Content Include="api\frequency.py" />
     <Content Include="README.md" />
+    <Content Include="static\js\slideshow.js" />
     <Content Include="study\ReadMeAcademic.md" />
     <Content Include="requirements.txt" />
     <Content Include="static\content\banner.png" />

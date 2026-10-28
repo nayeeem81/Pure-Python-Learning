@@ -288,6 +288,15 @@ th {
     backdrop-filter: blur(5px);
 }
 
+/* Panels remain visible and draggable in fullscreen */
+#canvas-container:fullscreen .floating-panel,
+#canvas-container:-webkit-full-screen .floating-panel,
+#canvas-container:-moz-full-screen .floating-panel,
+#canvas-container:-ms-fullscreen .floating-panel {
+    position: fixed;
+    z-index: 1000;
+}
+
 .panel-header {
     padding: 8px 10px;
     background: rgba(50, 50, 50, 0.5);
@@ -354,15 +363,117 @@ button.save-btn {
     cursor: pointer;
     border-radius: 3px;
     font-weight: bold;
+    width: 100%;
 }
 
     button.save-btn:hover {
         background: #1b5e20;
     }
 
+button.fullscreen-btn {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 5px;
+}
+
+    button.fullscreen-btn:hover {
+        background: #1565c0;
+    }
+
 audio {
     width: 100%;
     height: 32px;
+}
+
+.player-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.player-btn {
+    flex: 1;
+    background: #0077b6;
+    color: white;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+    .player-btn:hover {
+        background: #005f8f;
+    }
+
+    .player-btn:active {
+        opacity: 0.8;
+    }
+
+.playlist-info {
+    margin-top: 8px;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    font-size: 11px;
+    color: #ccc;
+    text-align: center;
+    min-height: 18px;
+}
+
+.exit-fullscreen-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(220, 50, 50, 0.9);
+    color: white;
+    border: 2px solid white;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    z-index: 9999;
+    font-size: 14px;
+}
+
+    .exit-fullscreen-btn:hover {
+        background: rgba(200, 20, 20, 1);
+    }
+
+#canvas-container:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+/* Vendor prefixes for fullscreen */
+#canvas-container:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#canvas-container:-moz-full-screen {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#canvas-container:-ms-fullscreen {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 
 #hud-hint {
