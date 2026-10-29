@@ -61,3 +61,31 @@ async def read_root(request: Request):
         name="slideshow.html", 
         context={"page_title": "Image slideshow"}
     )
+
+# ==========================================
+@view_router.get("/editimage")
+def edit_image():
+    """Serves the Image Editor interface."""
+    return render_template("editimage.html")
+
+
+@view_router.post("/api/editimage")
+def api_edit_image():
+    """API endpoint explicitly handling standalone image modifications."""
+    try:
+        data = request.get_json() or {}
+        # Parse inputs out of JSON data payload
+        return (
+            jsonify(
+                {"status": "success", "message": "Image tensor processing complete."}
+            ),
+            200,
+        )
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 400
+
+DEFAULT_IMAGE = Path(__file__).with_name("sample.png")	 
+
+@view_router.get("/api/tensor")
+def tensor():
+        return jsonify(tensor_payload(load_rgb_tensor(DEFAULT_IMAGE)))

@@ -3,6 +3,7 @@ import os
 target_file = r"C:\VisualStudioPyProjects\PurePythonApp\WebFastapiGttsProject\api\texteditor.py"
 
 clean_code = """
+
 # api/texteditor.py
 import os
 import json
@@ -79,9 +80,9 @@ async def get_sentences(
         }
         
     except Exception as e:
-        print("\\n=== DATABASE ERROR TRACEBACK ===")
+        print("\n=== DATABASE ERROR TRACEBACK ===")
         traceback.print_exc()
-        print("=================================\\n")			  # api/texteditor.py
+        print("=================================\n")              # api/texteditor.py
 import os
 import json
 import traceback
@@ -104,18 +105,19 @@ async def get_sentences(
     limit: int = Query(default=10, le=100)
 ): 
     try:
+
         count_statement = select(func.count()).select_from(Sentence)
         count_result = await session.execute(count_statement)
         total_records = count_result.scalar() or 0
         statement = select(Sentence).order_by(Sentence.id).offset(skip).limit(limit) 
         result = await session.execute(statement) 
         sentences = result.scalars().all()
-		cleaned_sentences = []
+        cleaned_sentences = []
         for s in sentences:
             sentence_dict = s.model_dump()
             text_val = "No Text Found"
             mp3_val = ""
-			total_duration_seconds = ""
+            total_duration_seconds = ""
 
             if hasattr(s, "original_sentence_json") and s.original_sentence_json:
                 json_data = s.original_sentence_json
@@ -128,7 +130,7 @@ async def get_sentences(
                 if isinstance(json_data, dict):
                     text_val = json_data.get("original_sentence", text_val)
                     mp3_val = json_data.get("master_mp3_path", mp3_val)
-					total_duration_seconds = json_data.get("total_duration_seconds", total_duration_seconds)
+                    total_duration_seconds = json_data.get("total_duration_seconds", total_duration_seconds)
 
             if text_val == "No Text Found":
                 if hasattr(s, "text_content") and s.text_content:
@@ -139,17 +141,17 @@ async def get_sentences(
             if not mp3_val:
                 if hasattr(s, "mp3_file_path") and s.mp3_file_path:
                     mp3_val = s.mp3_file_path
-			if not total_duration_seconds:
-				if hasattr(s, "total_duration_seconds") and s.total_duration_seconds:
+            if not total_duration_seconds:
+                if hasattr(s, "total_duration_seconds") and s.total_duration_seconds:
                     total_duration_seconds = s.total_duration_seconds
             sentence_dict["text_content"] = text_val
             sentence_dict["master_mp3_path"] = mp3_val
-			sentence_dict["total_duration_seconds"] = total_duration_seconds
+            sentence_dict["total_duration_seconds"] = total_duration_seconds
 
             if "audio_bytes" in sentence_dict:
                 sentence_dict["audio_bytes"] = None 
 
-            cleaned_sentences.append(sentence_dict)
+        cleaned_sentences.append(sentence_dict)
 
         return {
             "total": total_records,
@@ -159,13 +161,57 @@ async def get_sentences(
         }
         
     except Exception as e:
-        print("\n=== DATABASE ERROR TRACEBACK ===")
+        print("=== DATABASE ERROR TRACEBACK ===")
         traceback.print_exc()
-        print("=================================\n")
+        print("=================================")
         raise HTTPException(status_code=500, detail=f"Database operational crash: {str(e)}")
 
-class BulkDeleteRequest(BaseModel):
-    ids: list[int]
+ ==============================================================
+# PRIVATE UTILITY HELPER (Enforces DRY Principle)
+# ==============================================================
+def _extract_file_paths(sentence) -> Set[str]:
+   
+    extracted_paths = set()
+    
+    if hasattr(sentence, "mp3_file_path") and sentence.mp3_file_path:
+        extracted_paths.add(sentence.mp3_file_path)
+
+    if hasattr(sentence, "original_sentence_json") and sentence.original_sentence_json:
+        json_data = sentence.original_sentence_json
+        
+        # Safe JSON string parse fallback handling
+        if isinstance(json_data, str):
+            try:
+                json_data = json.loads(json_data)
+            except Exception:
+                json_data = {}
+        
+        if isinstance(json_data, dict):
+            if "master_mp3_path" in json_data:
+                extracted_paths.add(json_data["master_mp3_path"])
+                
+            if "words_timeline" in json_data and isinstance(json_data["words_timeline"], list):
+                for word_entry in json_data["words_timeline"]:
+                    if isinstance(word_entry, dict) and "segment_file" in word_entry:
+                        extracted_paths.add(word_entry["segment_file"])
+                        
+    return extracted_paths
+
+def _cleanup_physical_files(relative_paths: Set[str]) -> None:
+    for relative_path in relative_paths:
+        if relative_path and relative_path != "#":
+            full_file_path = os.path.normpath(
+                os.path.join(WORKSPACE_DIR, relative_path.replace("generated/", ""))
+            )
+            if os.path.exists(full_file_path):
+                try:
+                    os.remove(full_file_path)
+                except Exception as disk_err:
+                    print(f"⚠️ Failed to remove disk asset storage slot: {disk_err}")
+
+# ==============================================================
+# ENDPOINTS
+# ==============================================================
 
 @router_texteditor.delete("/sentences/{id}", status_code=status.HTTP_200_OK)
 async def delete_single_sentence(id: int, session: AsyncSession = Depends(get_db)):
@@ -177,34 +223,9 @@ async def delete_single_sentence(id: int, session: AsyncSession = Depends(get_db
         if not sentence:
             raise HTTPException(status_code=404, detail=f"Sentence ID {id} not found in database records.")
 
-        paths_to_delete = []
-        if hasattr(sentence, "mp3_file_path") and sentence.mp3_file_path:
-            paths_to_delete.append(sentence.mp3_file_path)
-            
-        if hasattr(sentence, "original_sentence_json") and sentence.original_sentence_json:
-            json_data = sentence.original_sentence_json
-            if isinstance(json_data, str):
-                try:
-                    json_data = json.loads(json_data)
-                except Exception:
-                    json_data = {}
-            
-            if isinstance(json_data, dict):
-                if "master_mp3_path" in json_data:
-                    paths_to_delete.append(json_data["master_mp3_path"])
-                if "words_timeline" in json_data and isinstance(json_data["words_timeline"], list):
-                    for word_entry in json_data["words_timeline"]:
-                        if isinstance(word_entry, dict) and "segment_file" in word_entry:
-                            paths_to_delete.append(word_entry["segment_file"])
-
-        for relative_path in set(paths_to_delete):
-            if relative_path and relative_path != "#":
-                full_file_path = os.path.normpath(os.path.join(WORKSPACE_DIR, relative_path.replace("generated/", "")))
-                if os.path.exists(full_file_path):
-                    try:
-                        os.remove(full_file_path)
-                    except Exception as disk_err:
-                        print(f"⚠️ Failed to remove disk asset storage slot: {disk_err}")
+        # Extract paths and delete matching disk assets
+        paths_to_delete = _extract_file_paths(sentence)
+        _cleanup_physical_files(paths_to_delete)
 
         await session.delete(sentence)
         await session.commit()
@@ -214,10 +235,11 @@ async def delete_single_sentence(id: int, session: AsyncSession = Depends(get_db
         raise
     except Exception as e:
         await session.rollback()
-        print("\n=== SINGLE DELETION EXCEPTION STACK ===")
+        print("=== SINGLE DELETION EXCEPTION STACK ===")
         traceback.print_exc()
-        print("========================================\n")
+        print("========================================")
         raise HTTPException(status_code=500, detail=f"Internal database deletion failure: {str(e)}")
+
 
 @router_texteditor.post("/sentences/bulk-delete", status_code=status.HTTP_200_OK)
 async def bulk_delete_sentences(payload: BulkDeleteRequest, session: AsyncSession = Depends(get_db)):
@@ -225,6 +247,7 @@ async def bulk_delete_sentences(payload: BulkDeleteRequest, session: AsyncSessio
         if not payload.ids:
             return {"status": "ignored", "message": "No targets passed."}
 
+        # Fetch records matching target IDs
         statement = select(Sentence).where(Sentence.id.in_(payload.ids))
         result = await session.execute(statement)
         sentences_to_clear = result.scalars().all()
@@ -232,49 +255,27 @@ async def bulk_delete_sentences(payload: BulkDeleteRequest, session: AsyncSessio
         if not sentences_to_clear:
             return {"status": "success", "message": "No records found."}
 
-        paths_to_delete = []
+        # Aggregate unique file paths across all matched sentences
+        all_paths_to_delete = set()
         for sentence in sentences_to_clear:
-            if hasattr(sentence, "mp3_file_path") and sentence.mp3_file_path:
-                paths_to_delete.append(sentence.mp3_file_path)
+            all_paths_to_delete.update(_extract_file_paths(sentence))
 
-            if hasattr(sentence, "original_sentence_json") and sentence.original_sentence_json:
-                json_data = sentence.original_sentence_json
-                if isinstance(json_data, str):
-                    try:
-                        json_data = json.loads(json_data)
-                    except Exception:
-                        json_data = {}
-                
-                if isinstance(json_data, dict):
-                    if "master_mp3_path" in json_data:
-                        paths_to_delete.append(json_data["master_mp3_path"])
-                    if "words_timeline" in json_data and isinstance(json_data["words_timeline"], list):
-                        for word_entry in json_data["words_timeline"]:
-                            if isinstance(word_entry, dict) and "segment_file" in word_entry:
-                                paths_to_delete.append(word_entry["segment_file"])
+        # Wipe local hard drive disk dependencies safely in one go
+        _cleanup_physical_files(all_paths_to_delete)
 
-        for relative_path in set(paths_to_delete):
-            if relative_path and relative_path != "#":
-                full_file_path = os.path.normpath(os.path.join(WORKSPACE_DIR, relative_path.replace("generated/", "")))
-                if os.path.exists(full_file_path):
-                    try:
-                        os.remove(full_file_path)
-                    except Exception:
-                        pass
-
-        for sentence in sentences_to_clear:
-            await session.delete(sentence)
+        # High-performance bulk database deletion execution step
+        delete_statement = delete(Sentence).where(Sentence.id.in_(payload.ids))
+        await session.execute(delete_statement)
 
         await session.commit()
-        return {"status": "success", "message": f"Successfully dropped records."}
+        return {"status": "success", "message": f"Successfully dropped {len(sentences_to_clear)} records."}
 
     except Exception as e:
         await session.rollback()
-        print("\n=== BULK DELETION EXCEPTION STACK ===")
+        print("=== BULK DELETION EXCEPTION STACK ===")
         traceback.print_exc()
-        print("======================================\n")
+        print("======================================")
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
-
 """
 
 # Force convert any residual tabs to 4 spaces programmatically

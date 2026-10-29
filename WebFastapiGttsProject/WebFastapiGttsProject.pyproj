@@ -43,6 +43,7 @@
     <Compile Include="views\canvas_utility\__init__.py" />
     <Compile Include="config.py" />
     <Compile Include="main.py" />
+    <Compile Include="views\image_processing.py" />
     <Compile Include="views\view_routes.py" />
     <Compile Include="views\__init__.py" />
   </ItemGroup>
@@ -50,6 +51,7 @@
     <Content Include=".gitignore" />
     <Content Include="api\frequency.py" />
     <Content Include="README.md" />
+    <Content Include="static\js\edit-image.js" />
     <Content Include="static\js\slideshow.js" />
     <Content Include="study\ReadMeAcademic.md" />
     <Content Include="requirements.txt" />
@@ -84,12 +86,14 @@
     <Content Include="study\textdisksave_bestpractice.md" />
     <Content Include="study\texteditor.md" />
     <Content Include="templates\about.html" />
+    <Content Include="templates\editimage.html" />
     <Content Include="templates\editor.html" />
     <Content Include="templates\index.html" />
     <Content Include="templates\layout.html" />
     <Content Include="templates\studio.html" />
     <Content Include="templates\slideshow.html" />
     <Content Include="templates\texteditor.html" />
+    <Content Include="views\sample.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="api\" />

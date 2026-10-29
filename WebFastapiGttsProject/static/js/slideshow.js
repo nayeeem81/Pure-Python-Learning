@@ -51,6 +51,15 @@ async function savePaths() {
     }
 }
 
+// Folder selection handlers
+function selectImageFolder() {
+    document.getElementById('img-folder-input').click();
+}
+
+function selectMp3Folder() {
+    document.getElementById('mp3-folder-input').click();
+}
+
 async function initializeMedia() {
     // Stop existing timeline loop if active
     if (slideshowInterval) clearInterval(slideshowInterval);

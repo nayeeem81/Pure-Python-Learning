@@ -5,6 +5,13 @@ let wsOriginal = null;
 let wsModified = null;
 let wsRegionsOriginal = null;
 let wordTimelineData = [];
+// ==========================================
+// 6. Text Editor & DSP State Management
+// ==========================================
+// 🛠️ ADD THESE LINES AT THE VERY TOP OF THE FILE:
+let currentSkip = 0;
+const recordsPerPage = 10;
+let totalRecords = 0;
 
 // Track active transaction contexts securely across modules
 window.currentSentenceId = null;
@@ -358,13 +365,7 @@ function compileNewAudio() {
 }
 
 
-// ==========================================
-// 6. Text Editor & DSP State Management
-// ==========================================
-// 🛠️ ADD THESE LINES AT THE VERY TOP OF THE FILE:
-let currentSkip = 0;
-const recordsPerPage = 10;
-let totalRecords = 0;
+
 
 // Connect the main action button
 document.getElementById('loadDataBtn').addEventListener('click', () => {
