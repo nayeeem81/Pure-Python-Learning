@@ -23,6 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="api\fix_tabs.py" />
+    <Compile Include="api\imagetensor.py" />
     <Compile Include="api\slideshow.py" />
     <Compile Include="api\texteditor.py" />
     <Compile Include="data\database.py" />
@@ -36,15 +37,16 @@
     <Compile Include="api\studio.py" />
     <Compile Include="api\agent.py" />
     <Compile Include="api\dependencies.py" />
-    <Compile Include="api\routes.py" />
+    <Compile Include="routers\api_routes.py" />
     <Compile Include="api\__init__.py" />
-    <Compile Include="views\canvas_utility\grid.py" />
-    <Compile Include="views\canvas_utility\waveform.py" />
-    <Compile Include="views\canvas_utility\__init__.py" />
+    <Compile Include="routers\__init__.py" />
+    <Compile Include="utilities\grid.py" />
+    <Compile Include="utilities\waveform.py" />
     <Compile Include="config.py" />
     <Compile Include="main.py" />
-    <Compile Include="views\image_processing.py" />
-    <Compile Include="views\view_routes.py" />
+    <Compile Include="utilities\image_processing.py" />
+    <Compile Include="routers\view_routes.py" />
+    <Compile Include="utilities\__init__.py" />
     <Compile Include="views\__init__.py" />
   </ItemGroup>
   <ItemGroup>
@@ -90,15 +92,15 @@
     <Content Include="templates\editor.html" />
     <Content Include="templates\index.html" />
     <Content Include="templates\layout.html" />
-    <Content Include="templates\studio.html" />
     <Content Include="templates\slideshow.html" />
     <Content Include="templates\texteditor.html" />
-    <Content Include="views\sample.png" />
+    <Content Include="static\sample.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="api\" />
     <Folder Include="data\" />
-    <Folder Include="views\canvas_utility\" />
+    <Folder Include="utilities\" />
+    <Folder Include="routers\" />
     <Folder Include="study\" />
     <Folder Include="static\" />
     <Folder Include="static\content\" />

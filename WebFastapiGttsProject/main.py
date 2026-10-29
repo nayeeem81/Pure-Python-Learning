@@ -3,38 +3,46 @@
 # =====================================================================
 import os
 import sys
+from pathlib import Path
+from contextlib import asynccontextmanager 
 
-# 1. Direct path to your working bin folder
+# 1. Path Fix: Dynamically add the current folder workspace to Python's path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+
+# 2. Configure FFmpeg Environment path strings immediately
 ffmpeg_path = r"C:\ffmpeg\bin"
-
-# 2. Inject it into the runtime path environment array immediately
 if ffmpeg_path not in os.environ["PATH"]:
     os.environ["PATH"] = ffmpeg_path + os.pathsep + os.environ["PATH"]
 
-# 3. Inform pydub exactly where the binaries sit before other files import it
+# 3. Force early configuration initialization on Pydub before ANY internal modules load it
 try:
     import pydub
     pydub.AudioSegment.converter = os.path.join(ffmpeg_path, "ffmpeg.exe")
     pydub.AudioSegment.ffprobe = os.path.join(ffmpeg_path, "ffprobe.exe")
 except ImportError:
     pass
+
 # =====================================================================
-# The rest of your main.py remains exactly as it was
+# CORE APPLICATION IMPORTS (Cleaned up duplicate router references)
 # =====================================================================
-from pathlib import Path
-from contextlib import asynccontextmanager 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text  
 from sqlalchemy.ext.asyncio import create_async_engine  
 from sqlmodel import SQLModel  
 
-from api.routes import api_router
-from views.view_routes import view_router
+# Now it is completely safe to load your custom app modules
+from routers.api_routes import api_router
+from routers.view_routes import view_router
 from config import config  
 from data.database import engine
 from data.model import Sentence, Word, SentenceHistory, WordHistory
 
+# =====================================================================
+# LIFECYCLE MANAGEMENT & ROUTING REGISTRATION
+# =====================================================================
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     admin_url = f"postgresql+asyncpg://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}:{config.DB_PORT}/postgres"
