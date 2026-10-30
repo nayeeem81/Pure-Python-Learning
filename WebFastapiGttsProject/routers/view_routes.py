@@ -65,3 +65,12 @@ def edit_image(request: Request):
         name="editimage.html", 
         context={"page_title": "Edit Image"}
     )
+
+@view_router.get("/storygrid", response_class=HTMLResponse)
+def story_grid(request: Request):
+    """Serves the Story Maker interface template safely via FastAPI."""
+    return templates.TemplateResponse(
+        request=request, 
+        name="storygrid.html", 
+        context={"page_title": "Make Story"}
+    )

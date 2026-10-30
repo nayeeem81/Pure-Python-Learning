@@ -25,6 +25,7 @@
     <Compile Include="api\fix_tabs.py" />
     <Compile Include="api\imagetensor.py" />
     <Compile Include="api\slideshow.py" />
+    <Compile Include="api\storygrid.py" />
     <Compile Include="api\texteditor.py" />
     <Compile Include="data\database.py" />
     <Compile Include="data\init_env.py" />
@@ -36,7 +37,6 @@
     <Compile Include="api\routerwords.py" />
     <Compile Include="api\studio.py" />
     <Compile Include="api\agent.py" />
-    <Compile Include="api\dependencies.py" />
     <Compile Include="routers\api_routes.py" />
     <Compile Include="api\__init__.py" />
     <Compile Include="routers\__init__.py" />
@@ -55,6 +55,7 @@
     <Content Include="README.md" />
     <Content Include="static\js\edit-image.js" />
     <Content Include="static\js\slideshow.js" />
+    <Content Include="static\js\storygrid.js" />
     <Content Include="study\ReadMeAcademic.md" />
     <Content Include="requirements.txt" />
     <Content Include="static\content\banner.png" />
@@ -93,6 +94,7 @@
     <Content Include="templates\index.html" />
     <Content Include="templates\layout.html" />
     <Content Include="templates\slideshow.html" />
+    <Content Include="templates\storygrid.html" />
     <Content Include="templates\texteditor.html" />
     <Content Include="static\sample.png" />
   </ItemGroup>
