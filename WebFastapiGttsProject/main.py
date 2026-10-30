@@ -39,7 +39,7 @@ from routers.api_routes import api_router
 from routers.view_routes import view_router
 from config import config  
 from data.database import engine
-from data.model import Sentence, Word, SentenceHistory, WordHistory
+from data.model import Sentence, Word, SentenceHistory, WordHistory, Story, Chapter
 
 # =====================================================================
 # LIFECYCLE MANAGEMENT & ROUTING REGISTRATION

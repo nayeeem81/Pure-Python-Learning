@@ -1,7 +1,8 @@
 # data/model.py
-from datetime import datetime, timezone  # 💡 Added timezone import
+# data/model.py
+from datetime import datetime, timezone
 from typing import List, Optional
-from sqlmodel import Field, SQLModel, Relationship
+from sqlmodel import SQLModel, Field, Relationship, Column, String 
 from sqlalchemy import String, Text, LargeBinary, Column
 from sqlalchemy.dialects.postgresql import JSONB  
 
@@ -84,3 +85,43 @@ class WordHistory(SQLModel, table=True):
     
     # Relationships
     word: "Word" = Relationship(back_populates="history_records")
+
+
+# =====================================================================
+# 2. STORY MODEL 
+# =====================================================================
+class Story(SQLModel, table=True):
+    __tablename__ = "story"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    story_name: str = Field(max_length=100, nullable=False)    
+    serial_number: int = Field(nullable=True) 
+    story_absolute_folderpath: Optional[str] = Field(default=None, sa_column=Column(String(500), nullable=True))
+
+    # Tracking parameters
+    version: int = Field(default=1)                             
+    modified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    modified_by: Optional[str] = Field(default=None, max_length=100)
+
+    # Relationships linked seamlessly across tables
+    chapters: List["Chapter"] = Relationship(back_populates="story", cascade_delete=True)
+
+
+class Chapter(SQLModel, table=True):
+    __tablename__ = "chapters"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    chapter_name: str = Field(max_length=100, nullable=False)  
+    serial_number: int = Field(nullable=True) 
+    chapter_absolute_folderpath: Optional[str] = Field(default=None, sa_column=Column(String(500), nullable=True))
+
+    # 💡 FOREIGN KEY FIX: Connects each chapter row to its parent story row in PostgreSQL
+    story_id: int = Field(foreign_key="story.id", nullable=False)
+
+    # Tracking parameters
+    version: int = Field(default=1)                             
+    modified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    modified_by: Optional[str] = Field(default=None, max_length=100)
+
+    # Relationships
+    story: "Story" = Relationship(back_populates="chapters")

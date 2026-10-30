@@ -9,16 +9,17 @@ from pydantic import BaseModel
 from sqlmodel import select, func, delete
 from sqlmodel.ext.asyncio.session import AsyncSession
 from data.database import get_db 
-from data.model import Sentence    
+from data.model import Sentence  
+from pathlib import Path
+from datetime import datetime, timezone
+# Assuming your models and engine setup are imported
+from data.model import Story, get_session 
 
-router_texteditor = APIRouter(tags=["Text Edit & DSP"])
+router_storygrid = APIRouter(tags=["Text Edit & DSP"])
 
 WORKSPACE_DIR = os.path.abspath("./project")
 GENERATED_DIR = os.path.join(WORKSPACE_DIR, "generated")
 
-# ==============================================================
-# DATA MODELS
-# ==============================================================
 class BulkDeleteRequest(BaseModel):
 	ids: List[int]
 
@@ -81,9 +82,8 @@ def _cleanup_physical_files(relative_paths: Set[str]) -> None:
 # ==============================================================
 # CORE API ENDPOINTS
 # ==============================================================
-
-@router_texteditor.get("/sentences", response_model=dict)
-async def get_sentences(
+@router_storygrid.get("/sentences", response_model=dict)
+async def get_storygrid(
 	session: AsyncSession = Depends(get_db),
 	skip: int = Query(default=0, ge=0),
 	limit: int = Query(default=10, le=100)
@@ -155,13 +155,12 @@ async def get_sentences(
 		raise HTTPException(status_code=500, detail=f"Database operational crash: {str(e)}")
 
 
-@router_texteditor.delete("/sentences/{id}", status_code=status.HTTP_200_OK)
-async def delete_single_sentence(id: int, session: AsyncSession = Depends(get_db)):
+@router_storygrid.delete("/sentences/{id}", status_code=status.HTTP_200_OK)
+async def delete_single_router_storygrid(id: int, session: AsyncSession = Depends(get_db)):
 	try:
 		statement = select(Sentence).where(Sentence.id == id)
 		result = await session.execute(statement)
 		sentence = result.scalars().first()
-
 		if not sentence:
 			raise HTTPException(status_code=404, detail=f"Sentence ID {id} not found in database records.")
 
@@ -183,8 +182,8 @@ async def delete_single_sentence(id: int, session: AsyncSession = Depends(get_db
 		raise HTTPException(status_code=500, detail=f"Internal database deletion failure: {str(e)}")
 
 
-@router_texteditor.post("/sentences/bulk-delete", status_code=status.HTTP_200_OK)
-async def bulk_delete_sentences(payload: BulkDeleteRequest, session: AsyncSession = Depends(get_db)):
+@router_storygrid.post("/sentences/bulk-delete", status_code=status.HTTP_200_OK)
+async def bulk_delete_storygrid(payload: BulkDeleteRequest, session: AsyncSession = Depends(get_db)):
 	try:
 		if not payload.ids:
 			return {"status": "ignored", "message": "No targets passed."}
@@ -218,3 +217,97 @@ async def bulk_delete_sentences(payload: BulkDeleteRequest, session: AsyncSessio
 		traceback.print_exc()
 		print("======================================")
 		raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
+
+
+# ==============================================================
+# DATA MODELS
+# ==============================================================
+class Story(BaseModel):
+   story_name: str
+
+@router_storygrid.post("/story", status_code=status.HTTP_201_CREATED)
+async def create_story(story: Story, db: AsyncSession = Depends(get_db)):
+    try:
+		story = Story(
+			story_name=story.story_name,
+			story_absolute_folderpath=story.story_name
+		)
+
+		new_words.append(word_item)
+        
+        db.add_all(new_words)
+
+        await db.commit() 
+
+        return {"message": f"Successfully compiled {len(new_words)} words for Sentence #{sentence_id}."}
+
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=500, 
+            detail=f"An error occurred while parsing the text layout: {str(e)}"
+        )
+
+
+@app.post("/stories/", response_model=Story)
+def create_story(story_name: str, session: Session = Depends(get_session)):
+    # 1. Create the physical file system folder
+    try:
+        user_home = Path.home()
+        project_dir = user_home / "Documents" / "Project"
+        project_dir.mkdir(parents=True, exist_ok=True)
+
+        story_dir = project_dir / story_name
+        story_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Convert path object to string for the database
+        absolute_path_str = str(story_dir)
+        
+    except PermissionError:
+        raise HTTPException(status_code=403, detail="File system write permission denied.")
+
+    # 2. Build the database record
+    now = datetime.now(timezone.utc)
+    new_story = Story(
+        story_name=story_name,
+        story_absolute_folderpath=absolute_path_str,
+        modified_at=now.date(),
+		modified_by=now.date()
+    )
+
+    # 3. Save to PostgreSQL
+    session.add(new_story)
+    session.commit()
+    session.refresh(new_story)
+    return new_story
+
+
+@app.get("/stories/{story_id}/files")
+def browse_story_files(story_id: int, session: Session = Depends(get_session)):
+    # 1. Get the story from the database
+    story = session.get(Story, story_id)
+    if not story:
+        raise HTTPException(status_code=404, detail="Story not found")
+
+    # 2. Turn the saved string path back into a Path object
+    story_folder = Path(story.story_absolute_folderpath)
+
+    # 3. Safety check: make sure the folder wasn't deleted manually on Windows
+    if not story_folder.is_dir():
+        raise HTTPException(status_code=404, detail="The physical directory does not exist on disk.")
+
+    # 4. Browse and list all files inside (e.g., mp3s, texts, chapters)
+    found_files = []
+    for file_path in story_folder.iterdir():
+        if file_path.is_file(): # Skip inner folders, only grab files
+            found_files.append({
+                "filename": file_path.name,
+                "extension": file_path.suffix,
+                "size_bytes": file_path.stat().st_size
+            })
+
+    return {
+        "story_name": story.story_name,
+        "folder_path": story.story_absolute_folderpath,
+        "files": found_files
+    }

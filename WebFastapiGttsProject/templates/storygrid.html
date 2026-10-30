@@ -3,12 +3,12 @@
 
 <div class="container">
     <div class="jumbotron">
-        <h1>🎛️ Story Maker</h1>
+        <h1>🎛️ STORY MAKER</h1>
     </div>
 
     <div class="action-bar" style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
-        <button id="loadStoryGridDataBtn" class="btn btn-primary load-sentence">Load Sentences</button>
-
+        <button id="loadStoryGridDataBtn" class="btn btn-primary load-sentence" disabled>Load Sentences</button>
+        <button id="createStoryBtn" class="btn btn-primary load-sentence">New Story</button>
         <!-- Industry Practice: Keep bulk actions outside the table and disabled until selection happens -->
         <button id="chapterSelectedBtn" class="btn btn-danger" style="display: none;">🗑️ Delete Selected (<span id="selectedCount">0</span>)</button>
     </div>
