@@ -12,11 +12,15 @@ const selectedCountSpan = document.getElementById('selectedCount');
 
 // Dom Reference Cache
 const newStoryModal = document.getElementById('newStoryModal');
-const createStoryBtn = document.getElementById('createStoryBtn');
+const newChapterModal = document.getElementById('newChapterModal');
+const createStoryBtn = document.getElementById('createStoryBtn'); 
+const createChapterBtn = document.getElementById('createChapterBtn');
 const cancelStoryBtn = document.getElementById('cancelStoryBtn');
 const closeModalCross = document.getElementById('closeModalCross');
 const submitStoryBtn = document.getElementById('submitStoryBtn');
 const storyTitleInput = document.getElementById('storyTitleInput');
+const submitChapterBtn = document.getElementById('submitChapterBtn');
+const chapterTitleInput = document.getElementById('chapterTitleInput');
 
 // 1. Open Native Modal with Backdrop backdrop styling automatically handled by browser
 createStoryBtn.addEventListener('click', () => {
@@ -32,75 +36,78 @@ const closeAndResetModal = () => {
 
 cancelStoryBtn.addEventListener('click', closeAndResetModal);
 closeModalCross.addEventListener('click', closeAndResetModal);
-
-// 3. Asynchronous Post Delivery to Fast API Backend
+// =========================================================================
+// RULE 2: Save metadata during the async REST API fetch return loop
+// =========================================================================
 submitStoryBtn.addEventListener('click', async () => {
     const storyTitle = storyTitleInput.value.trim();
+    if (!storyTitle) return;
 
-    if (!storyTitle) {
-        alert('Please provide a descriptive title for your story.');
-        storyTitleInput.focus();
-        return;
-    }
-
-    // Defensive UI: Prevent network race-conditions / double-clicks
     submitStoryBtn.disabled = true;
-    submitStoryBtn.textContent = 'Creating...';
 
+    // Inside your /static/js/storygrid.js -> submitStoryBtn Event Listener
     try {
-        // Try this if Scenario A is true (FastAPI has prefix="/api"):
         const response = await fetch('/api/stories', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ story_name: storyTitle }) // Field matches schema
+            body: JSON.stringify({ story_name: storyTitle })
         });
 
         if (!response.ok) {
             throw new Error(`Server returned error status: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data = await response.json(); // Explicit properties: data.id and data.story_name
         console.log('Story generated successfully:', data);
 
-        // Close form context on success block execution
+        // 1. Hide the dialog input modal form safely
         closeAndResetModal();
 
         // ====================================================
-        // PERMANENT DOM UPDATE CODE
+        // UPDATE PERMANENT UI CONTEXT LABEL
         // ====================================================
         const activeStoryLabel = document.getElementById('activeStoryLabel');
-        const activeStoryId = document.getElementById('activeStoryId');
-        const storyMetaBadge = document.getElementById('storyMetaBadge');
         const loadStoryGridDataBtn = document.getElementById('loadStoryGridDataBtn');
 
-        // 2. Safely swap out text contents with the fresh database returned value attributes
-        activeStoryLabel.textContent = `📖 ${data.story_name}`;
-        activeStoryLabel.style.color = '#212529'; // Reset the color tracking off red/italic state
+        // 2. Inject the newly processed model string properties permanently into the DOM
+        activeStoryLabel.innerHTML = `📖 <span style="color: #007bff;">${data.story_name}</span> <span style="font-size: 12px; color: #6c757d; font-weight: 400; margin-left: 10px;">(Database ID: ${data.id})</span>`;
 
-        activeStoryId.textContent = data.id;
-        storyMetaBadge.style.display = 'block'; // Reveal the visual badge metadata layer
-
-        // 3. Pro-Tip: Automatically unlock the "Load Sentences" action engine button 
-        // now that a valid working target exist!
-        loadStoryGridDataBtn.disabled = false;
+        // 3. Automatically enable your 'Load Sentences' table grid logic hook
+        if (loadStoryGridDataBtn) {
+            loadStoryGridDataBtn.disabled = false;
+        }
 
     } catch (error) {
         console.error('Failed to submit new story context payload:', error);
         alert('Could not save your new story right now. Please try again.');
     } finally {
-        // Safe Reset Sequence
         submitStoryBtn.disabled = false;
-        submitStoryBtn.textContent = 'Create Story';
     }
 });
-
 
 // Track active transaction contexts securely across modules
 window.currentSentenceId = null;
 
 // Initialize layout elements as soon as the DOM loads
 document.addEventListener("DOMContentLoaded", () => {
-    
+
+    const savedStoryName = localStorage.getItem('activeStoryName');
+    const savedStoryId = localStorage.getItem('activeStoryId');
+
+    if (savedStoryName && savedStoryId) {
+        updatePermanentUI(savedStoryName, savedStoryId);
+    }
+
+    // Helper component function to manage structural view states cleanly
+    function updatePermanentUI(name, id) {
+        activeStoryLabel.innerHTML = `📖 <span style="color: #007bff; font-weight: 700;">${name}</span> <span style="font-size: 12px; color: #6c757d; margin-left: 8px;">(Database ID: ${id})</span>`;
+
+        // Enable the matching data matrix loading triggers automatically
+        if (loadStoryGridDataBtn) {
+            loadStoryGridDataBtn.disabled = false;
+        }
+    }
+
     // 1. Dynamic visibility toggle & count calculation
     function updateChapterButtonState() {
         const checkedBoxes = userTableBody.querySelectorAll('.row-checkbox:checked');
