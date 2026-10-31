@@ -1,5 +1,6 @@
-# api/texteditor.py
-
+from sqlalchemy.orm import Session  
+from pathlib import Path
+from datetime import datetime, timezone
 from typing import List, Set 
 import os
 import json
@@ -8,12 +9,8 @@ from fastapi import APIRouter, HTTPException, Depends, Query, status
 from pydantic import BaseModel
 from sqlmodel import select, func, delete
 from sqlmodel.ext.asyncio.session import AsyncSession
-from data.database import get_db 
-from data.model import Sentence  
-from pathlib import Path
-from datetime import datetime, timezone
-# Assuming your models and engine setup are imported
-from data.model import Story, get_session 
+from data.database import get_db
+from data.model import Sentence , Story 
 
 router_storygrid = APIRouter(tags=["Text Edit & DSP"])
 
@@ -222,35 +219,16 @@ async def bulk_delete_storygrid(payload: BulkDeleteRequest, session: AsyncSessio
 # ==============================================================
 # DATA MODELS
 # ==============================================================
-class Story(BaseModel):
-   story_name: str
+# 1. FIX: Keep your Pydantic data schema separate from your SQLAlchemy DB Model
+class StoryCreateSchema(BaseModel):
+    story_name: str
+ # Inside api/storygrid.py
 
-@router_storygrid.post("/story", status_code=status.HTTP_201_CREATED)
-async def create_story(story: Story, db: AsyncSession = Depends(get_db)):
-    try:
-		story = Story(
-			story_name=story.story_name,
-			story_absolute_folderpath=story.story_name
-		)
+@router_storygrid.post("/stories")
+# 1. FIX: Add the async keyword to define this as an asynchronous endpoint handler
+async def create_story(payload: StoryCreateSchema, session: Session = Depends(get_db)):
+    story_name = payload.story_name 
 
-		new_words.append(word_item)
-        
-        db.add_all(new_words)
-
-        await db.commit() 
-
-        return {"message": f"Successfully compiled {len(new_words)} words for Sentence #{sentence_id}."}
-
-    except Exception as e:
-        await db.rollback()
-        raise HTTPException(
-            status_code=500, 
-            detail=f"An error occurred while parsing the text layout: {str(e)}"
-        )
-
-
-@app.post("/stories/", response_model=Story)
-def create_story(story_name: str, session: Session = Depends(get_session)):
     # 1. Create the physical file system folder
     try:
         user_home = Path.home()
@@ -259,8 +237,6 @@ def create_story(story_name: str, session: Session = Depends(get_session)):
 
         story_dir = project_dir / story_name
         story_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Convert path object to string for the database
         absolute_path_str = str(story_dir)
         
     except PermissionError:
@@ -268,22 +244,29 @@ def create_story(story_name: str, session: Session = Depends(get_session)):
 
     # 2. Build the database record
     now = datetime.now(timezone.utc)
+    
     new_story = Story(
         story_name=story_name,
         story_absolute_folderpath=absolute_path_str,
-        modified_at=now.date(),
-		modified_by=now.date()
+        version=1,
+        modified_at=now,
+        modified_by="System"
     )
 
-    # 3. Save to PostgreSQL
+    # 3. Save to PostgreSQL safely using async/await syntax rules
     session.add(new_story)
-    session.commit()
-    session.refresh(new_story)
+    
+    # 2. FIX: Await the database session commit sequence
+    await session.commit()
+    
+    # 3. FIX: Await the object state database refresh 
+    await session.refresh(new_story)
+    
     return new_story
 
 
-@app.get("/stories/{story_id}/files")
-def browse_story_files(story_id: int, session: Session = Depends(get_session)):
+@router_storygrid.get("/stories/{story_id}/files")
+def browse_story_files(story_id: int, session: Session = Depends(get_db)):
     # 1. Get the story from the database
     story = session.get(Story, story_id)
     if not story:

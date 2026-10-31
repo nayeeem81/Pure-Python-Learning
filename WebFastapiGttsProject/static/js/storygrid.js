@@ -1,4 +1,3 @@
-
 // ==========================================
 // 6. Text Editor & DSP State Management
 // ==========================================
@@ -6,18 +5,102 @@
 let currentSkip = 0;
 const recordsPerPage = 10;
 let totalRecords = 0;
+const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+const userTableBody = document.getElementById('userTableBody');
+const chapterSelectedBtn = document.getElementById('chapterSelectedBtn');
+const selectedCountSpan = document.getElementById('selectedCount');
+
+// Dom Reference Cache
+const newStoryModal = document.getElementById('newStoryModal');
+const createStoryBtn = document.getElementById('createStoryBtn');
+const cancelStoryBtn = document.getElementById('cancelStoryBtn');
+const closeModalCross = document.getElementById('closeModalCross');
+const submitStoryBtn = document.getElementById('submitStoryBtn');
+const storyTitleInput = document.getElementById('storyTitleInput');
+
+// 1. Open Native Modal with Backdrop backdrop styling automatically handled by browser
+createStoryBtn.addEventListener('click', () => {
+    newStoryModal.showModal();
+    storyTitleInput.focus(); // Good accessibility UX focus placement
+});
+
+// 2. Local Modular Modal Closures
+const closeAndResetModal = () => {
+    newStoryModal.close();
+    storyTitleInput.value = ''; // Clean field for subsequent openings
+};
+
+cancelStoryBtn.addEventListener('click', closeAndResetModal);
+closeModalCross.addEventListener('click', closeAndResetModal);
+
+// 3. Asynchronous Post Delivery to Fast API Backend
+submitStoryBtn.addEventListener('click', async () => {
+    const storyTitle = storyTitleInput.value.trim();
+
+    if (!storyTitle) {
+        alert('Please provide a descriptive title for your story.');
+        storyTitleInput.focus();
+        return;
+    }
+
+    // Defensive UI: Prevent network race-conditions / double-clicks
+    submitStoryBtn.disabled = true;
+    submitStoryBtn.textContent = 'Creating...';
+
+    try {
+        // Try this if Scenario A is true (FastAPI has prefix="/api"):
+        const response = await fetch('/api/stories', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ story_name: storyTitle }) // Field matches schema
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server returned error status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Story generated successfully:', data);
+
+        // Close form context on success block execution
+        closeAndResetModal();
+
+        // ====================================================
+        // PERMANENT DOM UPDATE CODE
+        // ====================================================
+        const activeStoryLabel = document.getElementById('activeStoryLabel');
+        const activeStoryId = document.getElementById('activeStoryId');
+        const storyMetaBadge = document.getElementById('storyMetaBadge');
+        const loadStoryGridDataBtn = document.getElementById('loadStoryGridDataBtn');
+
+        // 2. Safely swap out text contents with the fresh database returned value attributes
+        activeStoryLabel.textContent = `📖 ${data.story_name}`;
+        activeStoryLabel.style.color = '#212529'; // Reset the color tracking off red/italic state
+
+        activeStoryId.textContent = data.id;
+        storyMetaBadge.style.display = 'block'; // Reveal the visual badge metadata layer
+
+        // 3. Pro-Tip: Automatically unlock the "Load Sentences" action engine button 
+        // now that a valid working target exist!
+        loadStoryGridDataBtn.disabled = false;
+
+    } catch (error) {
+        console.error('Failed to submit new story context payload:', error);
+        alert('Could not save your new story right now. Please try again.');
+    } finally {
+        // Safe Reset Sequence
+        submitStoryBtn.disabled = false;
+        submitStoryBtn.textContent = 'Create Story';
+    }
+});
+
 
 // Track active transaction contexts securely across modules
 window.currentSentenceId = null;
 
 // Initialize layout elements as soon as the DOM loads
 document.addEventListener("DOMContentLoaded", () => {
-
-    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-    const userTableBody = document.getElementById('userTableBody');
-    const chapterSelectedBtn = document.getElementById('chapterSelectedBtn');
-    const selectedCountSpan = document.getElementById('selectedCount');
-
+    
     // 1. Dynamic visibility toggle & count calculation
     function updateChapterButtonState() {
         const checkedBoxes = userTableBody.querySelectorAll('.row-checkbox:checked');

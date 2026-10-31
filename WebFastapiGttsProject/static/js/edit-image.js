@@ -30,6 +30,83 @@ let dots = [];
 let selectedPolygon = null;
 let selectionSource = 'latest';
 
+// Dom Reference Cache
+const newStoryModal = document.getElementById('newStoryModal');
+const createStoryBtn = document.getElementById('createStoryBtn');
+const cancelStoryBtn = document.getElementById('cancelStoryBtn');
+const closeModalCross = document.getElementById('closeModalCross');
+const submitStoryBtn = document.getElementById('submitStoryBtn');
+const storyTitleInput = document.getElementById('storyTitleInput');
+
+// Dom Reference Cache
+const newStoryModal = document.getElementById('newStoryModal');
+const createStoryBtn = document.getElementById('createStoryBtn');
+const cancelStoryBtn = document.getElementById('cancelStoryBtn');
+const closeModalCross = document.getElementById('closeModalCross');
+const submitStoryBtn = document.getElementById('submitStoryBtn');
+const storyTitleInput = document.getElementById('storyTitleInput');
+
+// 1. Open Native Modal with Backdrop backdrop styling automatically handled by browser
+createStoryBtn.addEventListener('click', () => {
+    newStoryModal.showModal();
+    storyTitleInput.focus(); // Good accessibility UX focus placement
+});
+
+// 2. Local Modular Modal Closures
+const closeAndResetModal = () => {
+    newStoryModal.close();
+    storyTitleInput.value = ''; // Clean field for subsequent openings
+};
+
+cancelStoryBtn.addEventListener('click', closeAndResetModal);
+closeModalCross.addEventListener('click', closeAndResetModal);
+
+// 3. Asynchronous Post Delivery to Fast API Backend
+submitStoryBtn.addEventListener('click', async () => {
+    const storyTitle = storyTitleInput.value.trim();
+
+    if (!storyTitle) {
+        alert('Please provide a descriptive title for your story.');
+        storyTitleInput.focus();
+        return;
+    }
+
+    // Defensive UI: Prevent network race-conditions / double-clicks
+    submitStoryBtn.disabled = true;
+    submitStoryBtn.textContent = 'Creating...';
+
+    try {
+        const response = await fetch('/api/stories', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ story_name: storyTitle })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server returned error status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Story generated successfully:', data);
+
+        // Close form context on success block execution
+        closeAndResetModal();
+
+        // Pro-tip: Refresh your data table programmatically here if applicable!
+        // if (typeof loadStoryGridData === "function") loadStoryGridData();
+
+    } catch (error) {
+        console.error('Failed to submit new story context payload:', error);
+        alert('Could not save your new story right now. Please try again.');
+    } finally {
+        // Safe Reset Sequence
+        submitStoryBtn.disabled = false;
+        submitStoryBtn.textContent = 'Create Story';
+    }
+});
+
 function clamp(value) {
   return Math.max(0, Math.min(255, value));
 }

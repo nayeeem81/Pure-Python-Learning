@@ -10,6 +10,7 @@ from api.routerwords import router_words
 from api.texteditor import router_texteditor
 from api.slideshow import slideshow_router
 from api.imagetensor import router_imagetensor
+from api.storygrid import router_storygrid 
 
 api_router = APIRouter()
 
@@ -21,3 +22,5 @@ api_router.include_router(router_words)
 api_router.include_router(router_texteditor)
 api_router.include_router(slideshow_router)
 api_router.include_router(router_imagetensor)
+api_router.include_router(router_storygrid)
+

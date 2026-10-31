@@ -6,11 +6,26 @@
         <h1>🎛️ STORY MAKER</h1>
     </div>
 
+    <!-- ========================================================== -->
+    <!-- INDUSTRY PRACTICE: Permanent Active Context Tracking Label -->
+    <!-- ========================================================== -->
+    <div class="active-story-context" style="margin-bottom: 20px; padding: 12px 20px; background: #e9ecef; border-left: 5px solid #007bff; border-radius: 4px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+            <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #6c757d; font-weight: 700; display: block; margin-bottom: 2px;">Active Working Context</span>
+            <h2 id="activeStoryLabel" style="margin: 0; font-size: 1.5rem; color: #212529; font-weight: 600;">
+                <span style="color: #dc3545; font-style: italic; font-size: 1.1rem; font-weight: 400;">No Story Active. Click "New Story" to create one.</span>
+            </h2>
+        </div>
+        <div id="storyMetaBadge" style="display: none;">
+            <span class="badge" style="background: #007bff; color: white; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">ID: <span id="activeStoryId">-</span></span>
+        </div>
+    </div>
+
     <div class="action-bar" style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
         <button id="loadStoryGridDataBtn" class="btn btn-primary load-sentence" disabled>Load Sentences</button>
         <button id="createStoryBtn" class="btn btn-primary load-sentence">New Story</button>
         <!-- Industry Practice: Keep bulk actions outside the table and disabled until selection happens -->
-        <button id="chapterSelectedBtn" class="btn btn-danger" style="display: none;">🗑️ Delete Selected (<span id="selectedCount">0</span>)</button>
+        <button id="chapterSelectedBtn" class="btn btn-danger" style="display: none;">🗑️ Add Selected (<span id="selectedCount">0</span>)</button>
     </div>
 
     <table class="table">
@@ -48,7 +63,35 @@
             Next ⏭️
         </button>
     </div>
+
+    <!-- ========================================================== -->
+    <!-- INDUSTRY PRACTICE: Native Dialog Modal for Isolated Tasks -->
+    <!-- ========================================================== -->
+    <dialog id="newStoryModal" style="border: none; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 0; width: 450px; max-width: 90%;">
+        <!-- Modal Header -->
+        <div style="background: #f8f9fa; padding: 15px 20px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 1.25rem;">✨ Create New Story</h3>
+            <button type="button" id="closeModalCross" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+
+        <!-- Modal Body & Form Context -->
+        <div style="padding: 20px;">
+            <div style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px;">
+                <label for="storyTitleInput" style="font-weight: 600; color: #444;">Story Title</label>
+                <!-- aria-required ensures screen readers flag this field instantly -->
+                <input type="text" id="storyTitleInput" class="form-control" placeholder="e.g., The Midnight Mystery" aria-required="true" style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+            </div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div style="padding: 15px 20px; background: #f8f9fa; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" id="cancelStoryBtn" class="btn btn-secondary">Cancel</button>
+            <button type="button" id="submitStoryBtn" class="btn btn-success">Create Story</button>
+        </div>
+    </dialog>
+
 </div>
+
 {% endblock %}
 
 {% block scripts %}
