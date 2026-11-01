@@ -1,5 +1,5 @@
 // ==========================================
-// 6. Text Editor & DSP State Management
+// Story Grid Editor & DSP State Management
 // ==========================================
 // 🛠️ ADD THESE LINES AT THE VERY TOP OF THE FILE:
 let currentSkip = 0;
@@ -9,18 +9,28 @@ const selectAllCheckbox = document.getElementById('selectAllCheckbox');
 const userTableBody = document.getElementById('userTableBody');
 const chapterSelectedBtn = document.getElementById('chapterSelectedBtn');
 const selectedCountSpan = document.getElementById('selectedCount');
-
+// Track active transaction contexts securely across modules
+window.currentSentenceId = null;
 // Dom Reference Cache
 const newStoryModal = document.getElementById('newStoryModal');
 const newChapterModal = document.getElementById('newChapterModal');
+
 const createStoryBtn = document.getElementById('createStoryBtn'); 
 const createChapterBtn = document.getElementById('createChapterBtn');
+
 const cancelStoryBtn = document.getElementById('cancelStoryBtn');
 const closeModalCross = document.getElementById('closeModalCross');
+
 const submitStoryBtn = document.getElementById('submitStoryBtn');
 const storyTitleInput = document.getElementById('storyTitleInput');
+
 const submitChapterBtn = document.getElementById('submitChapterBtn');
 const chapterTitleInput = document.getElementById('chapterTitleInput');
+
+// Dom Reference Cache Targets
+const activeStoryLabel = document.getElementById('activeStoryLabel');
+const loadStoryGridDataBtn = document.getElementById('loadStoryGridDataBtn');
+const haveActiveContext = localStorage.getItem('activeStoryName') && localStorage.getItem('activeStoryId');
 
 // 1. Open Native Modal with Backdrop backdrop styling automatically handled by browser
 createStoryBtn.addEventListener('click', () => {
@@ -36,16 +46,20 @@ const closeAndResetModal = () => {
 
 cancelStoryBtn.addEventListener('click', closeAndResetModal);
 closeModalCross.addEventListener('click', closeAndResetModal);
+
+
 // =========================================================================
 // RULE 2: Save metadata during the async REST API fetch return loop
 // =========================================================================
 submitStoryBtn.addEventListener('click', async () => {
+
     const storyTitle = storyTitleInput.value.trim();
+
     if (!storyTitle) return;
 
     submitStoryBtn.disabled = true;
 
-    // Inside your /static/js/storygrid.js -> submitStoryBtn Event Listener
+   
     try {
         const response = await fetch('/api/stories', {
             method: 'POST',
@@ -60,7 +74,14 @@ submitStoryBtn.addEventListener('click', async () => {
         const data = await response.json(); // Explicit properties: data.id and data.story_name
         console.log('Story generated successfully:', data);
 
-        // 1. Hide the dialog input modal form safely
+        // 1. Commit values securely into browser local storage
+        localStorage.setItem('activeStoryName', data.story_name);
+        localStorage.setItem('activeStoryId', data.id);
+
+        // 2. Trigger instant component layout update
+        updatePermanentUI(data.story_name, data.id);
+
+        // 3. Clear window layer and close modal context
         closeAndResetModal();
 
         // ====================================================
@@ -75,25 +96,31 @@ submitStoryBtn.addEventListener('click', async () => {
         // 3. Automatically enable your 'Load Sentences' table grid logic hook
         if (loadStoryGridDataBtn) {
             loadStoryGridDataBtn.disabled = false;
+            createChapterBtn.disabled = false;
         }
 
     } catch (error) {
         console.error('Failed to submit new story context payload:', error);
         alert('Could not save your new story right now. Please try again.');
     } finally {
-        submitStoryBtn.disabled = false;
+        submitStoryBtn.disabled = true;
     }
 });
 
-// Track active transaction contexts securely across modules
-window.currentSentenceId = null;
+
+
 
 // Initialize layout elements as soon as the DOM loads
 document.addEventListener("DOMContentLoaded", () => {
-
     const savedStoryName = localStorage.getItem('activeStoryName');
     const savedStoryId = localStorage.getItem('activeStoryId');
 
+    if (haveActiveContext) {
+        createStoryBtn.disabled = true; // Disable story creation if an active context exists
+        loadStoryGridDataBtn.disabled = false; // Enable the load button if a story is active
+        createChapterBtn.disabled = false; // Enable chapter creation if a story is active
+    }
+    // If a story was previously created/selected, restore it to the UI
     if (savedStoryName && savedStoryId) {
         updatePermanentUI(savedStoryName, savedStoryId);
     }
@@ -254,6 +281,7 @@ async function fetchSentences() {
         if (!sentences || sentences.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No database rows found.</td></tr>';
             updatePaginationUI();
+            createChapterBtn.disabled = false; // Disable chapter creation if no sentences exist
             return;
         }
 
