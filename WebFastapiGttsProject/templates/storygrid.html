@@ -19,6 +19,11 @@
         <div id="storyMetaBadge" style="display: none;">
             <span class="badge" style="background: #007bff; color: white; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">ID: <span id="activeStoryId">-</span></span>
         </div>
+
+        <!-- This container holds all dynamically appended items -->
+        <div id="activeChapterContainer" style="display: flex; flex-wrap: wrap; gap: 5px;">
+            <!-- New items will appear here sequentially -->
+        </div>
     </div>
 
     <div class="action-bar" style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
@@ -67,7 +72,7 @@
     </div>
 
     <!-- ========================================================== -->
-    <!-- INDUSTRY PRACTICE: Native Dialog Modal for Isolated Tasks -->
+    <!-- INDUSTRY PRACTICE: Story: Native Dialog Modal for Isolated Tasks -->
     <!-- ========================================================== -->
     <dialog id="newStoryModal" style="border: none; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 0; width: 450px; max-width: 90%;">
         <!-- Modal Header -->
@@ -89,6 +94,32 @@
         <div style="padding: 15px 20px; background: #f8f9fa; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 10px;">
             <button type="button" id="cancelStoryBtn" class="btn btn-secondary">Cancel</button>
             <button type="button" id="submitStoryBtn" class="btn btn-success">Create Story</button>
+        </div>
+    </dialog>
+
+    <!-- ========================================================== -->
+    <!-- INDUSTRY PRACTICE: Chapter: Native Dialog Modal for Isolated Tasks -->
+    <!-- ========================================================== -->
+    <dialog id="newChapterModal" style="border: none; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 0; width: 450px; max-width: 90%;">
+        <!-- Modal Header -->
+        <div style="background: #f8f9fa; padding: 15px 20px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 1.25rem;">✨ Create New Chapter</h3>
+            <button type="button" id="closeChapterModalCross" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+
+        <!-- Modal Body & Form Context -->
+        <div style="padding: 20px;">
+            <div style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px;">
+                <label for="chapterTitleInput" style="font-weight: 600; color: #444;">Chapter Title</label>
+                <!-- aria-required ensures screen readers flag this field instantly -->
+                <input type="text" id="chapterTitleInput" class="form-control" placeholder="e.g., The Midnight Mystery" aria-required="true" style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px;">
+            </div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div style="padding: 15px 20px; background: #f8f9fa; border-top: 1px solid #dee2e6; display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" id="cancelChapterBtn" class="btn btn-secondary">Cancel</button>
+            <button type="button" id="submitChapterBtn" class="btn btn-success">Create Chapter</button>
         </div>
     </dialog>
 

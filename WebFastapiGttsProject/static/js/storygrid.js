@@ -1,56 +1,87 @@
 // ==========================================
 // Story Grid Editor & DSP State Management
 // ==========================================
-// 🛠️ ADD THESE LINES AT THE VERY TOP OF THE FILE:
 let currentSkip = 0;
 const recordsPerPage = 10;
 let totalRecords = 0;
+
 const selectAllCheckbox = document.getElementById('selectAllCheckbox');
 const userTableBody = document.getElementById('userTableBody');
 const chapterSelectedBtn = document.getElementById('chapterSelectedBtn');
 const selectedCountSpan = document.getElementById('selectedCount');
+
 // Track active transaction contexts securely across modules
 window.currentSentenceId = null;
-// Dom Reference Cache
+
+const createStoryBtn = document.getElementById('createStoryBtn');
+// Story Modal Elements
 const newStoryModal = document.getElementById('newStoryModal');
-const newChapterModal = document.getElementById('newChapterModal');
-
-const createStoryBtn = document.getElementById('createStoryBtn'); 
-const createChapterBtn = document.getElementById('createChapterBtn');
-
 const cancelStoryBtn = document.getElementById('cancelStoryBtn');
 const closeModalCross = document.getElementById('closeModalCross');
-
 const submitStoryBtn = document.getElementById('submitStoryBtn');
 const storyTitleInput = document.getElementById('storyTitleInput');
 
+// Local Storage (Story)
+const activeStoryLabel = document.getElementById('activeStoryLabel');
+const haveActiveContext = localStorage.getItem('activeStoryName') && localStorage.getItem('activeStoryId');
+// Local Storage (Chapter)
+const activeChapterLabel = document.getElementById('activeChapterLabel');
+
+const loadStoryGridDataBtn = document.getElementById('loadStoryGridDataBtn');
+const createChapterBtn = document.getElementById('createChapterBtn');
+
+// Chapter Modal Elements   
+const newChapterModal = document.getElementById('newChapterModal');
 const submitChapterBtn = document.getElementById('submitChapterBtn');
 const chapterTitleInput = document.getElementById('chapterTitleInput');
+const cancelChapterBtn = document.getElementById('cancelChapterBtn');
+const closeChapterModalCross = document.getElementById('closeChapterModalCross');
 
-// Dom Reference Cache Targets
-const activeStoryLabel = document.getElementById('activeStoryLabel');
-const loadStoryGridDataBtn = document.getElementById('loadStoryGridDataBtn');
-const haveActiveContext = localStorage.getItem('activeStoryName') && localStorage.getItem('activeStoryId');
-
-// 1. Open Native Modal with Backdrop backdrop styling automatically handled by browser
+// 1. Open Story Native Modal with Backdrop backdrop styling automatically handled by browser
 createStoryBtn.addEventListener('click', () => {
     newStoryModal.showModal();
-    storyTitleInput.focus(); // Good accessibility UX focus placement
+    storyTitleInput.focus(); 
 });
 
-// 2. Local Modular Modal Closures
 const closeAndResetModal = () => {
     newStoryModal.close();
-    storyTitleInput.value = ''; // Clean field for subsequent openings
+    storyTitleInput.value = '';
 };
 
+// 2. Local Modular Modal Closures (Story)
 cancelStoryBtn.addEventListener('click', closeAndResetModal);
 closeModalCross.addEventListener('click', closeAndResetModal);
 
+// 1. Open Chapter Native Modal with Backdrop backdrop styling automatically handled by browser
+createChapterBtn.addEventListener('click', () => {
+    newChapterModal.showModal();
+    chapterTitleInput.focus(); 
+});
+
+const closeAndResetChapterModal = () => {
+    newChapterModal.close();
+    chapterTitleInput.value = '';
+};
+
+// 2. Local Modular Modal Closures (Chapter)
+cancelChapterBtn.addEventListener('click', closeAndResetChapterModal);
+closeChapterModalCross.addEventListener('click', closeAndResetChapterModal);
+
 
 // =========================================================================
-// RULE 2: Save metadata during the async REST API fetch return loop
+// RULE 2: Save metadata during the async REST API fetch return loop (Create Story first)
 // =========================================================================
+
+// Helper component function to manage structural view states cleanly
+function updatePermanentUI(name, id) {
+    activeStoryLabel.innerHTML = `📖 <span style="color: #007bff; font-weight: 700;">${name}</span> <span style="font-size: 12px; color: #6c757d; margin-left: 8px;">(Database ID: ${id})</span>`;
+
+    // Enable the matching data matrix loading triggers automatically
+    if (loadStoryGridDataBtn) {
+        loadStoryGridDataBtn.disabled = false;
+    }
+}
+
 submitStoryBtn.addEventListener('click', async () => {
 
     const storyTitle = storyTitleInput.value.trim();
@@ -59,7 +90,6 @@ submitStoryBtn.addEventListener('click', async () => {
 
     submitStoryBtn.disabled = true;
 
-   
     try {
         const response = await fetch('/api/stories', {
             method: 'POST',
@@ -71,7 +101,8 @@ submitStoryBtn.addEventListener('click', async () => {
             throw new Error(`Server returned error status: ${response.status}`);
         }
 
-        const data = await response.json(); // Explicit properties: data.id and data.story_name
+        const data = await response.json(); 
+
         console.log('Story generated successfully:', data);
 
         // 1. Commit values securely into browser local storage
@@ -84,9 +115,6 @@ submitStoryBtn.addEventListener('click', async () => {
         // 3. Clear window layer and close modal context
         closeAndResetModal();
 
-        // ====================================================
-        // UPDATE PERMANENT UI CONTEXT LABEL
-        // ====================================================
         const activeStoryLabel = document.getElementById('activeStoryLabel');
         const loadStoryGridDataBtn = document.getElementById('loadStoryGridDataBtn');
 
@@ -107,9 +135,111 @@ submitStoryBtn.addEventListener('click', async () => {
     }
 });
 
+// =========================================================================
+// RULE 3: Save metadata during the async REST API fetch return loop (Create Chapter)
+// =========================================================================
+var arrChapters = []; // Initialize an empty array to hold chapter data
 
+submitChapterBtn.addEventListener('click', async () => {
 
+    const chapterTitle = chapterTitleInput.value.trim();
 
+    if (!chapterTitle) return;
+
+    submitChapterBtn.disabled = false;
+
+    try {
+        const rawStoryId = localStorage.getItem('activeStoryId');
+        const activeStoryId = rawStoryId ? parseInt(rawStoryId, 10) : 0; 
+
+        const payload = {
+            chapter_name: chapterTitle,
+            serial_number: 0, // Placeholder for future logic to auto-increment chapter numbers
+            story_id: activeStoryId    
+        };
+      
+        const response = await fetch('/api/chapters', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server returned error status: ${response.status}`);
+        }
+
+        var data = {};
+        data = await response.json(); 
+
+        // Commit values securely into browser local storage
+        arrChapters.push(data); 
+
+        localStorage.setItem('activeChapters', JSON.stringify(arrChapters));
+ 
+        appendChapterToUI('activeChapterContainer');
+
+        // Clear window layer and close modal context
+        closeAndResetChapterModal();
+
+        // Automatically enable your 'Load Sentences' table grid logic hook
+        if (loadStoryGridDataBtn) {
+            loadStoryGridDataBtn.disabled = false;
+            createChapterBtn.disabled = false;
+        }
+
+    } catch (error) {
+        console.error('Failed to submit new chapter context payload:', error);
+        alert('Could not save your new chapter right now. Please try again.');
+    } finally {
+        submitChapterBtn.disabled = false;
+    }
+});
+
+// Reusable utility function to append a new chapter element permanently to a container
+function appendChapterToUI(containerId) {
+    const targetContainer = document.getElementById(containerId);
+
+    if (!targetContainer) {
+        console.error(`Target container with ID "${containerId}" was not found.`);
+        return;
+    }
+
+    // 1. Retrieve the raw JSON string from local storage
+    const rawChapters = localStorage.getItem('activeChapters');
+
+    // 2. Safely parse the string into a JS array object (fallback to an empty array if null)
+    const arrChapters = rawChapters ? JSON.parse(rawChapters) : [];
+
+    // 3. You can now use it as a normal array
+    console.log("Your chapters array:", arrChapters);
+
+    // 1. Clear out old entries to prevent UI duplication bugs
+    targetContainer.innerHTML = '';
+
+    // 2. Loop through your chapters array
+    for (let i = 0; i < arrChapters.length; i++) {
+        // Optimization: Pull out the single object instance
+        const chapter = arrChapters[i];
+
+        const newChapterHTML = `
+        <div class="chapter-badge-item" style="margin-bottom: 8px; padding: 6px 12px; background: #ffffff; border: 1px solid #dee2e6; border-radius: 4px; display: inline-flex; align-items: center; gap: 10px; margin-right: 8px;">
+            <span style="font-size: 14px;">📖</span>
+            <span style="color: #007bff; font-weight: 600;">${chapter.chapter_name}</span>
+            <span style="font-size: 12px; color: #6c757d; font-weight: 400;">(Database ID: ${chapter.id})</span>
+        </div>
+    `;
+
+        // Append the element cleanly without wiping out components
+        targetContainer.insertAdjacentHTML('beforeend', newChapterHTML);
+    }
+    // ⚡ FIX: Removed the stray extra closing bracket '}' from here
+
+}
+
+// Initialize layout elements as soon as the DOM loads
+// Initialize layout elements as soon as the DOM loads
 // Initialize layout elements as soon as the DOM loads
 document.addEventListener("DOMContentLoaded", () => {
     const savedStoryName = localStorage.getItem('activeStoryName');
@@ -120,19 +250,11 @@ document.addEventListener("DOMContentLoaded", () => {
         loadStoryGridDataBtn.disabled = false; // Enable the load button if a story is active
         createChapterBtn.disabled = false; // Enable chapter creation if a story is active
     }
+
     // If a story was previously created/selected, restore it to the UI
     if (savedStoryName && savedStoryId) {
         updatePermanentUI(savedStoryName, savedStoryId);
-    }
-
-    // Helper component function to manage structural view states cleanly
-    function updatePermanentUI(name, id) {
-        activeStoryLabel.innerHTML = `📖 <span style="color: #007bff; font-weight: 700;">${name}</span> <span style="font-size: 12px; color: #6c757d; margin-left: 8px;">(Database ID: ${id})</span>`;
-
-        // Enable the matching data matrix loading triggers automatically
-        if (loadStoryGridDataBtn) {
-            loadStoryGridDataBtn.disabled = false;
-        }
+        appendChapterToUI('activeChapterContainer');
     }
 
     // 1. Dynamic visibility toggle & count calculation
@@ -149,6 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Auto-check/uncheck master header box based on individual row status
         const allBoxes = userTableBody.querySelectorAll('.row-checkbox');
+
         if (allBoxes.length > 0) {
             selectAllCheckbox.checked = (checkedBoxes.length === allBoxes.length);
         }
@@ -230,7 +353,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-
 // 💡 Helper function to update the slider numerical value text dynamically
 function updateLabel(elementId, value) {
     const label = document.getElementById(elementId);
@@ -239,7 +361,7 @@ function updateLabel(elementId, value) {
 
 // Connect the main action button
 document.getElementById('loadStoryGridDataBtn').addEventListener('click', () => {
-    currentSkip = 0; // Reset to the first page on a fresh click
+    currentSkip = 0; 
     fetchSentences();
 });
 
@@ -319,7 +441,6 @@ async function fetchSentences() {
     }
 }
 
-// Pageing
 function updatePaginationUI() {
     const currentPage = Math.floor(currentSkip / recordsPerPage) + 1;
     const totalPages = Math.ceil(totalRecords / recordsPerPage) || 1;
