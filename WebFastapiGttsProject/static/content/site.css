@@ -398,7 +398,194 @@ audio {
     font-weight: bold;
 }
 
-    .player-btn:hover {
+
+/* ====================================================================
+   FLOATING PANEL & TEXT OVERLAY STYLING
+   ==================================================================== */
+
+.keyboard-instruction {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 15px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.keyboard-instruction kbd {
+    background: #333;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-family: monospace;
+    margin: 0 4px;
+    font-weight: bold;
+}
+
+.floating-panel {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 300px;
+    background: rgba(30, 30, 30, 0.95);
+    border: 2px solid #f5c451;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    font-family: 'Arial', sans-serif;
+}
+
+.floating-panel-header {
+    background: rgba(50, 50, 50, 0.8);
+    padding: 12px;
+    border-bottom: 1px solid rgba(245, 196, 81, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 6px 6px 0 0;
+}
+
+.floating-panel-header h3 {
+    margin: 0;
+    color: #f5c451;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.close-button {
+    background: #c83232;
+    color: white;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.close-button:hover {
+    background: #a02020;
+}
+
+.floating-panel-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    color: #f5c451;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group textarea {
+    background: #222;
+    border: 1px solid #555;
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #f5c451;
+    box-shadow: 0 0 8px rgba(245, 196, 81, 0.3);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #888;
+}
+
+.floating-panel-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.floating-panel-actions button {
+    flex: 1;
+    background: #0077b6;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: background 0.2s ease;
+}
+
+.floating-panel-actions button:hover {
+    background: #0056a3;
+}
+
+.floating-panel-actions #clear-metadata-button {
+    background: #dc3545;
+}
+
+.floating-panel-actions #clear-metadata-button:hover {
+    background: #c82333;
+}
+
+/* Text overlay canvas styling */
+#text-overlay-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: transparent;
+    pointer-events: none;
+}
+
+.canvas-stage {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-btn {
+    background: #0077b6;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s ease;
+    font-size: 14px;
+}
+
+.custom-btn:hover {
+    background: #0056a3;
+}
+
+.custom-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
         background: #005f8f;
     }
 

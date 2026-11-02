@@ -125,3 +125,23 @@ class Chapter(SQLModel, table=True):
 
     # Relationships
     story: "Story" = Relationship(back_populates="chapters")
+
+
+# =====================================================================
+# 5. IMAGE METADATA MODEL (Title & Short Brief for Presentations)
+# =====================================================================
+class ImageMetadata(SQLModel, table=True):
+    __tablename__ = "image_metadata"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+    # Text fields for presentation overlay
+    title: str = Field(sa_column=Column(Text, nullable=False), default="")
+    short_brief: str = Field(sa_column=Column(Text, nullable=False), default="")
+
+    # Tracking parameters
+    version: int = Field(default=1)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    modified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    modified_by: Optional[str] = Field(default=None, max_length=100)
+

@@ -366,3 +366,246 @@ loadTensor().catch((error) => {
     shape.textContent = 'Tensor unavailable';
     position.textContent = error.message;
 });
+
+// ====================================================================
+// FLOATING PANEL AND TEXT OVERLAY FUNCTIONALITY
+// ====================================================================
+
+const floatingPanel = document.querySelector('#floating-panel');
+const closePanelButton = document.querySelector('#close-panel-button');
+const titleInput = document.querySelector('#title-input');
+const briefInput = document.querySelector('#brief-input');
+const saveMetadataButton = document.querySelector('#save-metadata-button');
+const clearMetadataButton = document.querySelector('#clear-metadata-button');
+const textOverlayCanvas = document.querySelector('#text-overlay-canvas');
+const textOverlayContext = textOverlayCanvas.getContext('2d');
+
+let currentMetadata = { title: '', short_brief: '' };
+
+// Load existing metadata on page load
+async function loadCurrentMetadata() {
+    try {
+        const response = await fetch('/api/metadata/current');
+        if (response.ok && response.status !== 204) {
+            const data = await response.json();
+            if (data) {
+                currentMetadata = {
+                    title: data.title || '',
+                    short_brief: data.short_brief || ''
+                };
+                titleInput.value = currentMetadata.title;
+                briefInput.value = currentMetadata.short_brief;
+                renderTextOverlay();
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load metadata:', error);
+    }
+}
+
+// Save or update metadata
+async function saveMetadata() {
+    const title = titleInput.value.trim();
+    const short_brief = briefInput.value.trim();
+
+    try {
+        const response = await fetch('/api/metadata/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, short_brief })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            currentMetadata = {
+                title: data.title,
+                short_brief: data.short_brief
+            };
+            renderTextOverlay();
+            console.log('Metadata saved successfully');
+        } else {
+            alert('Failed to save metadata');
+        }
+    } catch (error) {
+        console.error('Metadata save error:', error);
+        alert('Error saving metadata: ' + error.message);
+    }
+}
+
+// Clear metadata
+async function clearMetadata() {
+    try {
+        const response = await fetch('/api/metadata/clear', { method: 'POST' });
+
+        if (response.ok) {
+            currentMetadata = { title: '', short_brief: '' };
+            titleInput.value = '';
+            briefInput.value = '';
+            renderTextOverlay();
+            console.log('Metadata cleared');
+        } else {
+            alert('Failed to clear metadata');
+        }
+    } catch (error) {
+        console.error('Metadata clear error:', error);
+        alert('Error clearing metadata: ' + error.message);
+    }
+}
+
+// Render text overlay on canvas
+function renderTextOverlay() {
+    if (!tensor) return;
+
+    textOverlayCanvas.width = canvas.width;
+    textOverlayCanvas.height = canvas.height;
+
+    if (!currentMetadata.title && !currentMetadata.short_brief) {
+        textOverlayContext.clearRect(0, 0, textOverlayCanvas.width, textOverlayCanvas.height);
+        return;
+    }
+
+    // Clear canvas
+    textOverlayContext.clearRect(0, 0, textOverlayCanvas.width, textOverlayCanvas.height);
+
+    const width = textOverlayCanvas.width;
+    const height = textOverlayCanvas.height;
+    const marginX = Math.max(20, width / 20);
+    const marginY = Math.max(20, height / 20);
+
+    // Calculate font sizes based on canvas dimensions
+    const titleFontSize = Math.max(24, Math.floor(height / 12));
+    const briefFontSize = Math.max(16, Math.floor(height / 18));
+
+    textOverlayContext.save();
+
+    let yPos = marginY;
+
+    // Draw title
+    if (currentMetadata.title) {
+        textOverlayContext.font = `bold ${titleFontSize}px Arial`;
+        textOverlayContext.fillStyle = '#f5c451';
+        textOverlayContext.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        textOverlayContext.shadowBlur = 8;
+        textOverlayContext.shadowOffsetX = 2;
+        textOverlayContext.shadowOffsetY = 2;
+        textOverlayContext.fillText(currentMetadata.title, marginX, yPos);
+        yPos += titleFontSize + 20;
+        textOverlayContext.shadowColor = 'transparent';
+    }
+
+    // Draw short brief
+    if (currentMetadata.short_brief) {
+        textOverlayContext.font = `${briefFontSize}px Arial`;
+        textOverlayContext.fillStyle = '#ffffff';
+        textOverlayContext.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        textOverlayContext.shadowBlur = 6;
+        textOverlayContext.shadowOffsetX = 1;
+        textOverlayContext.shadowOffsetY = 1;
+
+        const maxWidth = width - (2 * marginX);
+        const lineHeight = briefFontSize + 8;
+        const lines = wrapText(currentMetadata.short_brief, maxWidth, briefFontSize);
+
+        lines.forEach((line) => {
+            textOverlayContext.fillText(line, marginX, yPos);
+            yPos += lineHeight;
+        });
+    }
+
+    textOverlayContext.restore();
+}
+
+// Helper function to wrap text
+function wrapText(text, maxWidth, fontSize) {
+    const canvas_temp = document.createElement('canvas');
+    const ctx_temp = canvas_temp.getContext('2d');
+    ctx_temp.font = `${fontSize}px Arial`;
+
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+
+    words.forEach((word) => {
+        const testLine = currentLine + (currentLine ? ' ' : '') + word;
+        const metrics = ctx_temp.measureText(testLine);
+
+        if (metrics.width > maxWidth && currentLine) {
+            lines.push(currentLine);
+            currentLine = word;
+        } else {
+            currentLine = testLine;
+        }
+    });
+
+    if (currentLine) {
+        lines.push(currentLine);
+    }
+
+    return lines;
+}
+
+// Toggle floating panel with T key
+document.addEventListener('keydown', (event) => {
+    // Only toggle if not typing in an input or textarea
+    if (event.key.toLowerCase() === 't' && 
+        document.activeElement !== titleInput && 
+        document.activeElement !== briefInput) {
+        event.preventDefault();
+        floatingPanel.style.display = floatingPanel.style.display === 'none' ? 'block' : 'none';
+    }
+});
+
+// Close panel button
+closePanelButton.addEventListener('click', () => {
+    floatingPanel.style.display = 'none';
+});
+
+// Save metadata button
+saveMetadataButton.addEventListener('click', saveMetadata);
+
+// Clear metadata button
+clearMetadataButton.addEventListener('click', async () => {
+    if (confirm('Are you sure you want to clear all text?')) {
+        await clearMetadata();
+    }
+});
+
+// Update text overlay when inputs change
+titleInput.addEventListener('change', renderTextOverlay);
+briefInput.addEventListener('change', renderTextOverlay);
+
+// Download button modification to include text overlay
+const originalDownloadButton = downloadButton;
+downloadButton.addEventListener('click', async () => {
+    try {
+        // Create a composite canvas with both the image and text
+        const compositeCanvas = document.createElement('canvas');
+        compositeCanvas.width = canvas.width;
+        compositeCanvas.height = canvas.height;
+        const compositeCtx = compositeCanvas.getContext('2d');
+
+        // Draw the main image
+        compositeCtx.drawImage(canvas, 0, 0);
+
+        // Draw the text overlay
+        compositeCtx.drawImage(textOverlayCanvas, 0, 0);
+
+        // Download the composite image
+        compositeCanvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `image_with_text_${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }, 'image/png');
+    } catch (error) {
+        console.error('Download error:', error);
+        alert('Error downloading image: ' + error.message);
+    }
+});
+
+// Load metadata and render overlay on initial load
+loadCurrentMetadata();
