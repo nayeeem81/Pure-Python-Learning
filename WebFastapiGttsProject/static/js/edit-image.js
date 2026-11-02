@@ -97,6 +97,9 @@ function render() {
 
     // Now this will render perfectly aligned nodes on top!
     drawSelection();
+
+    // Render text overlay with title and brief
+    renderTextOverlay();
 }
 
 
@@ -470,7 +473,7 @@ function renderTextOverlay() {
     const width = textOverlayCanvas.width;
     const height = textOverlayCanvas.height;
     const marginX = Math.max(20, width / 20);
-    const marginY = Math.max(20, height / 20);
+    const marginY = Math.max(40, height / 12);  // Increased top padding
 
     // Calculate font sizes based on canvas dimensions
     const titleFontSize = Math.max(24, Math.floor(height / 12));
@@ -489,7 +492,7 @@ function renderTextOverlay() {
         textOverlayContext.shadowOffsetX = 2;
         textOverlayContext.shadowOffsetY = 2;
         textOverlayContext.fillText(currentMetadata.title, marginX, yPos);
-        yPos += titleFontSize + 20;
+        yPos += titleFontSize + 32;  // Increased gap before brief
         textOverlayContext.shadowColor = 'transparent';
     }
 
@@ -503,7 +506,7 @@ function renderTextOverlay() {
         textOverlayContext.shadowOffsetY = 1;
 
         const maxWidth = width - (2 * marginX);
-        const lineHeight = briefFontSize + 8;
+        const lineHeight = briefFontSize + 12;  // Increased line height for better spacing
         const lines = wrapText(currentMetadata.short_brief, maxWidth, briefFontSize);
 
         lines.forEach((line) => {
@@ -515,31 +518,42 @@ function renderTextOverlay() {
     textOverlayContext.restore();
 }
 
-// Helper function to wrap text
+// Helper function to wrap text and handle line breaks
 function wrapText(text, maxWidth, fontSize) {
     const canvas_temp = document.createElement('canvas');
     const ctx_temp = canvas_temp.getContext('2d');
     ctx_temp.font = `${fontSize}px Arial`;
 
-    const words = text.split(' ');
+    // Split by line breaks first (\n)
+    const paragraphs = text.split('\n');
     const lines = [];
-    let currentLine = '';
 
-    words.forEach((word) => {
-        const testLine = currentLine + (currentLine ? ' ' : '') + word;
-        const metrics = ctx_temp.measureText(testLine);
+    paragraphs.forEach((paragraph) => {
+        if (!paragraph.trim()) {
+            // Empty line - add empty line for spacing
+            lines.push('');
+            return;
+        }
 
-        if (metrics.width > maxWidth && currentLine) {
+        const words = paragraph.split(' ');
+        let currentLine = '';
+
+        words.forEach((word) => {
+            const testLine = currentLine + (currentLine ? ' ' : '') + word;
+            const metrics = ctx_temp.measureText(testLine);
+
+            if (metrics.width > maxWidth && currentLine) {
+                lines.push(currentLine);
+                currentLine = word;
+            } else {
+                currentLine = testLine;
+            }
+        });
+
+        if (currentLine) {
             lines.push(currentLine);
-            currentLine = word;
-        } else {
-            currentLine = testLine;
         }
     });
-
-    if (currentLine) {
-        lines.push(currentLine);
-    }
 
     return lines;
 }
