@@ -218,24 +218,18 @@ function appendChapterToUI(containerId) {
     // 1. Clear out old entries to prevent UI duplication bugs
     targetContainer.innerHTML = '';
 
-    // 2. Loop through your chapters array
     for (let i = 0; i < arrChapters.length; i++) {
-        // Optimization: Pull out the single object instance
         const chapter = arrChapters[i];
 
         const newChapterHTML = `
-        <div class="chapter-badge-item" style="margin-bottom: 8px; padding: 6px 12px; background: #ffffff; border: 1px solid #dee2e6; border-radius: 4px; display: inline-flex; align-items: center; gap: 10px; margin-right: 8px;">
-            <span style="font-size: 14px;">📖</span>
-            <span style="color: #007bff; font-weight: 600;">${chapter.chapter_name}</span>
-            <span style="font-size: 12px; color: #6c757d; font-weight: 400;">(Database ID: ${chapter.id})</span>
-        </div>
+    <div class="chapter-badge-item" data-id="${chapter.id}">
+        <span class="chapter-badge-icon">📖</span>
+        <span class="chapter-badge-title">${chapter.chapter_name}</span>
+        <span class="chapter-badge-id">(Database ID: ${chapter.id})</span>
+    </div>
     `;
-
-        // Append the element cleanly without wiping out components
         targetContainer.insertAdjacentHTML('beforeend', newChapterHTML);
     }
-    // ⚡ FIX: Removed the stray extra closing bracket '}' from here
-
 }
 
 // Initialize layout elements as soon as the DOM loads
@@ -251,13 +245,28 @@ document.addEventListener("DOMContentLoaded", () => {
         createChapterBtn.disabled = false; // Enable chapter creation if a story is active
     }
 
-    // If a story was previously created/selected, restore it to the UI
     if (savedStoryName && savedStoryId) {
         updatePermanentUI(savedStoryName, savedStoryId);
         appendChapterToUI('activeChapterContainer');
     }
 
-    // 1. Dynamic visibility toggle & count calculation
+    const container = document.getElementById('activeChapterContainer');
+    if (container) {
+        container.addEventListener('click', (event) => {
+            const badge = event.target.closest('.chapter-badge-item');
+            if (!badge) return;
+
+            const chapterId = badge.dataset.id;
+            console.log("Captured Chapter Database ID:", chapterId);
+
+            handleChapterSelection(chapterId);
+        });
+    }
+
+    function handleChapterSelection(chapterId) {
+       
+    }
+
     function updateChapterButtonState() {
         const checkedBoxes = userTableBody.querySelectorAll('.row-checkbox:checked');
         const count = checkedBoxes.length;
@@ -269,15 +278,13 @@ document.addEventListener("DOMContentLoaded", () => {
             chapterSelectedBtn.style.display = 'none';
         }
 
-        // Auto-check/uncheck master header box based on individual row status
         const allBoxes = userTableBody.querySelectorAll('.row-checkbox');
 
         if (allBoxes.length > 0) {
             selectAllCheckbox.checked = (checkedBoxes.length === allBoxes.length);
         }
     }
-
-    // 2. Master Checkbox Event (Toggle all rows)
+    
     selectAllCheckbox.addEventListener('change', () => {
         const rowCheckboxes = userTableBody.querySelectorAll('.row-checkbox');
         rowCheckboxes.forEach(cb => {
@@ -286,20 +293,15 @@ document.addEventListener("DOMContentLoaded", () => {
         updateDeleteButtonState();
     });
 
-    // 3. Delegated Listener for row checkboxes (supports dynamically added rows)
     userTableBody.addEventListener('change', (e) => {
         if (e.target.classList.contains('row-checkbox')) {
             updateDeleteButtonState();
         }
     });
 
-    // 4. Executing Bulk Deletion against your FastAPI backend
     chapterSelectedBtn.addEventListener('click', async () => {
         const checkedBoxes = userTableBody.querySelectorAll('.row-checkbox:checked');
-
-        // Match your grid template: Read value directly from the checked checkbox element
         const idsToDelete = Array.from(checkedBoxes).map(cb => parseInt(cb.value, 10)).filter(id => !isNaN(id));
-
         if (idsToDelete.length === 0) return;
 
         const confirmDelete = confirm(`Are you sure you want to delete ${idsToDelete.length} selected item(s)?`);
@@ -311,7 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ids: idsToDelete }) // Sends: {"ids":}
+                body: JSON.stringify({ ids: idsToDelete }) 
             });
 
             if (!response.ok) {
@@ -321,19 +323,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const result = await response.json();
-
             if (result.status === 'success' || result.status === 'ignored') {
-                // UI Cleanup: Remove matching rows locally from the DOM tree
                 checkedBoxes.forEach(cb => {
                     const row = cb.closest('tr');
                     row.remove();
                 });
-
-                // Reset master checkbox header state
+                
                 selectAllCheckbox.checked = false;
                 updateChapterButtonState();
-
-                // Show grid placeholder text if the table has been fully cleared out
+                
                 if (userTableBody.querySelectorAll('.row-checkbox').length === 0) {
                     userTableBody.innerHTML = `
                         <tr>
@@ -353,19 +351,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-// 💡 Helper function to update the slider numerical value text dynamically
 function updateLabel(elementId, value) {
     const label = document.getElementById(elementId);
     if (label) label.innerText = value;
 }
 
-// Connect the main action button
 document.getElementById('loadStoryGridDataBtn').addEventListener('click', () => {
     currentSkip = 0; 
     fetchSentences();
 });
 
-// Connect Next/Previous Pagination Elements
 document.getElementById('prevPageBtn').addEventListener('click', () => {
     if (currentSkip >= recordsPerPage) {
         currentSkip -= recordsPerPage;
@@ -384,36 +379,28 @@ document.getElementById('loadStoryGridDataBtn').addEventListener('click', fetchS
 
 async function fetchSentences() {
     const tableBody = document.getElementById('userTableBody');
-    // Updated colspan to match the 4 columns we are rendering
     tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Querying ORM...</td></tr>';
 
     try {
-        // Inside studio-engine.js - update these lines inside fetchSentences():
-
         const response = await fetch(`/api/sentences?skip=${currentSkip}&limit=${recordsPerPage}`);
         if (!response.ok) throw new Error(`Server connection failed: ${response.status}`);
 
         const result = await response.json();
-        // 🛠️ FIX: Extract the actual array from the data property container
         const sentences = result.data;
         totalRecords = result.total;
-
-        tableBody.innerHTML = ''; // Clear fallback loading row
+        tableBody.innerHTML = '';
 
         if (!sentences || sentences.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No database rows found.</td></tr>';
             updatePaginationUI();
-            createChapterBtn.disabled = false; // Disable chapter creation if no sentences exist
+            createChapterBtn.disabled = false; 
             return;
         }
 
-        // 🛠️ FIX: Loop through the 'sentences' array variable instead of the root 'data' object
         sentences.forEach((sentence, index) => {
             const row = document.createElement('tr');
             const duration = sentence.total_duration_seconds ? `${sentence.total_duration_seconds}s` : '2.88s';
             const mp3Url = sentence.master_mp3_path ? `/project/${sentence.master_mp3_path}` : '#';
-
-            // Example of how your row template string should look when appending to userTableBody
             const rowHtml = `
                     <tr data-id="${sentence.id}">
                         <td style="text-align: center;">
@@ -424,14 +411,12 @@ async function fetchSentences() {
                         <td>${sentence.text_content || 'No Text'}</td>
                          <td>
                     <audio controls preload="none"><source src="${mp3Url}" type="audio/mpeg"></audio>
-                  
                 </td>
                         <td>${sentence.total_duration_seconds}s</td>
                         <td><span class="status-indicator ready">Ready</span></td>
                     </tr>
                 `;
-                 
-           
+
             userTableBody.insertAdjacentHTML('beforeend', rowHtml);
         });
         updatePaginationUI();
@@ -444,18 +429,11 @@ async function fetchSentences() {
 function updatePaginationUI() {
     const currentPage = Math.floor(currentSkip / recordsPerPage) + 1;
     const totalPages = Math.ceil(totalRecords / recordsPerPage) || 1;
-
-    // Log calculation data to your browser console to verify values
     console.log(`Pagination Diagnostics -> Total Rows: ${totalRecords}, Current Skip: ${currentSkip}`);
-
-    // Update text node layout
     document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${totalPages} (Total: ${totalRecords})`;
-
-    // Select DOM nodes
     const prevBtn = document.getElementById('prevPageBtn');
     const nextBtn = document.getElementById('nextPageBtn');
-
-    // 🛠️ FIX: Explicit boolean calculations
+    // FIX: Explicit boolean calculations
     prevBtn.disabled = (currentSkip === 0);
     nextBtn.disabled = (currentSkip + recordsPerPage >= totalRecords);
 }

@@ -845,6 +845,42 @@ audio {
 
 /* ================= STORY GRID LAYOUT & CONTROLS ================= */
 /* ================= STORY GRID LAYOUT & CONTROLS ================= */
+/* Chapter Badge Container Item */
+.chapter-badge-item {
+    margin-bottom: 8px;
+    margin-right: 8px;
+    padding: 6px 12px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer; /* Added for standard button/clickable behavior */
+    transition: background-color 0.2s ease;
+}
+
+    .chapter-badge-item:hover {
+        background-color: #f8f9fa; /* Subtle hover effect */
+    }
+
+/* Internal Icon Element */
+.chapter-badge-icon {
+    font-size: 14px;
+}
+
+/* Chapter Title Text */
+.chapter-badge-title {
+    color: #007bff;
+    font-weight: 600;
+}
+
+/* Database ID Label Context */
+.chapter-badge-id {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 400;
+}
 
 
 
