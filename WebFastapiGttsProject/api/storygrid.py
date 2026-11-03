@@ -186,9 +186,9 @@ async def bulk_delete_storygrid(payload: BulkDeleteRequest, session: AsyncSessio
 
 # ============================================================== 
 # STORIES & CHAPTERS ENDPOINTS 
-# ============================================================== 
+# =====================================g========================= 
 class StoryCreateSchema(BaseModel): 
-    story_name: str 
+	story_name: str
 
 @router_storygrid.post("/stories") 
 # FIX: Switched standard Session to AsyncSession type hint
@@ -232,11 +232,16 @@ async def create_chapter(payload: ChapterCreateSchema, session: AsyncSession = D
     serial_number = payload.serial_number
     story_id = payload.story_id
     
+	# Fetch existing chapters to determine sequence and log information
+    statement_story = select(Story).where(Story.id == story_id).order_by(Story.id)
+
+    result = await session.execute(statement_story)
+    all_stories = result.scalars().all()
     try:
         user_home = Path.home()
-        project_dir = user_home / "Documents" / "Project"
+        project_dir = user_home / "Documents" / "Project" / f"{all_stories[0].story_name}" 
         project_dir.mkdir(parents=True, exist_ok=True)
-        chapterdir = project_dir / chapter_name
+        chapterdir = project_dir / f"{chapter_name}" 
         chapterdir.mkdir(parents=True, exist_ok=True)
         absolute_path_str = str(chapterdir)
     except PermissionError:
