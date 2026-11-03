@@ -1195,32 +1195,3 @@ audio {
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     }
 
-/* ─── BUTTON STATES (Assuming fallback styles if Bootstrap isn't loaded) ─── */
-.btn {
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    color: #ffffff;
-}
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
-    }
-
-.btn-success {
-    background-color: #28a745;
-    color: #ffffff;
-}
-
-    .btn-success:hover {
-        background-color: #218838;
-    }
-
