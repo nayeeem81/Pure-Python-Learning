@@ -1,5 +1,4 @@
 # data/model.py
-# data/model.py
 from datetime import datetime, timezone
 from typing import List, Optional
 from sqlmodel import SQLModel, Field, Relationship, Column, String 
@@ -28,9 +27,8 @@ class Sentence(SQLModel, table=True):
     # Tracking parameters
     version: int = Field(default=1)
     
-    # 💡 FIX: Force timezone tracking into the default factory loop to clear the ValueError
+    # Force timezone tracking into the default factory loop to clear the ValueError
     modified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    
     modified_by: Optional[str] = Field(default=None, max_length=100)
 
     # Relationships linked seamlessly across tables
@@ -39,7 +37,7 @@ class Sentence(SQLModel, table=True):
 
 
 # =====================================================================
-# 2. WORD MODEL (Verified & Unchanged)
+# 2. WORD MODEL
 # =====================================================================
 class Word(SQLModel, table=True):
     __tablename__ = "words"
@@ -88,7 +86,7 @@ class WordHistory(SQLModel, table=True):
 
 
 # =====================================================================
-# 2. STORY MODEL 
+# 5. STORY MODEL 
 # =====================================================================
 class Story(SQLModel, table=True):
     __tablename__ = "story"
@@ -103,10 +101,15 @@ class Story(SQLModel, table=True):
     modified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     modified_by: Optional[str] = Field(default=None, max_length=100)
 
-    # Relationships linked seamlessly across tables
+    # One Story has many Chapters
     chapters: List["Chapter"] = Relationship(back_populates="story", cascade_delete=True)
+    # One Story has many AudioChapters
+    audio_chapters: List["AudioChapter"] = Relationship(back_populates="story", cascade_delete=True)
 
 
+# =====================================================================
+# 6. CHAPTER MODEL 
+# =====================================================================
 class Chapter(SQLModel, table=True):
     __tablename__ = "chapters"
 
@@ -115,7 +118,7 @@ class Chapter(SQLModel, table=True):
     serial_number: int = Field(nullable=True) 
     chapter_absolute_folderpath: Optional[str] = Field(default=None, sa_column=Column(String(500), nullable=True))
 
-    # 💡 FOREIGN KEY FIX: Connects each chapter row to its parent story row in PostgreSQL
+    # Connects each chapter row to its parent story row
     story_id: int = Field(foreign_key="story.id", nullable=False)
 
     # Tracking parameters
@@ -123,25 +126,49 @@ class Chapter(SQLModel, table=True):
     modified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     modified_by: Optional[str] = Field(default=None, max_length=100)
 
-    # Relationships
+    # Relationships       
     story: "Story" = Relationship(back_populates="chapters")
+    
+    # FIX: Changed back_populates from "chapters" to "chapter" to match AudioChapter property
+    audio_chapters: List["AudioChapter"] = Relationship(back_populates="chapter", cascade_delete=True)
 
 
 # =====================================================================
-# 5. IMAGE METADATA MODEL (Title & Short Brief for Presentations)
+# 7. AUDIO CHAPTER MODEL 
+# =====================================================================
+class AudioChapter(SQLModel, table=True):
+    __tablename__ = "audio_chapters"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+    # Foreign Keys pointing to explicit schema table names
+    story_id: Optional[int] = Field(default=None, foreign_key="story.id") 
+    chapter_id: Optional[int] = Field(default=None, foreign_key="chapters.id") 
+    
+    serial_number: int = Field(nullable=True) 
+    audio_absolute_filepath: Optional[str] = Field(default=None, sa_column=Column(String(500), nullable=True))
+
+    version: int = Field(default=1)                             
+    modified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    modified_by: Optional[str] = Field(default=None, max_length=100)
+
+    # Clean mappings back to parent structures
+    story: "Story" = Relationship(back_populates="audio_chapters")
+    chapter: "Chapter" = Relationship(back_populates="audio_chapters")
+
+
+# =====================================================================
+# 8. IMAGE METADATA MODEL
 # =====================================================================
 class ImageMetadata(SQLModel, table=True):
     __tablename__ = "image_metadata"
 
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    # Text fields for presentation overlay
     title: str = Field(sa_column=Column(Text, nullable=False), default="")
     short_brief: str = Field(sa_column=Column(Text, nullable=False), default="")
 
-    # Tracking parameters
     version: int = Field(default=1)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     modified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     modified_by: Optional[str] = Field(default=None, max_length=100)
-

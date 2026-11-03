@@ -679,6 +679,8 @@ audio {
 }
 
 /* ================= TENSOR EDITOR LAYOUT & CONTROLS ================= */
+/* ================= GRID PAGING CONTROLS ================= */
+
 .tensor-editor {
     display: flex;
     flex-direction: column;
@@ -842,7 +844,99 @@ audio {
 }
 
 /* ================= STORY GRID LAYOUT & CONTROLS ================= */
+/* Layout container */
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+    font-family: sans-serif;
+}
+
+/* Page text display */
+#pageInfo {
+    font-size: 14px;
+    font-weight: 600;
+    color: #444444;
+}
+
+/* Pagination button rules */
+.pagination-wrapper .btn {
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+    /* Hover state for active buttons */
+    .pagination-wrapper .btn:not([disabled]):hover {
+        background-color: #e2e6ea;
+        border-color: #dae0e5;
+    }
+
+    .pagination-wrapper .btn:[disabled] {
+        cursor: not-allowed;
+        opacity: 0.6;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+
 /* ================= STORY GRID LAYOUT & CONTROLS ================= */
+/* Container framework */
+.active-story-context {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 12px 20px;
+    background: #e9ecef;
+    border-left: 5px solid #007bff;
+    border-radius: 4px;
+}
+
+/* Typography & Labels */
+.context-label {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.story-label {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+/* Fallback state alert */
+.no-story-alert {
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-style: italic;
+    color: #dc3545;
+}
+
+.meta-badge-container {
+    display: none; 
+}
+
+    .meta-badge-container .badge {
+        background: #007bff;
+        color: #ffffff;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
 
 /* Chapter Badge Container Item */
 /* Base styles for all chapter items (for context) */
@@ -903,4 +997,230 @@ audio {
         }
 
 
+/* Core Log Layout */
+.log-container {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    max-width: 850px;
+    margin: 20px auto;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.log-header {
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+    .log-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #495057;
+    }
+
+.log-body {
+    padding: 15px 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Individual Log Entries */
+.log-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    background-color: #fafbfc;
+    border: 1px solid #e9ecef;
+    border-left-width: 4px;
+    transition: all 0.2s ease;
+}
+
+    .log-entry:hover {
+        background-color: #f1f3f5;
+    }
+
+    /* Status Variations */
+    .log-entry.status-not-found {
+        border-left-color: #fd7e14; /* Warning orange border */
+    }
+
+    .log-entry.status-info {
+        border-left-color: #0d6efd; /* Info blue border */
+    }
+
+/* Internal Components */
+.log-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.status-not-found .log-tag {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-info .log-tag {
+    background-color: #cff4fc;
+    color: #055160;
+}
+
+.log-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.log-message {
+    font-size: 14px;
+    font-weight: 500;
+    color: #212529;
+}
+
+.log-path {
+    font-family: 'Consolas', 'Courier New', Courier, monospace;
+    font-size: 12px;
+    color: #6c757d;
+    word-break: break-all;
+    background: #f1f3f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* CSS FOR MODAL DIALOGS */
+
+/* ─── NATIVE DIALOG ROOT ELEMENT ─── */
+.modal-dialog {
+    width: 450px;
+    max-width: 90%;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    background-color: #ffffff;
+}
+
+    /* Native Modal Backdrop Blur (Triggered when using .showModal()) */
+    .modal-dialog::backdrop {
+        background-color: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(2px);
+    }
+
+/* ─── MODAL SECTIONS ─── */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* ─── ELEMENTS & INPUT TYPOGRAPHY ─── */
+.modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.modal-close-cross {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    color: #6c757d;
+    transition: color 0.15s ease;
+}
+
+    .modal-close-cross:hover {
+        color: #343a40;
+    }
+
+/* ─── FORM COMPONENTS ─── */
+/* ─── FORM COMPONENTS ─── */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #444444;
+    font-size: 14px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .form-control:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+/* ─── BUTTON STATES (Assuming fallback styles if Bootstrap isn't loaded) ─── */
+.btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+.btn-success {
+    background-color: #28a745;
+    color: #ffffff;
+}
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
 

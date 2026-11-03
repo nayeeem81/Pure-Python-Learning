@@ -18,9 +18,6 @@ router_storygrid = APIRouter(tags=["Text Edit & DSP"])
 WORKSPACE_DIR = os.path.abspath("./project") 
 GENERATED_DIR = os.path.join(WORKSPACE_DIR, "generated") 
 
-class BulkDeleteRequest(BaseModel): 
-    ids: List[int] 
-
 # ============================================================== 
 # PRIVATE UTILITY HELPERS 
 # ============================================================== 
@@ -156,8 +153,12 @@ async def delete_single_router_storygrid(id: int, session: AsyncSession = Depend
         traceback.print_exc() 
         raise HTTPException(status_code=500, detail=f"Internal database deletion failure: {str(e)}") 
 
-@router_storygrid.post("/sentences/bulk-delete", status_code=status.HTTP_200_OK) 
-async def bulk_delete_storygrid(payload: BulkDeleteRequest, session: AsyncSession = Depends(get_db)): 
+
+class BulkAddRequest(BaseModel): 
+    ids: List[int] 
+
+@router_storygrid.post("/sentences/bulk-add", status_code=status.HTTP_200_OK) 
+async def bulk_add_storygrid(payload: BulkAddRequest, session: AsyncSession = Depends(get_db)): 
     try: 
         if not payload.ids: 
             return {"status": "ignored", "message": "No targets passed."} 

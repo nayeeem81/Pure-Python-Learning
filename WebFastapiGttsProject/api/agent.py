@@ -10,7 +10,7 @@ from sqlalchemy import select
 
 # Database dependencies and ORM Models
 from data.database import get_db
-from data.model import Sentence, Word, Story, Chapter
+from data.model import Sentence, Word, Story, Chapter, AudioChapter
 
 agent_router = APIRouter(prefix="/agent", tags=["Agent Operations"])
 

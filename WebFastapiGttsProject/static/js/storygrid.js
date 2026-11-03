@@ -197,7 +197,6 @@ submitChapterBtn.addEventListener('click', async () => {
     }
 });
 
-// Reusable utility function to append a new chapter element permanently to a container
 function appendChapterToUI(containerId) {
     const targetContainer = document.getElementById(containerId);
 
@@ -206,16 +205,9 @@ function appendChapterToUI(containerId) {
         return;
     }
 
-    // 1. Retrieve the raw JSON string from local storage
     const rawChapters = localStorage.getItem('activeChapters');
-
-    // 2. Safely parse the string into a JS array object (fallback to an empty array if null)
-    const arrChapters = rawChapters ? JSON.parse(rawChapters) : [];
-
-    // 3. You can now use it as a normal array
+    const arrChapters = rawChapters ? JSON.parse(rawChapters) : []; 
     console.log("Your chapters array:", arrChapters);
-
-    // 1. Clear out old entries to prevent UI duplication bugs
     targetContainer.innerHTML = '';
 
     for (let i = 0; i < arrChapters.length; i++) {
@@ -240,9 +232,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedStoryId = localStorage.getItem('activeStoryId');
 
     if (haveActiveContext) {
-        createStoryBtn.disabled = true; // Disable story creation if an active context exists
-        loadStoryGridDataBtn.disabled = false; // Enable the load button if a story is active
-        createChapterBtn.disabled = false; // Enable chapter creation if a story is active
+        createStoryBtn.disabled = true; 
+        loadStoryGridDataBtn.disabled = false; 
+        createChapterBtn.disabled = false; 
     }
 
     if (savedStoryName && savedStoryId) {
@@ -267,7 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleChapterSelection(chapterId, badgeElement) {
         document.querySelector('.chapter-badge-item.active')?.classList.remove('active');
         badgeElement.classList.add('active');
-        const activeChapterId = localStorage.setItem('activeChapterId', chapterId);
+        localStorage.setItem('activeChapterId', chapterId);
     }
 
     function updateChapterButtonState() {
@@ -304,19 +296,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     chapterSelectedBtn.addEventListener('click', async () => {
         const checkedBoxes = userTableBody.querySelectorAll('.row-checkbox:checked');
-        const idsToDelete = Array.from(checkedBoxes).map(cb => parseInt(cb.value, 10)).filter(id => !isNaN(id));
-        if (idsToDelete.length === 0) return;
+        const idsToAdd = Array.from(checkedBoxes).map(cb => parseInt(cb.value, 10)).filter(id => !isNaN(id));
+        if (idsToAdd.length === 0) return;
 
-        const confirmDelete = confirm(`Are you sure you want to delete ${idsToDelete.length} selected item(s)?`);
+        const confirmDelete = confirm(`Are you sure you want to add ${idsToAdd.length} selected item(s)?`);
         if (!confirmDelete) return;
 
         try {
-            const response = await fetch('/api/sentences/bulk-delete', {
+            const response = await fetch('/api/sentences/bulk-add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ids: idsToDelete }) 
+                body: JSON.stringify({ ids: idsToAdd }) 
             });
 
             if (!response.ok) {
