@@ -251,6 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const container = document.getElementById('activeChapterContainer');
+
     if (container) {
         container.addEventListener('click', (event) => {
             const badge = event.target.closest('.chapter-badge-item');
@@ -259,12 +260,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const chapterId = badge.dataset.id;
             console.log("Captured Chapter Database ID:", chapterId);
 
-            handleChapterSelection(chapterId);
+            handleChapterSelection(chapterId, badge);
         });
     }
 
-    function handleChapterSelection(chapterId) {
-       
+    function handleChapterSelection(chapterId, badgeElement) {
+        document.querySelector('.chapter-badge-item.active')?.classList.remove('active');
+        badgeElement.classList.add('active');
+        const activeChapterId = localStorage.setItem('activeChapterId', chapterId);
     }
 
     function updateChapterButtonState() {
@@ -290,12 +293,12 @@ document.addEventListener("DOMContentLoaded", () => {
         rowCheckboxes.forEach(cb => {
             cb.checked = selectAllCheckbox.checked;
         });
-        updateDeleteButtonState();
+        updateChapterButtonState();
     });
 
     userTableBody.addEventListener('change', (e) => {
         if (e.target.classList.contains('row-checkbox')) {
-            updateDeleteButtonState();
+            updateChapterButtonState();
         }
     });
 

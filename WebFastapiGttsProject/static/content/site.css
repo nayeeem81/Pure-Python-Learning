@@ -605,8 +605,6 @@ audio {
     cursor: not-allowed;
     opacity: 0.6;
 }
-        background: #005f8f;
-    }
 
     .player-btn:active {
         opacity: 0.8;
@@ -845,7 +843,10 @@ audio {
 
 /* ================= STORY GRID LAYOUT & CONTROLS ================= */
 /* ================= STORY GRID LAYOUT & CONTROLS ================= */
+
 /* Chapter Badge Container Item */
+/* Base styles for all chapter items (for context) */
+
 .chapter-badge-item {
     margin-bottom: 8px;
     margin-right: 8px;
@@ -861,26 +862,45 @@ audio {
 }
 
     .chapter-badge-item:hover {
-        background-color: #f8f9fa; /* Subtle hover effect */
+        background-color: #f8f9fa;
     }
 
-/* Internal Icon Element */
 .chapter-badge-icon {
     font-size: 14px;
 }
 
-/* Chapter Title Text */
 .chapter-badge-title {
     color: #007bff;
     font-weight: 600;
 }
-
-/* Database ID Label Context */
 .chapter-badge-id {
     font-size: 12px;
     color: #6c757d;
     font-weight: 400;
 }
+
+.chapter-badge-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+   
+    .chapter-badge-item.active {
+        background-color: #e6f0fa;
+        border-left: 4px solid #0066cc; 
+    }
+
+        .chapter-badge-item.active .chapter-badge-title {
+            font-weight: 600;
+            color: #004499;
+        }
+
+        .chapter-badge-item.active .chapter-badge-id {
+            color: #6688aa;
+        }
 
 
 
