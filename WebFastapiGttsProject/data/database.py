@@ -1,6 +1,6 @@
 # data/database.py
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlmodel.ext.asyncio.session import AsyncSession  # 💡 Uses SQLModel's AsyncSession for .exec() compatibility
+from sqlmodel.ext.asyncio.session import AsyncSession  
 from config import config
 
 # Create Async Engine for PostgreSQL

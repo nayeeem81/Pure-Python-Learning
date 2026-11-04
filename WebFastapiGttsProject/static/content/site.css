@@ -1195,3 +1195,55 @@ audio {
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     }
 
+/* TAGS CONTAINER FOR CHAPTER AUDIO FILES */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    min-height: 40px;
+}
+
+.file-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-family: system-ui, sans-serif;
+    font-size: 14px;
+    border: 1px solid #ced4da;
+    transition: background-color 0.2s ease;
+}
+
+    .file-tag:hover {
+        background-color: #dee2e6;
+    }
+
+    .file-tag .file-info {
+        margin-right: 8px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .file-tag .close-btn {
+        background: none;
+        border: none;
+        color: #adb5bd;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 0 2px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s ease;
+    }
+
+        .file-tag .close-btn:hover {
+            color: #dc3545; /* Red on hover */
+        }

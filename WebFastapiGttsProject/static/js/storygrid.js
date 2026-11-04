@@ -138,7 +138,7 @@ submitStoryBtn.addEventListener('click', async () => {
 // =========================================================================
 // RULE 3: Save metadata during the async REST API fetch return loop (Create Chapter)
 // =========================================================================
-var arrChapters = []; // Initialize an empty array to hold chapter data
+var arrChapters = []; 
 
 submitChapterBtn.addEventListener('click', async () => {
 
@@ -154,7 +154,7 @@ submitChapterBtn.addEventListener('click', async () => {
 
         const payload = {
             chapter_name: chapterTitle,
-            serial_number: 0, // Placeholder for future logic to auto-increment chapter numbers
+            serial_number: 0, 
             story_id: activeStoryId    
         };
       
@@ -224,13 +224,106 @@ function appendChapterToUI(containerId) {
     }
 }
 
+// 1. Utility Function
+function getFileName(path) {
+    if (!path) return 'unknown.mp3';
+    return path.split(/[/\\]/).pop();
+}
+
+// Global variable to keep track of all records loaded from the database
+let allAudioRecords = [];
+
+// 1. Function to load data from your FastAPI server
+async function loadAudioRecords() {
+    try {
+        const response = await fetch('/api/sentences/audio-chapters');
+        if (!response.ok) throw new Error('Failed to fetch audio items from server');
+
+        // Populate our array variable with data from the database
+        allAudioRecords = await response.json();
+
+        // Render the UI tags based on whatever chapter is currently active
+        filterAndRenderAudioTags();
+    } catch (error) {
+        console.error('Error fetching audio records:', error);
+    }
+}
+
+// 2. Function that reads localStorage and updates the DOM container
+function filterAndRenderAudioTags() {
+    const container = document.getElementById('audio-tags-container');
+
+    // We clear the container right before rendering so we don't duplicate tags
+    container.innerHTML = '';
+
+    // Get the current active chapter context from local storage
+    const rawChapterId = localStorage.getItem('activeChapterId');
+    const activeChapterId = rawChapterId ? parseInt(rawChapterId, 10) : 0;
+
+    // Filter our global array down to just the active chapter items
+    const activeFiles = allAudioRecords.filter(item => item.chapter_id === activeChapterId);
+
+    if (activeFiles.length === 0) {
+        container.innerHTML = '<span style="color: #888; font-size: 14px;">No audio files for this chapter.</span>';
+        return;
+    }
+
+    // Generate the tags dynamically
+    activeFiles.forEach(item => {
+        const fileName = getFileName(item.audio_absolute_filepath);
+        const recordId = item.id;
+
+        const tagDiv = document.createElement('div');
+        tagDiv.className = 'file-tag';
+        tagDiv.setAttribute('data-id', recordId);
+
+        const infoSpan = document.createElement('span');
+        infoSpan.className = 'file-info';
+        infoSpan.textContent = `[ID: ${recordId}] ${fileName}`;
+
+        // Add your player events here
+        infoSpan.addEventListener('click', () => console.log(`Playing: ${recordId}`));
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-btn';
+        closeBtn.innerHTML = '&times;';
+
+        // Wire up the delete logic
+        closeBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!confirm(`Delete audio record ID: ${recordId}?`)) return;
+
+            try {
+                const res = await fetch(`/api/sentences/bulk-remove/${recordId}`, { method: 'DELETE' });
+                const result = await res.json();
+
+                if (res.ok && result.status === 'success') {
+                    // Update our local global state array so it stays in sync with DB
+                    allAudioRecords = allAudioRecords.filter(r => r.id !== recordId);
+                    // Re-render UI cleanly from the updated global state
+                    filterAndRenderAudioTags();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        tagDiv.appendChild(infoSpan);
+        tagDiv.appendChild(closeBtn);
+        container.appendChild(tagDiv);
+    });
+}
+
+
+
 // Initialize layout elements as soon as the DOM loads
 // Initialize layout elements as soon as the DOM loads
 // Initialize layout elements as soon as the DOM loads
 document.addEventListener("DOMContentLoaded", () => {
+    loadAudioRecords();
     const savedStoryName = localStorage.getItem('activeStoryName');
     const savedStoryId = localStorage.getItem('activeStoryId');
-
+    
     if (haveActiveContext) {
         createStoryBtn.disabled = true; 
         loadStoryGridDataBtn.disabled = false; 
@@ -260,6 +353,9 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector('.chapter-badge-item.active')?.classList.remove('active');
         badgeElement.classList.add('active');
         localStorage.setItem('activeChapterId', chapterId);
+
+        loadAudioRecords();
+        
     }
 
     function updateChapterButtonState() {
@@ -294,13 +390,107 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    chapterSelectedBtn.addEventListener('click', async () => {
-        const checkedBoxes = userTableBody.querySelectorAll('.row-checkbox:checked');
-        const idsToAdd = Array.from(checkedBoxes).map(cb => parseInt(cb.value, 10)).filter(id => !isNaN(id));
-        if (idsToAdd.length === 0) return;
+    // Function to extract just the file name from a path string
+    function getFileName(path) {
+        if (!path) return 'unknown.mp3';
+        // Splits by both forward and backward slashes to handle all environment types safely
+        return path.split(/[/\\]/).pop();
+    }
 
-        const confirmDelete = confirm(`Are you sure you want to add ${idsToAdd.length} selected item(s)?`);
+    function handleBulkAddResponse(serverResponse) {
+        const container = document.getElementById('audio-tags-container');
+        if (!serverResponse.data || serverResponse.data.length === 0) return;
+
+        serverResponse.data.forEach(item => {
+            const fileName = getFileName(item.audio_absolute_filepath);
+            const recordId = item.id; // Unique ID from database
+
+            const tagDiv = document.createElement('div');
+            tagDiv.className = 'file-tag';
+            tagDiv.setAttribute('data-id', recordId);
+
+            const infoSpan = document.createElement('span');
+            infoSpan.className = 'file-info';
+            infoSpan.textContent = `[ID: ${recordId}] ${fileName}`;
+
+            infoSpan.addEventListener('click', () => {
+                console.log(`Playing item ID: ${recordId}`);
+            });
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'close-btn';
+            closeBtn.innerHTML = '&times;';
+
+            closeBtn.addEventListener('click', async (e) => {
+                e.stopPropagation(); 
+                const confirmDelete = confirm(`Are you sure you want to permanently delete this audio record (ID: ${recordId}) from the database?`);
+
+                if (!confirmDelete) {
+                    return; // User clicked 'Cancel', abort the deletion pipeline
+                }
+
+                // 2. Visual feedback: dim the tag while waiting for the database response
+                tagDiv.style.opacity = '0.5';
+                tagDiv.style.pointerEvents = 'none';
+
+                try {
+                    // Send DELETE request directly to your FastAPI path variable
+                    const response = await fetch(`/api/sentences/bulk-remove/${recordId}`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.status === 'success') {
+                        console.log(`Database deleted: ${result.message}`);
+                        // Success! Safe to remove the item component from HTML
+                        tagDiv.remove();
+                    } else {
+                        // Restore layout state if server rejects processing
+                        tagDiv.style.opacity = '1';
+                        tagDiv.style.pointerEvents = 'auto';
+                        alert(`Failed to delete record: ${result.detail || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    // Restore layout state if server network drops entirely
+                    tagDiv.style.opacity = '1';
+                    tagDiv.style.pointerEvents = 'auto';
+                    console.error("Network removal pipeline broken:", error);
+                    alert("Network error: Could not reach the server to delete this item.");
+                }
+            });
+
+
+            tagDiv.appendChild(infoSpan);
+            tagDiv.appendChild(closeBtn);
+            container.appendChild(tagDiv);
+        });
+    }
+    chapterSelectedBtn.addEventListener('click', async () => {
+        const rawStoryId = localStorage.getItem('activeStoryId');
+        const activeStoryId = rawStoryId ? parseInt(rawStoryId, 10) : 0;
+        const rawChapterId = localStorage.getItem('activeChapterId');
+        const activeChapterId = rawChapterId ? parseInt(rawChapterId, 10) : 0;
+
+        const checkedBoxes = userTableBody.querySelectorAll('.row-checkbox:checked');
+        const selectedItems = Array.from(checkedBoxes)
+            .map(cb => ({
+                id: parseInt(cb.value, 10),
+                path: cb.dataset.path || ''
+            }))
+            .filter(item => !isNaN(item.id) && item.path !== '');
+
+        if (selectedItems.length === 0) return;
+
+        const confirmDelete = confirm(`Are you sure you want to add ${selectedItems.length} selected item(s)?`);
         if (!confirmDelete) return;
+
+        const payload = {
+            items: selectedItems,
+            story_id: activeStoryId,
+            chapter_id: activeChapterId
+        };
 
         try {
             const response = await fetch('/api/sentences/bulk-add', {
@@ -308,7 +498,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ids: idsToAdd }) 
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
@@ -317,33 +507,41 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error(errData.detail ? JSON.stringify(errData.detail) : 'Server rejected request');
             }
 
-            const result = await response.json();
-            if (result.status === 'success' || result.status === 'ignored') {
-                checkedBoxes.forEach(cb => {
-                    const row = cb.closest('tr');
-                    row.remove();
-                });
-                
+            const jsonResult = await response.json();
+
+            // FIXED: Combined response structure checks cleanly here
+            if (jsonResult.status === 'success') {
+                handleBulkAddResponse(jsonResult); // Your tag UI renderer
+
+                // Push the newly created items into your global in-memory state variable
+                if (jsonResult.data) {
+                    allAudioRecords.push(...jsonResult.data);
+                }
+
                 selectAllCheckbox.checked = false;
                 updateChapterButtonState();
-                
-                if (userTableBody.querySelectorAll('.row-checkbox').length === 0) {
-                    userTableBody.innerHTML = `
-                        <tr>
-                            <td colspan="7" style="text-align: center; color: #666;">
-                                Click "Load Sentences" to populate grid.
-                            </td>
-                        </tr>`;
-                }
+
+                // ... remove table rows code ...
             } else {
-                alert(`Notice: ${result.message}`);
+                console.error("Server execution rejected:", jsonResult.message);
+                alert(`Notice: ${jsonResult.message}`); // FIXED: Changed 'result' to 'jsonResult'
             }
+
+            // Check if table is empty after items are removed
+            if (userTableBody.querySelectorAll('.row-checkbox').length === 0) {
+                userTableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #666;">
+                        Click "Load Sentences" to populate grid.
+                    </td>
+                </tr>`;
+            }
+
         } catch (error) {
-            console.error('Error during bulk deletion processing:', error);
-            alert(`Failed to delete records: ${error.message}`);
+            console.error('Error during bulk addition processing:', error);
+            alert(`Failed to add records: ${error.message}`);
         }
     });
-
 });
 
 function updateLabel(elementId, value) {
@@ -353,8 +551,8 @@ function updateLabel(elementId, value) {
 
 document.getElementById('loadStoryGridDataBtn').addEventListener('click', () => {
     currentSkip = 0; 
-    fetchSentences();
-});
+    fetchSentences(); 
+}); 
 
 document.getElementById('prevPageBtn').addEventListener('click', () => {
     if (currentSkip >= recordsPerPage) {
@@ -397,9 +595,9 @@ async function fetchSentences() {
             const duration = sentence.total_duration_seconds ? `${sentence.total_duration_seconds}s` : '2.88s';
             const mp3Url = sentence.master_mp3_path ? `/project/${sentence.master_mp3_path}` : '#';
             const rowHtml = `
-                    <tr data-id="${sentence.id}">
+                    <tr data-id="${sentence.id}" data-path="${mp3Url}">
                         <td style="text-align: center;">
-                            <input type="checkbox" class="row-checkbox" value="${sentence.id}">
+                            <input data-path="${mp3Url}"  type="checkbox" class="row-checkbox" value="${sentence.id}">
                         </td>
                         <td>${sentence.id}</td>
                         <td>#${currentSkip + index + 1}</td>
@@ -413,8 +611,11 @@ async function fetchSentences() {
                 `;
 
             userTableBody.insertAdjacentHTML('beforeend', rowHtml);
+
         });
+
         updatePaginationUI();
+
     } catch (error) {
         console.error(error);
         tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">Error: ${error.message}</td></tr>`;
@@ -424,10 +625,14 @@ async function fetchSentences() {
 function updatePaginationUI() {
     const currentPage = Math.floor(currentSkip / recordsPerPage) + 1;
     const totalPages = Math.ceil(totalRecords / recordsPerPage) || 1;
+
     console.log(`Pagination Diagnostics -> Total Rows: ${totalRecords}, Current Skip: ${currentSkip}`);
+
     document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${totalPages} (Total: ${totalRecords})`;
+
     const prevBtn = document.getElementById('prevPageBtn');
     const nextBtn = document.getElementById('nextPageBtn');
+
     // FIX: Explicit boolean calculations
     prevBtn.disabled = (currentSkip === 0);
     nextBtn.disabled = (currentSkip + recordsPerPage >= totalRecords);
