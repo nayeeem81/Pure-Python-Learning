@@ -29,6 +29,16 @@ let tensorStack = [];
 let dots = [];
 let selectedPolygon = null;
 let selectionSource = 'latest';
+const floatingPanel = document.querySelector('#floating-panel');
+const closePanelButton = document.querySelector('#close-panel-button');
+const titleInput = document.querySelector('#title-input');
+const briefInput = document.querySelector('#brief-input');
+const saveMetadataButton = document.querySelector('#save-metadata-button');
+const clearMetadataButton = document.querySelector('#clear-metadata-button');
+const textOverlayCanvas = document.querySelector('#text-overlay-canvas');
+const textOverlayContext = textOverlayCanvas.getContext('2d');
+
+let currentMetadata = { title: '', short_brief: '' };
 
 function clamp(value) {
     return Math.max(0, Math.min(255, value));
@@ -374,16 +384,6 @@ loadTensor().catch((error) => {
 // FLOATING PANEL AND TEXT OVERLAY FUNCTIONALITY
 // ====================================================================
 
-const floatingPanel = document.querySelector('#floating-panel');
-const closePanelButton = document.querySelector('#close-panel-button');
-const titleInput = document.querySelector('#title-input');
-const briefInput = document.querySelector('#brief-input');
-const saveMetadataButton = document.querySelector('#save-metadata-button');
-const clearMetadataButton = document.querySelector('#clear-metadata-button');
-const textOverlayCanvas = document.querySelector('#text-overlay-canvas');
-const textOverlayContext = textOverlayCanvas.getContext('2d');
-
-let currentMetadata = { title: '', short_brief: '' };
 
 // Load existing metadata on page load
 async function loadCurrentMetadata() {

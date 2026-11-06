@@ -17,7 +17,7 @@
     </div>
 
     <!-- Floating Text Panel (Controlled via JS visibility) -->
-    <div id="floating-panel" class="floating-panellens hidden">
+    <div id="floating-panel" class="floating-panel hidden">
         <div class="floating-panel-header">
             <h3>Presentation Text</h3>
             <button id="close-panel-button" class="close-button" type="button" aria-label="Close panel">&times;</button>
@@ -59,6 +59,10 @@
                     <h2>Adjust every pixel</h2>
                     <p class="muted">Each control adds an offset to its tensor channel.</p>
                 </div>
+
+                <div class="gap"></div>
+                <div class="gap"></div>
+
                 <div class="history-actions">
                     <button id="reset-button" type="button">Reset channels</button>
                 </div>
@@ -109,13 +113,13 @@
                 </div>
 
                 <div class="stack-counter-align">
-                    <h3 id="tensor-count-header">Stack 0</h3>
+                    <h4 id="tensor-count">Stack 0</h4>
                 </div>
 
                 <div class="canvas-panel-editimage">
                     <div class="shape-readout" aria-live="polite">
                         <span id="shape">Loading tensor...</span>
-                        <span id="tensor-count">Stack 0</span>
+                        <span>      </span>
                         <span class="status-dot"></span>
                         <span id="image-name" class="image-name">Generated sample: </span>
                     </div>
