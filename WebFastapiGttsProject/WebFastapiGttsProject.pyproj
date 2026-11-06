@@ -39,11 +39,6 @@
     <Compile Include="routers\api_routes.py" />
     <Compile Include="api\__init__.py" />
     <Compile Include="routers\__init__.py" />
-    <Compile Include="utilities\file_processing.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="utilities\grid.py" />
-    <Compile Include="utilities\waveform.py" />
     <Compile Include="config.py" />
     <Compile Include="main.py" />
     <Compile Include="utilities\image_processing.py" />

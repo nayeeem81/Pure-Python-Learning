@@ -1,6 +1,3 @@
-# =====================================================================
-# FORCE ENVIRONMENT OVERRIDES AT THE ABSOLUTE TOP OF MAIN.PY
-# =====================================================================
 import os
 import sys
 from pathlib import Path
@@ -26,9 +23,6 @@ except ImportError:
     pass
 
 
-# =====================================================================
-# CORE APPLICATION IMPORTS (Cleaned up duplicate router references)
-# =====================================================================
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text  
@@ -41,11 +35,8 @@ from routers.view_routes import view_router
 from config import config  
 from data.database import engine
 from data.model import Sentence, Word, SentenceHistory, WordHistory, Story, Chapter, AudioChapter  
-# Ensure all models are imported for table creation
 
-# =====================================================================
 # LIFECYCLE MANAGEMENT & ROUTING REGISTRATION
-# =====================================================================
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     admin_url = f"postgresql+asyncpg://{config.DB_USER}:{config.DB_PASSWORD}@{config.DB_HOST}:{config.DB_PORT}/postgres"

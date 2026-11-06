@@ -1,53 +1,10 @@
-/* Page Wrapper Layout */
+/* ==========================================================================
+   1. Base Containers & Layout Wrappers
+   ========================================================================== */
 .story-maker-container {
     width: 100%;
-    margin-top: 20px;
 }
 
-/* Active Context Card Section */
-.active-story-context {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-.context-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    color: #6c757d;
-    font-weight: 600;
-    display: block;
-    margin-bottom: 4px;
-    letter-spacing: 0.5px;
-}
-
-.story-label {
-    margin: 0;
-    font-size: 1.4rem;
-    color: #212529;
-    font-weight: 700;
-}
-
-.no-story-alert {
-    color: #dc3545;
-    font-size: 0.95rem;
-    font-weight: normal;
-}
-
-/* Dynamic Content Areas */
-#activeChapterContainer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 15px;
-}
-
-/* Action Control Strip */
 .action-bar {
     margin-bottom: 20px;
     display: flex;
@@ -59,20 +16,133 @@
         display: none !important;
     }
 
-/* Grid & Table Column Normalization */
-.custom-story-table th.col-checkbox {
+/* ==========================================================================
+   2. Active Story Context Bar
+   ========================================================================== */
+.active-story-context {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 12px 20px;
+    background: #e9ecef;
+    border-left: 5px solid #007bff;
+    border-radius: 4px;
+}
+
+.context-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.story-label {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+.no-story-alert {
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-style: italic;
+    color: #dc3545;
+}
+
+/* ==========================================================================
+   3. Meta & Chapter Badge Components
+   ========================================================================== */
+.meta-badge-container {
+    display: none;
+}
+
+    .meta-badge-container .badge {
+        background: #007bff;
+        color: #ffffff;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+#activeChapterContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 15px;
+}
+
+.chapter-badge-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    margin-right: 8px;
+    padding: 10px 15px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .chapter-badge-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .chapter-badge-item.active {
+        background-color: #e6f0fa;
+        border-left: 4px solid #0066cc;
+    }
+
+.chapter-badge-icon {
+    font-size: 14px;
+}
+
+.chapter-badge-title {
+    color: #007bff;
+    font-weight: 600;
+}
+
+.chapter-badge-item.active .chapter-badge-title {
+    color: #004499;
+}
+
+.chapter-badge-id {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 400;
+}
+
+.chapter-badge-item.active .chapter-badge-id {
+    color: #6688aa;
+}
+
+/* ==========================================================================
+   4. Tables (Story & DSP Layouts)
+   ========================================================================== */
+.custom-story-table th.col-checkbox,
+.custom-dsp-table th.col-checkbox {
     width: 45px;
     text-align: center;
 }
 
-.custom-story-table .table-placeholder {
+.custom-story-table .table-placeholder,
+.custom-dsp-table .table-placeholder {
     text-align: center;
-    color: #777;
+    color: #666;
     padding: 30px 10px;
     font-style: italic;
 }
 
-/* Native Dialog Overlay Elements */
+/* ==========================================================================
+   5. Modals & Forms
+   ========================================================================== */
 .modal-dialog {
     border: none;
     border-radius: 8px;
@@ -129,7 +199,6 @@
     background-color: #f8f9fa;
 }
 
-/* Inputs & Form Enforcements */
 .form-group {
     margin-bottom: 15px;
 }
@@ -141,7 +210,6 @@
     color: #495057;
 }
 
-/* Ensures layout.html styles don't conflict with target models */
 .modal-body .form-control {
     width: 100% !important;
     border: 1px solid #ccc !important;
@@ -151,209 +219,46 @@
     color: #333 !important;
 }
 
-/* ================= STORY GRID LAYOUT & CONTROLS ================= */
-/* Container framework */
-.active-story-context {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    padding: 12px 20px;
-    background: #e9ecef;
-    border-left: 5px solid #007bff;
-    border-radius: 4px;
-}
-
-/* Typography & Labels */
-.context-label {
-    display: block;
-    margin-bottom: 2px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #6c757d;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.story-label {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #212529;
-}
-
-/* Fallback state alert */
-.no-story-alert {
-    font-size: 1.1rem;
-    font-weight: 400;
-    font-style: italic;
-    color: #dc3545;
-}
-
-.meta-badge-container {
-    display: none;
-}
-
-    .meta-badge-container .badge {
-        background: #007bff;
-        color: #ffffff;
-        padding: 5px 10px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-/* Chapter Badge Container Item */
-/* Base styles for all chapter items (for context) */
-
-.chapter-badge-item {
-    margin-bottom: 8px;
-    margin-right: 8px;
-    padding: 6px 12px;
-    background-color: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer; /* Added for standard button/clickable behavior */
-    transition: background-color 0.2s ease;
-}
-
-    .chapter-badge-item:hover {
-        background-color: #f8f9fa;
-    }
-
-.chapter-badge-icon {
-    font-size: 14px;
-}
-
-.chapter-badge-title {
-    color: #007bff;
-    font-weight: 600;
-}
-
-.chapter-badge-id {
-    font-size: 12px;
-    color: #6c757d;
-    font-weight: 400;
-}
-
-.chapter-badge-item {
-    display: flex;
-    align-items: center;
-    padding: 10px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-    .chapter-badge-item.active {
-        background-color: #e6f0fa;
-        border-left: 4px solid #0066cc;
-    }
-
-        .chapter-badge-item.active .chapter-badge-title {
-            font-weight: 600;
-            color: #004499;
-        }
-
-        .chapter-badge-item.active .chapter-badge-id {
-            color: #6688aa;
-        }
-
-
-/* ================= STORY GRID LAYOUT & CONTROLS ================= */
-/* Layout container */
+/* ==========================================================================
+   6. Pagination
+   ========================================================================== */
 .pagination-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 15px;
     margin: 20px 0;
-    font-family: sans-serif;
-}
-
-/* Page text display */
-#pageInfo {
-    font-size: 14px;
-    font-weight: 600;
-    color: #444444;
-}
-
-/* Pagination button rules */
-.pagination-wrapper .btn {
-    padding: 6px 12px;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    background-color: #f8f9fa;
-    color: #333;
-    transition: all 0.2s ease;
-}
-
-    /* Hover state for active buttons */
-    .pagination-wrapper .btn:not([disabled]):hover {
-        background-color: #e2e6ea;
-        border-color: #dae0e5;
-    }
-
-    .pagination-wrapper .btn[disabled] {
-        cursor: not-allowed;
-        opacity: 0.6;
-        background-color: #e9ecef;
-        border-color: #dee2e6;
-    }
-
-/* Action Bar Rules */
-.action-bar {
-    margin-bottom: 15px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-    /* Visibility State Modifier */
-    .action-bar .hidden {
-        display: none !important;
-    }
-
-/* Custom Table Layout Adjustments */
-.custom-dsp-table th.col-checkbox {
-    width: 40px;
-    text-align: center;
-}
-
-.custom-dsp-table .table-placeholder {
-    text-align: center;
-    color: #666;
-}
-
-/* Pagination Control Mechanics */
-.pagination-wrapper {
-    margin: 20px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
     font-family: system-ui, -apple-system, sans-serif;
 }
 
     .pagination-wrapper #pageInfo {
-        font-weight: 600;
-        color: #444;
         font-size: 14px;
+        font-weight: 600;
+        color: #444444;
     }
 
-    /* Framework Button Additions / Fallbacks */
+    .pagination-wrapper .btn,
     .pagination-wrapper .btn-secondary {
         padding: 6px 12px;
+        font-size: 14px;
         cursor: pointer;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        background-color: #f8f9fa;
+        color: #333;
+        transition: all 0.2s ease;
     }
 
-        /* Clean Attribute Selector fixing your previous error context */
+        .pagination-wrapper .btn:not([disabled]):hover,
+        .pagination-wrapper .btn-secondary:not([disabled]):hover {
+            background-color: #e2e6ea;
+            border-color: #dae0e5;
+        }
+
+        .pagination-wrapper .btn[disabled],
         .pagination-wrapper .btn-secondary[disabled] {
             cursor: not-allowed;
-            opacity: 0.65;
+            opacity: 0.6;
+            background-color: #e9ecef;
+            border-color: #dee2e6;
         }

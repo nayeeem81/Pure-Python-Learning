@@ -3,17 +3,13 @@ body {
     padding-bottom: 20px;
 }
 
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
 span.bullet {
     margin-top: 20px;
 }
 
 .jumbotron {
     background-color: #468847 !important;
+    box-shadow: 1px 3px 5px rgba(0,0,0,0.1);
 }
 
     .jumbotron img {
@@ -23,7 +19,6 @@ span.bullet {
     }
 
     .jumbotron p {
-        margin-top: 30px;
         width: 100%;
         height: auto;
         text-align: justify;
@@ -39,7 +34,6 @@ span.bullet {
     height: 28px;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
 textarea {
@@ -65,7 +59,6 @@ button {
         background: #0056b3;
     }
 
-
 label {
     font-size: 12px;
     color: #aaa;
@@ -82,7 +75,6 @@ input[type="text"] {
     border-radius: 3px;
 }
 
-/* styles for validation helpers */
 .field-validation-error {
     color: #b94a48;
 }
@@ -111,7 +103,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 1px 3px 5px rgba(0,0,0,0.1);
 }
 
 th, td {
@@ -125,22 +117,6 @@ th {
     color: white;
 }
 
-.pagination-wrapper button {
-    border: 1px solid #ccc;
-    background-color: #fff;
-    border-radius: 4px;
-    transition: all 0.2s ease;
+nav navbar-nav ul {
+    text-transform: uppercase;
 }
-
-    .pagination-wrapper button:hover:not([disabled]) {
-        background-color: #f0f0f0;
-        border-color: #999;
-    }
-
-    .pagination-wrapper button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background-color: #eaeded;
-    }
-
-
