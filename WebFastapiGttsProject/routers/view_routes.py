@@ -21,15 +21,15 @@ def render_home_page(request: Request):
 def render_studio_page(request: Request):
     return templates.TemplateResponse(
         request=request, 
-        name="studio.html", 
+        name="studiogtts.html", 
         context={"page_title": "Gtts | Speak"}
     )
 
-@view_router.get("/word-editor", response_class=HTMLResponse)
+@view_router.get("/dsp-studio", response_class=HTMLResponse)
 def render_editor_page(request: Request):
     return templates.TemplateResponse(
         request=request, 
-        name="editor.html", 
+        name="studiogtts.html", 
         context={"page_title": "Workspace | Editor"}
     )
 
@@ -45,7 +45,7 @@ def render_about_page(request: Request):
 def render_texteditor_page(request: Request):
     return templates.TemplateResponse(
         request=request, 
-        name="texteditor.html", 
+        name="paragraphs.html", 
         context={"page_title": "Text - DSP"}
     )
 
@@ -62,7 +62,7 @@ def edit_image(request: Request):
     """Serves the Image Editor interface template safely via FastAPI."""
     return templates.TemplateResponse(
         request=request, 
-        name="editimage.html", 
+        name="magiclens.html", 
         context={"page_title": "Edit Image"}
     )
 
@@ -71,6 +71,6 @@ def story_grid(request: Request):
     """Serves the Story Maker interface template safely via FastAPI."""
     return templates.TemplateResponse(
         request=request, 
-        name="storygrid.html", 
+        name="storyparagraphs.html", 
         context={"page_title": "Make Story"}
     )

@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<!-- 💡 Links the page-specific CSS file without cluttering site.css -->
+<link rel="stylesheet" href="{{ url_for('static', path='content/storyparagraphs.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="story-maker-container">
+    <div class="jumbotron">
+        <h1>🎛️ STORY MAKER</h1>
+    </div>
+
+    <!-- Permanent Active Context Tracking Label -->
+    <div class="active-story-context">
+        <div class="context-info">
+            <span class="context-label">Active Working Context</span>
+            <h2 id="activeStoryLabel" class="story-label">
+                <span class="no-story-alert">No Story Active. Click "New Story" to create one.</span>
+            </h2>
+        </div>
+        <div id="storyMetaBadge" class="meta-badge-container">
+            <span class="badge">ID: <span id="activeStoryId">-</span></span>
+        </div>
+    </div>
+
+    <!-- Dynamic Chapter Chips Container -->
+    <div id="activeChapterContainer">
+        <!-- New items will appear here sequentially -->
+    </div>
+
+    <!-- Rendered Audio Paths Container -->
+    <div id="audio-tags-container" class="tags-container"></div>
+
+    <div class="action-bar">
+        <button id="loadStoryGridDataBtn" class="btn btn-primary" disabled>Load Sentences</button>
+        <button id="createStoryBtn" class="btn btn-primary">New Story</button>
+        <button id="createChapterBtn" class="btn btn-primary" disabled>New Chapter</button>
+
+        <!-- Bulk actions button kept outside grid -->
+        <button id="chapterSelectedBtn" class="btn btn-danger hidden">🗑️ Add Selected (<span id="selectedCount">0</span>)</button>
+    </div>
+
+    <table class="table table-striped table-hover custom-story-table">
+        <thead>
+            <tr>
+                <th class="col-checkbox">
+                    <input type="checkbox" id="selectAllCheckbox" aria-label="Select all rows">
+                </th>
+                <th>ID</th>
+                <th>Serial No</th>
+                <th>Sentence Text</th>
+                <th>Master Audio (.mp3)</th>
+                <th>Duration</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+            <tr>
+                <td colspan="7" class="table-placeholder">
+                    Click "Load Sentences" to populate grid.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination-wrapper">
+        <button id="prevPageBtn" class="btn btn-default" disabled>
+            ⏮️ Previous
+        </button>
+        <span id="pageInfo">Page 1</span>
+        <button id="nextPageBtn" class="btn btn-default" disabled>
+            Next ⏭️
+        </button>
+    </div>
+
+    <!-- Native Story Dialog Modal -->
+    <dialog id="newStoryModal" class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">✨ Create New Story</h3>
+            <button type="button" id="closeModalCross" class="modal-close-cross">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="storyTitleInput" class="form-label">Story Title</label>
+                <input type="text" id="storyTitleInput" class="form-control" placeholder="e.g., The Midnight Mystery" aria-required="true">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="cancelStoryBtn" class="btn btn-default">Cancel</button>
+            <button type="button" id="submitStoryBtn" class="btn btn-success">Create Story</button>
+        </div>
+    </dialog>
+
+    <!-- Native Chapter Dialog Modal -->
+    <dialog id="newChapterModal" class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">✨ Create New Chapter</h3>
+            <button type="button" id="closeChapterModalCross" class="modal-close-cross">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="chapterTitleInput" class="form-label">Chapter Title</label>
+                <input type="text" id="chapterTitleInput" class="form-control" placeholder="e.g., Chapter 1: The Gathering Storm" aria-required="true">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="cancelChapterBtn" class="btn btn-default">Cancel</button>
+            <button type="button" id="submitChapterBtn" class="btn btn-success">Create Chapter</button>
+        </div>
+    </dialog>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/storyparagraphs.js" defer></script>
+{% endblock %}

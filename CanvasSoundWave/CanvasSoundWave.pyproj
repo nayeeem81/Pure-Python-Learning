@@ -4,7 +4,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e4aa3778-d066-4e86-a928-48456662df3d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>main.py</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -27,7 +28,6 @@
     <Compile Include="chordapps\dual_wave_chord_visualizer_player.py" />
     <Compile Include="chordapps\interactive_line_app.py" />
     <Compile Include="chordapps\interactive_sine_waveapp.py" />
-    <Compile Include="main.py" />
     <Compile Include="chordapps\single_static_line.py" />
     <Compile Include="chordapps\simple_grid_app.py" />
     <Compile Include="study\colorhistorygoogleplay.py" />

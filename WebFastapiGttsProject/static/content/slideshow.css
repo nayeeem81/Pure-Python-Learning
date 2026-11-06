@@ -1,0 +1,381 @@
+
+button.save-btn {
+    background: #2e7d32;
+    color: white;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-weight: bold;
+    width: 100%;
+}
+
+    button.save-btn:hover {
+        background: #1b5e20;
+    }
+
+button.fullscreen-btn {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 5px;
+}
+
+    button.fullscreen-btn:hover {
+        background: #1565c0;
+    }
+
+audio {
+    width: 100%;
+    height: 32px;
+}
+
+.player-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.player-btn {
+    flex: 1;
+    background: #0077b6;
+    color: white;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+
+
+    .player-btn:active {
+        opacity: 0.8;
+    }
+
+.playlist-info {
+    margin-top: 8px;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    font-size: 11px;
+    color: #ccc;
+    text-align: center;
+    min-height: 18px;
+}
+
+.exit-fullscreen-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(220, 50, 50, 0.9);
+    color: white;
+    border: 2px solid white;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    z-index: 9999;
+    font-size: 14px;
+}
+
+    .exit-fullscreen-btn:hover {
+        background: rgba(200, 20, 20, 1);
+    }
+
+#canvas-container:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#canvas-container:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#canvas-container:-moz-full-screen {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#canvas-container:-ms-fullscreen {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#hud-hint {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    color: rgba(255,255,255,0.6);
+    z-index: 2;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+
+/* Core Log Layout */
+.log-container {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    max-width: 850px;
+    margin: 20px auto;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.log-header {
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+    .log-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #495057;
+    }
+
+.log-body {
+    padding: 15px 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Individual Log Entries */
+.log-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    background-color: #fafbfc;
+    border: 1px solid #e9ecef;
+    border-left-width: 4px;
+    transition: all 0.2s ease;
+}
+
+    .log-entry:hover {
+        background-color: #f1f3f5;
+    }
+
+    /* Status Variations */
+    .log-entry.status-not-found {
+        border-left-color: #fd7e14; /* Warning orange border */
+    }
+
+    .log-entry.status-info {
+        border-left-color: #0d6efd; /* Info blue border */
+    }
+
+/* Internal Components */
+.log-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.status-not-found .log-tag {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-info .log-tag {
+    background-color: #cff4fc;
+    color: #055160;
+}
+
+.log-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.log-message {
+    font-size: 14px;
+    font-weight: 500;
+    color: #212529;
+}
+
+.log-path {
+    font-family: 'Consolas', 'Courier New', Courier, monospace;
+    font-size: 12px;
+    color: #6c757d;
+    word-break: break-all;
+    background: #f1f3f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* CSS FOR MODAL DIALOGS */
+
+/* ─── NATIVE DIALOG ROOT ELEMENT ─── */
+.modal-dialog {
+    width: 450px;
+    max-width: 90%;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    background-color: #ffffff;
+}
+
+    /* Native Modal Backdrop Blur (Triggered when using .showModal()) */
+    .modal-dialog::backdrop {
+        background-color: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(2px);
+    }
+
+/* ─── MODAL SECTIONS ─── */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* ─── ELEMENTS & INPUT TYPOGRAPHY ─── */
+.modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.modal-close-cross {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    color: #6c757d;
+    transition: color 0.15s ease;
+}
+
+    .modal-close-cross:hover {
+        color: #343a40;
+    }
+
+/* ─── FORM COMPONENTS ─── */
+/* ─── FORM COMPONENTS ─── */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #444444;
+    font-size: 14px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .form-control:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+/* TAGS CONTAINER FOR CHAPTER AUDIO FILES */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    min-height: 40px;
+}
+
+.file-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-family: system-ui, sans-serif;
+    font-size: 14px;
+    border: 1px solid #ced4da;
+    transition: background-color 0.2s ease;
+}
+
+    .file-tag:hover {
+        background-color: #dee2e6;
+    }
+
+    .file-tag .file-info {
+        margin-right: 8px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .file-tag .close-btn {
+        background: none;
+        border: none;
+        color: #adb5bd;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 0 2px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s ease;
+    }
+
+        .file-tag .close-btn:hover {
+            color: #dc3545; /* Red on hover */
+        }

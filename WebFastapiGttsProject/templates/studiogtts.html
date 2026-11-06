@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+<!-- 💡 Injecting the workspace CSS into the head section dynamically -->
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', path='content/studiogtts.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1>Welcome to Control Studio!</h1>
+</div>
+<div class="workspace-container">
+    <div class="workspace-input-card">
+        <h3>Generate Live Speech Pipeline</h3>
+        <textarea id="ttsText" placeholder="Type a sentence here to analyze and cut up..."></textarea>
+        <div class="action-row">
+            <button class="btn btn-primary" onclick="handleLiveTTS()">
+                🔊 Synthesize and Load Workspace
+            </button>
+        </div>
+    </div>
+
+    <!-- Hidden audio element used by handleLiveTTS to stream instant audio -->
+    <audio id="masterPlayer"></audio>
+
+    <h3>Original Sentence Reference</h3>
+    <div class="wave-box">
+        <div id="original-waveform"></div>
+        <div class="action-row">
+            <button class="btn btn-secondary" onclick="wsOriginal.playPause()">Play Original</button>
+        </div>
+    </div>
+
+    <h3>Modified Preview</h3>
+    <div class="wave-box">
+        <div id="modified-waveform"></div>
+        <div class="action-row">
+            <button class="btn btn-secondary" onclick="wsModified.playPause()">Play Modified Track</button>
+        </div>
+    </div>
+
+    <div class="submit-row">
+        <button class="btn btn-success btn-block" onclick="compileNewAudio()">
+            🔀 Consolidate and Render New MP3 Changes
+        </button>
+    </div>
+
+    <h3>Individual Word Control Grid</h3>
+    <!-- Grid Configuration for single-row word layouts without overflow scrollbars -->
+    <div id="control-grid"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/wavesurfer.min.js"></script>
+<script src="/static/regions.min.js"></script>
+<!-- 💡 IMPORTANT: Ensure this matches the exact file name you chose for your consolidated JS script -->
+<script src="/static/js/studiogtts.js" defer></script>
+{% endblock %}

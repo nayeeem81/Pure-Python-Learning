@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<!-- Link your separate page-specific CSS here -->
+<link rel="stylesheet" href="{{ url_for('static', path='content/paragraphs.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="jumbotron">
+        <h1>🎛️ ALL DSP</h1>
+    </div>
+
+    <div class="action-bar">
+        <button id="loadDataBtn" class="btn btn-primary load-sentence">Load Sentences</button>
+        <!-- Industry Practice: Keep bulk actions outside the table and disabled until selection happens -->
+        <button id="deleteSelectedBtn" class="btn btn-danger hidden">🗑️ Delete Selected (<span id="selectedCount">0</span>)</button>
+    </div>
+
+    <table class="table custom-dsp-table">
+        <thead>
+            <tr>
+                <!-- Master Checkbox to Select All -->
+                <th class="col-checkbox">
+                    <input type="checkbox" id="selectAllCheckbox" aria-label="Select all rows">
+                </th>
+                <th>ID</th>
+                <th>Serial No</th>
+                <th>Sentence Text</th>
+                <th>Master Audio (.mp3)</th>
+                <th>Duration</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+            <tr>
+                <td colspan="7" class="table-placeholder">
+                    Click "Load Sentences" to populate grid.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination-wrapper">
+        <button id="prevPageBtn" class="btn btn-secondary" disabled>
+            ⏮️ Previous
+        </button>
+        <span id="pageInfo">
+            Page 1
+        </span>
+        <button id="nextPageBtn" class="btn btn-secondary" disabled>
+            Next ⏭️
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/wavesurfer.min.js"></script>
+<script src="/static/regions.min.js"></script>
+<script src="/static/js/paragraphs.js" defer></script>
+{% endblock %}

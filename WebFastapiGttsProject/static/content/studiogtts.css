@@ -1,0 +1,201 @@
+/* Container Layout */
+.workspace-container {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Base Form Cards & Audio Boxes */
+.workspace-input-card {
+    background: #1e1e2f;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    color: white;
+}
+
+    .workspace-input-card h3 {
+        margin-top: 0;
+    }
+
+    .workspace-input-card textarea {
+        width: 100%;
+        height: 80px;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #444;
+        background: #2a2a40;
+        color: #fff;
+        font-size: 1.1em;
+        resize: none;
+        box-sizing: border-box;
+    }
+
+.wave-box {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+}
+
+/* Layout Utilities */
+.action-row {
+    margin-top: 10px;
+}
+
+.submit-row {
+    margin-bottom: 30px;
+}
+
+#masterPlayer {
+    display: none;
+}
+
+/* Interactive Component Control Grid */
+#control-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-top: 15px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* Reusable Button Framework */
+.btn {
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-primary {
+    background: #0077b6;
+    color: white;
+    padding: 10px 20px;
+}
+
+    .btn-primary:hover {
+        background: #0096c7;
+    }
+
+.btn-secondary {
+    background: #e9ecef;
+    color: #495057;
+    border: 1px solid #ced4da;
+    padding: 6px 12px;
+    font-weight: normal;
+}
+
+    .btn-secondary:hover {
+        background: #dee2e6;
+    }
+
+.btn-success {
+    background: #2b9348;
+    color: white;
+    font-size: 1.2em;
+    padding: 12px 24px;
+}
+
+    .btn-success:hover {
+        background: #55a630;
+    }
+
+.btn-block {
+    width: 100%;
+    display: block;
+}
+
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+
+
+
+
+
+#waveform-container {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.word-controls {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.wave-box {
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.word-card {
+    background: #2a2a2a;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: aliceblue;
+}
+
+.slider-group {
+    display: flex;
+    gap: 20px;
+}
+
+.slider-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+#ttsText {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    background: #2a2a40;
+    color: #fff;
+    font-size: 1.1em;
+    resize: none;
+}
+
+.btnsnthesis {
+    background: #0077b6;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btnclrsnthesis {
+    background: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
