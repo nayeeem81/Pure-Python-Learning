@@ -1,4 +1,4 @@
-# api/agent.py
+# api/gttsagent.py
 import os
 import io
 from pathlib import Path
@@ -12,7 +12,7 @@ from sqlalchemy import select
 from data.database import get_db
 from data.model import Sentence, Word, Story, Chapter, AudioChapter
 
-agent_router = APIRouter(prefix="/agent", tags=["Agent Operations"])
+router_gttsagent = APIRouter(prefix="/agent", tags=["Agent Operations"])
 
 # api/agent.py
 import io
@@ -20,7 +20,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from gtts import gTTS
 
-agent_router = APIRouter(prefix="/agent", tags=["Agent Operations"])
+router_gttsagent = APIRouter(prefix="/agent", tags=["Agent Operations"])
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,7 +28,7 @@ AUDIO_DIR = BASE_DIR / "audio_files"
 
 os.makedirs(AUDIO_DIR, exist_ok=True)
 
-@agent_router.get("/generate-tts")
+@router_gttsagent.get("/generate-tts")
 async def generate_tts(text: str):
     """
     💡 FIX 4: Pure, high-speed text-to-speech media streaming engine block.
@@ -48,7 +48,7 @@ async def generate_tts(text: str):
         raise HTTPException(status_code=500, detail=f"Audio runtime stream processing failure: {str(e)}")
 
 
-@agent_router.get("/play-file/{filename}")
+@router_gttsagent.get("/play-file/{filename}")
 async def play_audio_file(filename: str):
     file_path = AUDIO_DIR / filename
     # Debug print: This will print out exactly WHERE the server is looking in your terminal!
@@ -62,7 +62,7 @@ async def play_audio_file(filename: str):
     return FileResponse(path=file_path, media_type=media_type)
 
 
-@agent_router.get("/generate-tts")
+@router_gttsagent.get("/generate-tts")
 async def generate_tts(text: str, db: AsyncSession = Depends(get_db)):
     """
     Generates NEW live audio in-memory from text, streams it immediately 

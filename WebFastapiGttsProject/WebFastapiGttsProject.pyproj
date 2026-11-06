@@ -23,20 +23,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="api\fix_tabs.py" />
-    <Compile Include="api\imagetensor.py" />
+    <Compile Include="api\magiclens.py" />
     <Compile Include="api\slideshow.py" />
-    <Compile Include="api\storygrid.py" />
-    <Compile Include="api\texteditor.py" />
+    <Compile Include="api\paragraph.py" />
+    <Compile Include="api\sentence.py" />
     <Compile Include="data\database.py" />
     <Compile Include="data\init_env.py" />
     <Compile Include="data\model.py" />
     <Compile Include="data\__init__.py" />
-    <Compile Include="api\process.py">
+    <Compile Include="api\gttsprocess.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="api\routerwords.py" />
-    <Compile Include="api\studio.py" />
-    <Compile Include="api\agent.py" />
+    <Compile Include="api\gttsword.py" />
+    <Compile Include="api\gttsagent.py" />
     <Compile Include="routers\api_routes.py" />
     <Compile Include="api\__init__.py" />
     <Compile Include="routers\__init__.py" />
@@ -54,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
-    <Content Include="api\frequency.py" />
+    <Content Include="api\gttsanalyzer.py" />
     <Content Include="README.md" />
     <Content Include="static\content\storyparagraphs.css" />
     <Content Include="static\content\slideshow.css" />

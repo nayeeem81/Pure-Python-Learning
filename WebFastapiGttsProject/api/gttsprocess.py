@@ -15,7 +15,7 @@ from data.database import get_db
 from data.model import Sentence, Word
 
 # ALWAYS DECLARE THE ROUTER FIRST AT THE TOP
-process_router = APIRouter(prefix="/process", tags=["TTS Processor"]) 
+router_gttsprocess = APIRouter(prefix="/process", tags=["Gtts Processor"]) 
 
 WORKSPACE_DIR = os.path.abspath("./project")
 GENERATED_DIR = os.path.join(WORKSPACE_DIR, "generated")
@@ -24,10 +24,8 @@ SEGMENTS_DIR = os.path.join(GENERATED_DIR, "segments")
 # Auto-ensure directories exist on startup
 os.makedirs(SEGMENTS_DIR, exist_ok=True)
 
-
 class TTSRequest(BaseModel):
 	text: str
-
 
 async def generate_tts_and_metadata_task(sentence_id: int, text: str):
 	"""
@@ -128,8 +126,7 @@ async def generate_tts_and_metadata_task(sentence_id: int, text: str):
 	except Exception as e:
 		print(f"❌ Error compiling background audio tasks: {str(e)}")
 
-
-@process_router.post("/generate-speech-processing", status_code=status.HTTP_201_CREATED)
+@router_gttsprocess.post("/generate-speech-processing", status_code=status.HTTP_201_CREATED)
 async def generate_speech(payload: TTSRequest, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_db)):
 	"""
 	Receives sentence text, provisions primary database row entry instantly, 

@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-slideshow_router = APIRouter(tags=["media"])
+router_slideshow = APIRouter(tags=["media"])
 
 media_config = {
     "image_folder": "",
@@ -18,7 +18,7 @@ class ConfigSchema(BaseModel):
     image_folder: str
     mp3_folder_path: str
 
-@slideshow_router.post("/config")
+@router_slideshow.post("/config")
 async def update_config(config: ConfigSchema):
     """Updates the active local paths used by the system."""
     # Validation: Check if paths exist and are directories
@@ -34,12 +34,12 @@ async def update_config(config: ConfigSchema):
     media_config["mp3_folder_path"] = config.mp3_folder_path
     return {"status": "success", "config": media_config}
 
-@slideshow_router.get("/config")
+@router_slideshow.get("/config")
 async def get_config():
     """Returns the current path configurations."""
     return media_config
 
-@slideshow_router.get("/images")
+@router_slideshow.get("/images")
 async def get_images():
     """Returns list of valid image files from configured folder."""
     folder = media_config["image_folder"]
@@ -52,7 +52,7 @@ async def get_images():
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Failed to read image folder: {str(err)}")
 
-@slideshow_router.get("/images/{filename}")
+@router_slideshow.get("/images/{filename}")
 async def serve_image(filename: str):
     """Serves individual image file from configured folder."""
     folder = media_config["image_folder"]
@@ -67,7 +67,7 @@ async def serve_image(filename: str):
         raise HTTPException(status_code=404, detail="Image not found")
     return FileResponse(file_path)
 
-@slideshow_router.get("/mp3-files")
+@router_slideshow.get("/mp3-files")
 async def get_mp3_playlist():
     """Returns list of MP3 files from configured folder."""
     folder = media_config["mp3_folder_path"]
@@ -80,7 +80,7 @@ async def get_mp3_playlist():
     except Exception as err:
         raise HTTPException(status_code=500, detail=f"Failed to read MP3 folder: {str(err)}")
 
-@slideshow_router.get("/mp3/{filename}")
+@router_slideshow.get("/mp3/{filename}")
 async def serve_mp3(filename: str):
     """Serves individual MP3 file from configured folder."""
     folder = media_config["mp3_folder_path"]

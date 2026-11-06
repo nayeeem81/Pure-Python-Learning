@@ -1,30 +1,26 @@
-# api/texteditor.py
-
-from typing import List, Set 
-import os
+# api/studiogtts.py
+# 1. Standard Library Imports
 import json
+import os
 import traceback
-from fastapi import APIRouter, HTTPException, Depends, Query, status
+from typing import List, Set
+# 2. Third-Party Imports
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlmodel import select, func, delete
+from sqlmodel import delete, func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
-from data.database import get_db 
-from data.model import Sentence    
+# 3. Local Application Imports
+from data.database import get_db
+from data.model import Sentence
 
-router_texteditor = APIRouter(tags=["Text Edit & DSP"])
+router_sentence = APIRouter(tags=["Text, DSP & GTTS"])
 
 WORKSPACE_DIR = os.path.abspath("./project")
 GENERATED_DIR = os.path.join(WORKSPACE_DIR, "generated")
 
-# ==============================================================
-# DATA MODELS
-# ==============================================================
 class BulkDeleteRequest(BaseModel):
 	ids: List[int]
 
-# ==============================================================
-# PRIVATE UTILITY HELPERS (Enforces DRY Principle)
-# ==============================================================
 def _extract_file_paths(sentence) -> Set[str]:
 	"""
 	Extracts all physical file paths related to a sentence object,
@@ -78,11 +74,7 @@ def _cleanup_physical_files(relative_paths: Set[str]) -> None:
 				print(f"⚠️ NOT FOUND: Python could not find a file matching this path.")
 	print(f"=== END OF FILE CLEANUP SYSTEM DISK SCAN ===\n")
 
-# ==============================================================
-# CORE API ENDPOINTS
-# ==============================================================
-
-@router_texteditor.get("/sentences", response_model=dict)
+@router_sentence.get("/sentences", response_model=dict)
 async def get_sentences(
 	session: AsyncSession = Depends(get_db),
 	skip: int = Query(default=0, ge=0),
@@ -155,7 +147,7 @@ async def get_sentences(
 		raise HTTPException(status_code=500, detail=f"Database operational crash: {str(e)}")
 
 
-@router_texteditor.delete("/sentences/{id}", status_code=status.HTTP_200_OK)
+@router_sentence.delete("/sentences/{id}", status_code=status.HTTP_200_OK)
 async def delete_single_sentence(id: int, session: AsyncSession = Depends(get_db)):
 	try:
 		statement = select(Sentence).where(Sentence.id == id)
@@ -183,7 +175,7 @@ async def delete_single_sentence(id: int, session: AsyncSession = Depends(get_db
 		raise HTTPException(status_code=500, detail=f"Internal database deletion failure: {str(e)}")
 
 
-@router_texteditor.post("/sentences/bulk-delete", status_code=status.HTTP_200_OK)
+@router_sentence.post("/sentences/bulk-delete", status_code=status.HTTP_200_OK)
 async def bulk_delete_sentences(payload: BulkDeleteRequest, session: AsyncSession = Depends(get_db)):
 	try:
 		if not payload.ids:

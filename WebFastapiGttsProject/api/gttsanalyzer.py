@@ -1,21 +1,23 @@
 # api/frequency.py
-import os
-import json  
+
+# 1. Standard Library Imports
 import io
+import json
+import os
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, status
+
+# 2. Third-Party Imports
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from pydub import AudioSegment
-
-# Use sqlmodel modules cleanly
-from sqlmodel import select
+from sqlmodel import select  # Use sqlmodel modules cleanly
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-# Database dependencies and ORM Models
+# 3. Local Application Imports (Database dependencies and ORM Models)
 from data.database import get_db
-from data.model import Sentence, Word, SentenceHistory, WordHistory
+from data.model import Sentence, SentenceHistory, Word, WordHistory
 
-frequency_router = APIRouter(prefix="/frequency", tags=["Sentence Frequency Analyzer"])
+router_gttsanalyzer = APIRouter(prefix="/frequency", tags=["Sentence Frequency Analyzer"])
 
 WORKSPACE_DIR = os.path.abspath("./project")
 GENERATED_DIR = os.path.join(WORKSPACE_DIR, "generated")
@@ -37,7 +39,7 @@ def apply_frequency_pitch_shift(audio_segment: AudioSegment, shift_amount: float
     return shifted_audio.set_frame_rate(audio_segment.frame_rate)
 
 
-@frequency_router.post("/update-frequency", status_code=status.HTTP_200_OK)
+@router_gttsanalyzer.post("/update-frequency", status_code=status.HTTP_200_OK)
 async def update_frequency(data: FrequencyUpdate, db: AsyncSession = Depends(get_db)):
     """
     Shifts the frequency of a word fragment, re-consolidates the specific track on disk,

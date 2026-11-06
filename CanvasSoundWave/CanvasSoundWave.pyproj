@@ -30,6 +30,7 @@
     <Compile Include="chordapps\interactive_sine_waveapp.py" />
     <Compile Include="chordapps\single_static_line.py" />
     <Compile Include="chordapps\simple_grid_app.py" />
+    <Compile Include="studio.py" />
     <Compile Include="study\colorhistorygoogleplay.py" />
     <Compile Include="study\interactive_line_app.md" />
     <Compile Include="study\interactive_lineslope_app.md" />

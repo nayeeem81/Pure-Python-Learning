@@ -1,22 +1,24 @@
 # api/routerwords.py
-import os
-import json
-import re
-from io import BytesIO
+
+# 1. Standard Library Imports
 from datetime import datetime, timezone  # 💡 Added timezone support to fix transaction crashes
-from fastapi import APIRouter, HTTPException, Depends, status
+from io import BytesIO
+import json
+import os
+import re
+
+# 2. Third-Party Imports
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from pydub import AudioSegment
-
-# 💡 Import select from sqlmodel uniformly to keep driver calls safe
-from sqlmodel import select
+from sqlmodel import select  # 💡 Import select from sqlmodel uniformly to keep driver calls safe
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-# Database dependencies and ORM Models
+# 3. Local Application Imports (Database dependencies and ORM Models)
 from data.database import get_db
-from data.model import Sentence, Word, SentenceHistory, WordHistory
+from data.model import Sentence, SentenceHistory, Word, WordHistory
 
-router_words = APIRouter(prefix="/words", tags=["Word Frequency & Amplitude Customizer"])
+router_gttsword = APIRouter(prefix="/words", tags=["Word Frequency & Amplitude Customizer"])
 
 WORKSPACE_DIR = os.path.abspath("./project")
 GENERATED_DIR = os.path.join(WORKSPACE_DIR, "generated")
@@ -43,7 +45,7 @@ def apply_dsp_tweaks(audio: AudioSegment, pitch: float, volume: float) -> AudioS
         
     return modified_audio
 
-@router_words.post("/parse/{sentence_id}", status_code=status.HTTP_201_CREATED)
+@router_gttsword.post("/parse/{sentence_id}", status_code=status.HTTP_201_CREATED)
 async def parse_sentence_into_words(sentence_id: int, db: AsyncSession = Depends(get_db)):
     """
     Finds a sentence, parses its string into clean sequential words,
@@ -53,7 +55,6 @@ async def parse_sentence_into_words(sentence_id: int, db: AsyncSession = Depends
         stmt = select(Sentence).where(Sentence.id == sentence_id)
         result = await db.exec(stmt)
         sentence = result.one_or_none()  # 💡 FIX: Changed from .scalar_one_or_none()
-
         
         if not sentence:
             raise HTTPException(status_code=404, detail=f"Sentence ID {sentence_id} not found.")
@@ -92,7 +93,7 @@ async def parse_sentence_into_words(sentence_id: int, db: AsyncSession = Depends
         )
 
 # --- 2. UPDATED AUDIO PROCESSING & DATABASE INTEGRATION ENGINE ---
-@router_words.post("/consolidate-modifications")
+@router_gttsword.post("/consolidate-modifications")
 async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSession = Depends(get_db)):
     try:
         # Fetch targeting parent sentence from database context

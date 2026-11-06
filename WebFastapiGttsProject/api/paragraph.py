@@ -1,26 +1,42 @@
-from sqlalchemy.orm import Session 
-from pathlib import Path 
-from datetime import datetime, timezone 
-from typing import List, Set 
-import os 
-import json 
-import traceback 
-from fastapi import APIRouter, HTTPException, Depends, Query, status 
-from pydantic import BaseModel 
-from sqlmodel import select, func, delete 
-from sqlmodel.ext.asyncio.session import AsyncSession 
-from data.database import get_db 
-# FIX: Ensure all required models (Story, Chapter) are imported here
-from data.model import Sentence, Story, Chapter, AudioChapter
+# 1. Standard Library Imports
+from datetime import datetime, timezone
+import json
+import os
+from pathlib import Path
+import traceback
+from typing import List, Set
+# 2. Third-Party Imports
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from sqlmodel import delete, func, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+# 3. Local Application Imports
+from data.database import get_db
+from data.model import AudioChapter, Chapter, Sentence, Story
 
-router_storygrid = APIRouter(tags=["Text Edit & DSP"]) 
+router_paragraph = APIRouter(tags=["Paragraphs Grid, Delete, View Sentences, Play Mp3"]) 
 
 WORKSPACE_DIR = os.path.abspath("./project") 
 GENERATED_DIR = os.path.join(WORKSPACE_DIR, "generated") 
 
-# ============================================================== 
-# PRIVATE UTILITY HELPERS 
-# ============================================================== 
+class SelectedItem(BaseModel):
+    id: int
+    path: str
+
+class BulkAddRequest(BaseModel): 
+    items: List[SelectedItem]  
+    story_id: int
+    chapter_id: int	
+
+class StoryCreateSchema(BaseModel): 
+	story_name: str
+
+class ChapterCreateSchema(BaseModel): 
+    chapter_name: str 
+    serial_number: int 
+    story_id: int 
+
 def _extract_file_paths(sentence) -> Set[str]: 
     """ Extracts all physical file paths related to a sentence object. """
     extracted_paths = set() 
@@ -60,10 +76,8 @@ def _cleanup_physical_files(relative_paths: Set[str]) -> None:
                 print(f"⚠️ NOT FOUND: Python could not find a file matching this path.") 
     print(f"=== END OF FILE CLEANUP SYSTEM DISK SCAN ===\n") 
 
-# ============================================================== 
-# CORE API ENDPOINTS 
-# ============================================================== 
-@router_storygrid.get("/sentences", response_model=dict) 
+
+@router_paragraph.get("/sentences", response_model=dict) 
 async def get_storygrid( 
     session: AsyncSession = Depends(get_db), 
     skip: int = Query(default=0, ge=0), 
@@ -130,8 +144,8 @@ async def get_storygrid(
         traceback.print_exc() 
         raise HTTPException(status_code=500, detail=f"Database operational crash: {str(e)}") 
 
-@router_storygrid.delete("/sentences/{id}", status_code=status.HTTP_200_OK) 
-async def delete_single_router_storygrid(id: int, session: AsyncSession = Depends(get_db)): 
+@router_paragraph.delete("/sentences/{id}", status_code=status.HTTP_200_OK) 
+async def delete_single_router_paragraph(id: int, session: AsyncSession = Depends(get_db)): 
     try: 
         statement = select(Sentence).where(Sentence.id == id) 
         result = await session.execute(statement) 
@@ -153,107 +167,70 @@ async def delete_single_router_storygrid(id: int, session: AsyncSession = Depend
         traceback.print_exc() 
         raise HTTPException(status_code=500, detail=f"Internal database deletion failure: {str(e)}") 
 
-
-# 1. Define the structure for an individual item
-class SelectedItem(BaseModel):
-    id: int
-    path: str
-
-# 2. Update your BulkAddRequest payload model
-class BulkAddRequest(BaseModel): 
-    items: List[SelectedItem]  # Replaces 'ids: List[int]'
-    story_id: int
-    chapter_id: int	
-
-# Assuming your models/dependencies are imported like this
-# from .database import get_db
-# from .schemas import BulkAddRequest
-# from .models import AudioChapter
-
-@router_storygrid.post("/sentences/bulk-add", status_code=status.HTTP_200_OK) 
+@router_paragraph.post("/sentences/bulk-add", status_code=status.HTTP_200_OK) 
 async def bulk_add_storygrid(payload: BulkAddRequest, session: AsyncSession = Depends(get_db)): 
     try: 
         if not payload.items: 
             return {"status": "ignored", "message": "No targets passed."} 
 
-        # 1. FIXED: Correctly execute asynchronous select queries
         statement = select(func.max(AudioChapter.serial_number)).where(
             AudioChapter.story_id == payload.story_id,
             AudioChapter.chapter_id == payload.chapter_id
         )
+
         result = await session.execute(statement)
         max_serial = result.scalar_one_or_none()
-
-        # Fallback to starting index if table is empty
         next_serial = (max_serial or 0) + 1
         now = datetime.now(timezone.utc)	 
-
         inserted_records = []
-
-        # 2. FIXED: Correct loop to process each item and increment numbers
         for item in payload.items:
             new_audio_chapter = AudioChapter(
                 chapter_id=payload.chapter_id,
                 story_id=payload.story_id,
                 serial_number=next_serial, 
-                audio_absolute_filepath=item.path,  # Dynamically references current item path
+                audio_absolute_filepath=item.path, 
                 modified_at=now,
                 modified_by="System"
             )
             
             session.add(new_audio_chapter)
             inserted_records.append(new_audio_chapter)
-            
             # Increment tracking sequence number for the next pass
             next_serial += 1
-
         # 3. Commit batch work to database
         await session.commit()
-
         # 4. Refresh all inserted objects to populate any database-generated values (like auto-increment IDs)
         for record in inserted_records:
             await session.refresh(record)
-
         # 5. FIXED: Safely return the populated array back to JavaScript code
         return {
             "status": "success", 
             "message": f"Successfully inserted {len(inserted_records)} items.",
             "data": [record.model_dump() for record in inserted_records] # Converts SQLModel to clean JSON list
         }
-
     except Exception as e: 
         await session.rollback() 
         print("=== BULK INSERTION EXCEPTION STACK ===") 
         traceback.print_exc() 
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
-# from .database import get_db
-# from .models import AudioChapter
-
-@router_storygrid.delete("/sentences/bulk-remove/{item_id}", status_code=status.HTTP_200_OK)
+@router_paragraph.delete("/sentences/bulk-remove/{item_id}", status_code=status.HTTP_200_OK)
 async def delete_audio_chapter(item_id: int, session: AsyncSession = Depends(get_db)):
     try:
         # Query the record by its unique database ID
         statement = select(AudioChapter).where(AudioChapter.id == item_id)
         result = await session.execute(statement)
         record = result.scalar_one_or_none()
-        
         # If the record doesn't exist, return a 404 error
         if not record:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, 
                 detail=f"Audio record with ID {item_id} not found."
             )
-        
         # Remove the record and commit the changes asynchronously
         session.delete(record)
         await session.commit()
-        
         return {"status": "success", "message": f"Record {item_id} deleted successfully."}
-        
     except HTTPException as he:
         raise he
     except Exception as e:
@@ -263,15 +240,10 @@ async def delete_audio_chapter(item_id: int, session: AsyncSession = Depends(get
             detail=f"Database error: {str(e)}"
         )
 
-
 # ============================================================== 
 # STORIES & CHAPTERS ENDPOINTS 
-# =====================================g========================= 
-class StoryCreateSchema(BaseModel): 
-	story_name: str
-
-@router_storygrid.post("/stories") 
-# FIX: Switched standard Session to AsyncSession type hint
+# ============================================================== 
+@router_paragraph.post("/stories") 
 async def create_story(payload: StoryCreateSchema, session: AsyncSession = Depends(get_db)): 
     try: 
         story_name = payload.story_name 
@@ -301,17 +273,11 @@ async def create_story(payload: StoryCreateSchema, session: AsyncSession = Depen
         await session.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to create story: {str(e)}")
 
-class ChapterCreateSchema(BaseModel): 
-    chapter_name: str 
-    serial_number: int 
-    story_id: int 
-
-@router_storygrid.post("/chapters") 
+@router_paragraph.post("/chapters") 
 async def create_chapter(payload: ChapterCreateSchema, session: AsyncSession = Depends(get_db)):
     chapter_name = payload.chapter_name
     serial_number = payload.serial_number
     story_id = payload.story_id
-    
 	# Fetch existing chapters to determine sequence and log information
     statement_story = select(Story).where(Story.id == story_id).order_by(Story.id)
 
@@ -325,8 +291,7 @@ async def create_chapter(payload: ChapterCreateSchema, session: AsyncSession = D
         chapterdir.mkdir(parents=True, exist_ok=True)
         absolute_path_str = str(chapterdir)
     except PermissionError:
-        raise HTTPException(status_code=403, detail="File system write permission denied.")
-        
+        raise HTTPException(status_code=403, detail="File system write permission denied.")   
     try:
         # Fetch existing chapters to determine sequence and log information
         statement = select(Chapter).where(Chapter.story_id == story_id).order_by(Chapter.id)
@@ -352,22 +317,19 @@ async def create_chapter(payload: ChapterCreateSchema, session: AsyncSession = D
             modified_at=now,
             modified_by="System"
         )
-        
         session.add(new_chapter)
         await session.commit()
         await session.refresh(new_chapter)
         return new_chapter
-        
     except Exception as e:
         await session.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to create chapter: {str(e)}")
 
-@router_storygrid.get("/sentences/audio-chapters", status_code=200)
+@router_paragraph.get("/sentences/audio-chapters", status_code=200)
 async def get_all_audio_chapters(session: AsyncSession = Depends(get_db)):
     # Fetch all records from the audio_chapters table
     statement = select(AudioChapter)
     result = await session.execute(statement)
     records = result.scalars().all()
-    
     # Return them as a clean list of dictionaries
     return [record.model_dump() for record in records]

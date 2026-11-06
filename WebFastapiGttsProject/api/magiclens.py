@@ -1,24 +1,27 @@
-# api/imagetensor.py
+# api/magiclens.py
+
+# 1. Standard Library Imports
+from datetime import datetime, timezone
 import os
 from pathlib import Path
-from fastapi import APIRouter, Request, HTTPException, status, Depends
+
+# 2. Third-Party Imports
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse
-from sqlmodel import Session, select
 from pydantic import BaseModel
-from datetime import datetime, timezone
-from utilities.image_processing import load_rgb_tensor, tensor_payload
+from sqlmodel import Session, select						
+# 3. Local Application Imports
 from data.database import get_db
 from data.model import ImageMetadata
+from utilities.image_processing import load_rgb_tensor, tensor_payload
 
 # Initialize a dedicated router for tensor operations
-router_imagetensor = APIRouter(tags=["Image Tensor Engine"])
-
+router_magiclens = APIRouter(tags=["Image Tensor/Numpy Engine"])
 
 class ImageMetadataRequest(BaseModel):
     """Request model for saving/updating image metadata."""
     title: str
     short_brief: str
-
 
 class ImageMetadataResponse(BaseModel):
     """Response model for image metadata retrieval."""
@@ -29,13 +32,12 @@ class ImageMetadataResponse(BaseModel):
     modified_at: datetime
 
 # Resolve the absolute path to the project root static folder
-# Path(__file__).resolve()   -> .../WebFastapiGttsProject/api/imagetensor.py
+# Path(__file__).resolve()   -> .../WebFastapiGttsProject/api/magiclens.py
 # .parent.parent            -> .../WebFastapiGttsProject (Project Root)
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_IMAGE = BASE_DIR / "static" / "sample.png"
 
-
-@router_imagetensor.post("/metadata/save", response_model=ImageMetadataResponse, status_code=status.HTTP_200_OK)
+@router_magiclens.post("/metadata/save", response_model=ImageMetadataResponse, status_code=status.HTTP_200_OK)
 async def save_image_metadata(request: ImageMetadataRequest, session: Session = Depends(get_db)):
     """Save or update image metadata (title and short brief)."""
     try:
@@ -58,7 +60,6 @@ async def save_image_metadata(request: ImageMetadataRequest, session: Session = 
                 version=1
             )
             session.add(metadata)
-
         await session.commit()
         await session.refresh(metadata)
 
@@ -76,8 +77,7 @@ async def save_image_metadata(request: ImageMetadataRequest, session: Session = 
             detail=f"Metadata save failed: {str(exc)}"
         )
 
-
-@router_imagetensor.get("/metadata/current", response_model=ImageMetadataResponse | None, status_code=status.HTTP_200_OK)
+@router_magiclens.get("/metadata/current", response_model=ImageMetadataResponse | None, status_code=status.HTTP_200_OK)
 async def get_image_metadata(session: Session = Depends(get_db)):
     """Retrieve the current image metadata."""
     try:
@@ -101,8 +101,7 @@ async def get_image_metadata(session: Session = Depends(get_db)):
             detail=f"Metadata retrieval failed: {str(exc)}"
         )
 
-
-@router_imagetensor.post("/metadata/clear", status_code=status.HTTP_200_OK)
+@router_magiclens.post("/metadata/clear", status_code=status.HTTP_200_OK)
 async def clear_image_metadata(session: Session = Depends(get_db)):
     """Clear all image metadata."""
     try:
@@ -125,9 +124,7 @@ async def clear_image_metadata(session: Session = Depends(get_db)):
             detail=f"Metadata clear failed: {str(exc)}"
         )
 
-
-
-@router_imagetensor.get("/tensor")
+@router_magiclens.get("/tensor")
 async def tensor():
     """Generates and returns JSON-friendly pixel matrices for canvas interfaces."""
     try:
