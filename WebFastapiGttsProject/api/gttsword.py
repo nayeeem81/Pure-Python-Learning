@@ -1,11 +1,12 @@
 # api/routerwords.py
 
 # 1. Standard Library Imports
-from datetime import datetime, timezone  # 💡 Added timezone support to fix transaction crashes
+from datetime import datetime, timezone  
 from io import BytesIO
 import json
 import os
 import re
+from typing import List, Optional
 
 # 2. Third-Party Imports
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -20,9 +21,7 @@ from data.model import Sentence, SentenceHistory, Word, WordHistory
 
 router_gttsword = APIRouter(prefix="/words", tags=["Word Frequency & Amplitude Customizer"])
 
-WORKSPACE_DIR = os.path.abspath("./project")
-GENERATED_DIR = os.path.join(WORKSPACE_DIR, "generated")
-
+# 💡 MATCHED: Utilizing your exact pre-declared Pydantic schema structures
 class WordAdjustment(BaseModel):
     word_index: int
     pitch_shift: float  # Represented in octaves/semitones
@@ -30,7 +29,14 @@ class WordAdjustment(BaseModel):
 
 class ConsolidateRequest(BaseModel):
     sentence_id: int    # Linked to relational primary keys
-    adjustments: list[WordAdjustment]
+    adjustments: List[WordAdjustment]
+
+# ==========================================================================
+# UNIFIED DECOUPLED STORAGE VARIABLES FOR D: DRIVE PARAMS
+# ==========================================================================
+STORAGE_ROOT = "D:\\StudioStorage"
+GENERATED_DIR = os.path.normpath(os.path.join(STORAGE_ROOT, "generated"))
+SEGMENTS_BASE_DIR = os.path.normpath(os.path.join(GENERATED_DIR, "segments"))
 
 def apply_dsp_tweaks(audio: AudioSegment, pitch: float, volume: float) -> AudioSegment:
     """Modifies the frequency profile and gain metrics of an audio fragment."""
@@ -54,7 +60,7 @@ async def parse_sentence_into_words(sentence_id: int, db: AsyncSession = Depends
     try:
         stmt = select(Sentence).where(Sentence.id == sentence_id)
         result = await db.exec(stmt)
-        sentence = result.one_or_none()  # 💡 FIX: Changed from .scalar_one_or_none()
+        sentence = result.one_or_none() 
         
         if not sentence:
             raise HTTPException(status_code=404, detail=f"Sentence ID {sentence_id} not found.")
@@ -92,21 +98,26 @@ async def parse_sentence_into_words(sentence_id: int, db: AsyncSession = Depends
             detail=f"An error occurred while parsing the text layout: {str(e)}"
         )
 
-# --- 2. UPDATED AUDIO PROCESSING & DATABASE INTEGRATION ENGINE ---
+
 @router_gttsword.post("/consolidate-modifications")
 async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSession = Depends(get_db)):
+    """
+    🛠️ OPTIMIZED DSP ENGINE: Reads raw word fragments right off the D: Drive storage volume,
+    applies real-time pitch/volume modifiers, archives snapshots, and flushes database changes cleanly.
+    """
     try:
         # Fetch targeting parent sentence from database context
         sentence_stmt = select(Sentence).where(Sentence.id == payload.sentence_id)
-        sentence_res = await db.exec(sentence_stmt)  
-        # 💡 FIX 1: Switched from scalar_one_or_none() to one_or_none() for SQLModel ScalarResult compatibility
-        sentence = sentence_res.one_or_none()  
+        sentence_res = await db.execute(sentence_stmt)  
+        sentence = sentence_res.scalars().first()  
         
         if not sentence:
             raise HTTPException(status_code=404, detail=f"Sentence ID {payload.sentence_id} missing in DB.")
 
-        dynamic_json_path = os.path.join(GENERATED_DIR, f"metadata_{payload.sentence_id}.json")
-        dynamic_master_mp3_path = os.path.join(GENERATED_DIR, f"sentence_{payload.sentence_id}.mp3")
+        # Resolve strict absolute D: Drive tracking strings
+        dynamic_json_path = os.path.normpath(os.path.join(GENERATED_DIR, f"metadata_{payload.sentence_id}.json"))
+        dynamic_master_mp3_path = os.path.normpath(os.path.join(GENERATED_DIR, f"sentence_{payload.sentence_id}.mp3"))
+        sentence_segments_dir = os.path.normpath(os.path.join(SEGMENTS_BASE_DIR, f"sentence_{payload.sentence_id}"))
         
         if not os.path.exists(dynamic_json_path):
             raise HTTPException(status_code=404, detail=f"Original analysis metadata map missing for sentence {payload.sentence_id}")
@@ -114,14 +125,15 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
         with open(dynamic_json_path, "r", encoding="utf-8") as f:
             original_data = json.load(f)
 
+        # 🛠️ ALIGNED DICTIONARY MAP: Safely maps WordAdjustment models
         adj_map = {item.word_index: item for item in payload.adjustments}
         modified_timeline = []
         consolidated_track = AudioSegment.empty()
 
         # --- ARCHIVE RUN: SAVE HISTORICAL SNAPSHOT BEFORE MODIFICATION ---
         sentence_hist_stmt = select(SentenceHistory).where(SentenceHistory.sentence_id == sentence.id)
-        s_hist_res = await db.exec(sentence_hist_stmt)  
-        next_s_version = len(s_hist_res.all()) + 1
+        s_hist_res = await db.execute(sentence_hist_stmt)  
+        next_s_version = len(s_hist_res.scalars().all()) + 1
 
         old_sentence_snapshot = SentenceHistory(
             sentence_id=sentence.id,
@@ -130,22 +142,23 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
         )
         db.add(old_sentence_snapshot)
 
-        segments_dir = os.path.join(WORKSPACE_DIR, "generated", "segments")
-        os.makedirs(segments_dir, exist_ok=True)
-
         # --- CONSOLIDATION LOOP ---
         for word_meta in original_data["words_timeline"]:
             idx = word_meta["word_index"]
-            word_wav_path = os.path.join(WORKSPACE_DIR, word_meta["segment_file"])
+            
+            # Target path parsed directly from the database string layer
+            word_wav_path = os.path.normpath(word_meta["segment_file"])
             
             if not os.path.exists(word_wav_path):
-                raise HTTPException(status_code=404, detail=f"Fragment missing: {word_wav_path}")
+                raise HTTPException(status_code=404, detail=f"Fragment missing at location: {word_wav_path}")
                 
             raw_word_audio = AudioSegment.from_wav(word_wav_path)
             
+            # Read alignment numbers from the WordAdjustment parameter map
             pitch_val = adj_map[idx].pitch_shift if idx in adj_map else 0.0
             volume_val = adj_map[idx].volume_db if idx in adj_map else 0.0
             
+            # Execute your custom DSP frequency/amplitude modifiers
             processed_word_audio = apply_dsp_tweaks(raw_word_audio, pitch_val, volume_val)
             consolidated_track += processed_word_audio
             
@@ -153,15 +166,16 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
             processed_word_audio.export(word_buffer, format="wav")
             word_raw_bytes = word_buffer.getvalue()
 
-            # 💡 FIX 2: Corrected the target query path variable name and indentation to fetch the matching Word entity
+            # Query matching Word entry to update its values
             word_stmt = select(Word).where(Word.sentence_id == sentence.id, Word.word_order == idx)
-            word_res = await db.exec(word_stmt)
-            live_word = word_res.one_or_none()  # Switched to .one_or_none()
+            word_res = await db.execute(word_stmt)
+            live_word = word_res.scalars().first()
 
             if live_word:
+                # Track and archive historical modification state profiles
                 word_hist_stmt = select(WordHistory).where(WordHistory.word_id == live_word.id)
-                w_hist_res = await db.exec(word_hist_stmt)  
-                next_w_version = len(w_hist_res.all()) + 1
+                w_hist_res = await db.execute(word_hist_stmt)  
+                next_w_version = len(w_hist_res.scalars().all()) + 1
 
                 old_word_snapshot = WordHistory(
                     word_id=live_word.id,
@@ -170,24 +184,29 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
                 )
                 db.add(old_word_snapshot)
 
-                live_word.audio_bytes = word_raw_bytes
-                live_word.mp3_file_path = f"generated/segments/word_{idx:03d}_mod.wav"
+                # Overwrites the target modified word file inside sentence directory on D: Drive
+                word_mod_filename = f"word_{idx:03d}_mod.wav"
+                word_absolute_mod_path = os.path.normpath(os.path.join(sentence_segments_dir, word_mod_filename))
+                
+                processed_word_audio.export(word_absolute_mod_path, format="wav")
 
-                word_absolute_path = os.path.join(WORKSPACE_DIR, live_word.mp3_file_path)
-                processed_word_audio.export(word_absolute_path, format="wav")
+                # Map data columns accurately
+                live_word.audio_bytes = word_raw_bytes
+                live_word.mp3_file_path = word_absolute_mod_path  
 
             # Footprint logging adjustments for JSON configuration mappings
             modified_word_entry = word_meta.copy()
             modified_word_entry["applied_frequency_shift_hz"] = pitch_val
             modified_word_entry["applied_amplitude_db"] = volume_val
+            modified_word_entry["segment_file"] = live_word.mp3_file_path if live_word else word_meta["segment_file"]
             modified_timeline.append(modified_word_entry)
 
-        # Complete the missing file writers and commit layout tree elements safely
+        # Complete file writers and commit layout tree elements safely
         original_data["words_timeline"] = modified_timeline
         with open(dynamic_json_path, "w", encoding="utf-8") as f:
             json.dump(original_data, f, indent=4)
 
-        # Export completed soundscape track out to drive metrics
+        # Export completed soundscape track out to D: Drive storage volume
         consolidated_track.export(dynamic_master_mp3_path, format="mp3")
         master_buffer = BytesIO()
         consolidated_track.export(master_buffer, format="mp3")
@@ -201,7 +220,7 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
         sentence.version += 1
 
         await db.commit()
-                # Upgraded metadata payload response
+        
         return {
             "status": "success",
             "code": status.HTTP_200_OK,
@@ -221,6 +240,8 @@ async def consolidate_modifications(payload: ConsolidateRequest, db: AsyncSessio
     except Exception as e:
         await db.rollback()
         print(f"❌ Consolidation Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=500, 
             detail=f"Database transaction operations failure: {str(e)}"
