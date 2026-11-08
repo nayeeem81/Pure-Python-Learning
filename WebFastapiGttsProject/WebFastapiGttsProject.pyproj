@@ -23,6 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="api\fix_tabs.py" />
+    <Compile Include="api\textipyimage.py" />
     <Compile Include="api\magiclens.py" />
     <Compile Include="api\slideshow.py" />
     <Compile Include="api\paragraph.py" />
@@ -50,11 +51,13 @@
     <Content Include=".gitignore" />
     <Content Include="api\gttsanalyzer.py" />
     <Content Include="README.md" />
+    <Content Include="static\content\textipyimage.css" />
     <Content Include="static\content\storyparagraphs.css" />
     <Content Include="static\content\slideshow.css" />
     <Content Include="static\content\studiogtts.css" />
     <Content Include="static\content\magiclens.css" />
     <Content Include="static\content\paragraphs.css" />
+    <Content Include="static\js\textipyimage.js" />
     <Content Include="static\js\magiclens.js" />
     <Content Include="static\js\paragraphs.js" />
     <Content Include="static\js\slideshow.js" />
@@ -113,6 +116,7 @@
     <Content Include="study\textdisksave_bestpractice.md" />
     <Content Include="study\texteditor.md" />
     <Content Include="templates\about.html" />
+    <Content Include="templates\textipyimage.html" />
     <Content Include="templates\magiclens.html" />
     <Content Include="templates\studiogtts.html" />
     <Content Include="templates\index.html" />

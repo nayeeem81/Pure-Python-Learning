@@ -1,0 +1,434 @@
+/* ==========================================================================
+   1. PAGE CONTEXT & CORE LAYOUT 
+   ========================================================================== */
+
+.magic-lens-container {
+    position: relative;
+    width: 100%;
+}
+
+    .magic-lens-container .hidden {
+        display: none !important;
+    }
+
+.editor-row {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 10px;
+    align-items: start;
+    margin-top: 20px;
+}
+
+.controls-column {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    max-width: 360px;
+    padding: 15px;
+    background: var(--panel-contrast, #c98dc7b8);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+}
+
+.canvas-column {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    gap: 12px;
+}
+
+
+/* ==========================================================================
+   2. FLOATING CONTROLLER BLOCK & STRUCTURAL PANELS
+   ========================================================================== */
+
+.floating-panel {
+    position: absolute;
+    z-index: 10;
+    color: #fff;
+    background: rgba(30, 30, 30, 0.9);
+    border: 2px solid #c8c8c8;
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    user-select: none;
+}
+
+.floating-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(50, 50, 50, 0.8);
+    border-bottom: 1px solid rgba(245, 196, 81, 0.3);
+    border-radius: 6px 6px 0 0;
+}
+
+    .floating-panel-header h3 {
+        margin: 0;
+        color: #f5c451;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+.floating-panel-content {
+    padding: 16px;
+}
+
+    .floating-panel-content .form-group {
+        margin-bottom: 12px;
+    }
+
+    .floating-panel-content label {
+        display: block;
+        margin-bottom: 4px;
+        color: #ccc;
+        font-size: 12px;
+    }
+
+    .floating-panel-content input[type="text"],
+    .floating-panel-content textarea {
+        width: 100%;
+        padding: 8px;
+        color: #fff;
+        background: #222;
+        border: 1px solid #555;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+.floating-panel-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+
+    .floating-panel-actions button {
+        flex: 1;
+        background: #0077b6;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 12px;
+        transition: background 0.2s ease;
+    }
+
+        .floating-panel-actions button:hover {
+            background: #0056a3;
+        }
+
+    .floating-panel-actions #clear-metadata-button {
+        background: #dc3545;
+    }
+
+        .floating-panel-actions #clear-metadata-button:hover {
+            background: #c82333;
+        }
+
+
+/* ==========================================================================
+   3. FORM GROUPS, CONTROL ELEMENTS & BUTTONS
+   ========================================================================== */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .form-group:nth-child(2) {
+        margin-top: 8px;
+    }
+
+    .form-group label {
+        color: #f5c451;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 10px;
+        color: #fff;
+        background: #222;
+        border: 1px solid #555;
+        border-radius: 4px;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        line-height: 1.5;
+        transition: border-color 0.2s ease;
+    }
+
+    .form-group input {
+        resize: none;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+        .form-group textarea::placeholder {
+            white-space: normal;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #f5c451;
+            box-shadow: 0 0 8px rgba(245, 196, 81, 0.3);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #888;
+        }
+
+.upload-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.download-wrap {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.custom-btn {
+    padding: 10px 15px;
+    color: white;
+    background: #0077b6;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+    .custom-btn:hover {
+        background: #0056a3;
+    }
+
+    .custom-btn:disabled {
+        background: #ccc;
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.close-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    color: white;
+    background: #c83232;
+    border: none;
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+    .close-button:hover {
+        background: #a02020;
+    }
+
+
+/* ==========================================================================
+   4. COLOR CHANNEL MIXERS & SLIDERS
+   ========================================================================== */
+
+.sliders {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.channel-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+}
+
+.channel-name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+}
+
+.channel-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+    .channel-inputs input[type="range"] {
+        flex: 1 1 auto;
+    }
+
+.channel-number {
+    width: 72px;
+    padding: 6px;
+    text-align: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+
+/* ==========================================================================
+   5. CANVAS PANEL VIEWBOX CONSTRAINTS
+   ========================================================================== */
+
+.canvas-panel-editimage {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.canvas-actions-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.shape-readout, .canvas-topline, .canvas-footline
+.canvas-frame {
+    background: #f5efef;
+    border-radius: 4px;
+    overflow: auto;
+    max-width: 100%;
+    max-height: auto;
+    scrollbar-width: revert;
+    scrollbar-color: #f5c451 #333;
+    font-size: 14px;
+}
+
+    /* Webkit scrollbar (Chrome, Safari, Edge) */
+    .canvas-frame::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .canvas-frame::-webkit-scrollbar-track {
+        background: #333;
+        border-radius: 4px;
+    }
+
+    .canvas-frame::-webkit-scrollbar-thumb {
+        background: #f5c451;
+        border-radius: 4px;
+    }
+
+        .canvas-frame::-webkit-scrollbar-thumb:hover {
+            background: #ffd700;
+        }
+
+.canvas-stage {
+    position: relative;
+    display: inline-block;
+}
+
+#tensor-canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: dashed 2px #f5c451;
+}
+
+#selection-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+}
+
+#text-overlay-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+/* ==========================================================================
+   6. UI MESSAGES, NOTIFICATIONS & CONTROLS
+   ========================================================================== */
+
+.tensor-editor {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.panel-heading .eyebrow {
+    color: #6c757d;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.panel-heading .muted {
+    color: #6c757d;
+    font-size: 13px;
+}
+
+.history-actions {
+    margin: 10px 0 15px 0;
+}
+
+.stack-counter-align {
+    margin-bottom: 5px;
+    text-align: right;
+}
+
+.tensor-note {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.keyboard-instruction {
+    margin: 15px 0;
+    padding: 15px;
+    color: #333;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+    .keyboard-instruction kbd {
+        margin: 0 4px;
+        padding: 3px 8px;
+        color: #fff;
+        background: #333;
+        border-radius: 3px;
+        font-family: monospace;
+        font-weight: bold;
+    }

@@ -74,3 +74,12 @@ def story_grid(request: Request):
         name="storyparagraphs.html", 
         context={"page_title": "Make Story"}
     )
+
+@view_router.get("/textipyimage", response_class=HTMLResponse)
+def textipy_image(request: Request):
+    """Serves the TextIpy Image interface template safely via FastAPI."""
+    return templates.TemplateResponse(
+        request=request, 
+        name="textipyimage.html", 
+        context={"page_title": "Add Text to Image"}
+    )
