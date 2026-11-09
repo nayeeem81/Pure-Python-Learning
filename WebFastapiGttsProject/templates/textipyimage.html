@@ -7,6 +7,7 @@
 
 {% block content %}
 <div class="textipy-magic-lens-container">
+
     <div class="jumbotron">
         <h1>🎛️ TEXTIPY IMAGE</h1>
     </div>
@@ -16,91 +17,68 @@
         <p><strong>💡 Tip:</strong> Press <kbd>T</kbd> to toggle the floating text panel</p>
     </div>
 
-    <!-- Floating Text Panel (Controlled via JS visibility) -->
-    <div id="textipy-floating-panel" class="textipy-floating-panel">
-        <div class="floating-panel-header">
+    <!-- Floating Text Panel (Spacious layout, centered via fixed CSS positions) -->
+    <div id="textipy-floating-panel" class="textipy-floating-panel hidden">
+        <div class="textipy-floating-panel-header">
             <h3>Presentation Text</h3>
-            <button id="textipy-close-panel-button" class="close-button" type="button" aria-label="Close panel">&times;</button>
+            <button id="textipy-close-panel-button" class="textipy-close-button" type="button" aria-label="Close panel">&times;</button>
         </div>
-        <div class="floating-panel-content">
+        <div class="textipy-floating-panel-content">
             <div class="form-group">
-                <label for="title-input">Title:</label>
+                <label for="textipy-title-input">Title:</label>
                 <input id="textipy-title-input" type="text" placeholder="Enter slide title" maxlength="200">
             </div>
+
             <div class="form-group">
-                <label for="brief-input">Short Brief:</label>
+                <label for="textipy-brief-input">Short Brief:</label>
                 <textarea id="textipy-brief-input" placeholder="Enter brief description" rows="4" maxlength="500"></textarea>
             </div>
-            <div class="floating-panel-actions">
-                <button id="save-metadata-button" class="custom-btn" type="button">💾 Add/Update</button>
+
+            <div class="textipy-floating-panel-actions">
+                <!-- 💡 FIX: Added 'textipy-' prefix to match JS query selectors -->
+                <button id="textipy-save-metadata-button" class="custom-btn" type="button">💾 Add/Update</button>
                 <button id="textipy-clear-metadata-button" class="custom-btn" type="button">🗑️ Clear</button>
             </div>
         </div>
     </div>
 
-    <section class="workspace tensor-editor" aria-label="Tensor image viewer">
+    <section class="workspace textipy-tensor-editor" aria-label="Tensor image viewer">
         <!-- Row 1: Upload / Actions Configuration Bar -->
         <div class="textipy-upload-row">
             <div class="textipy-upload-block">
                 <input id="textipy-image-upload" type="file" accept="image/*" class="hidden">
                 <button id="textipy-upload-button" class="custom-btn" type="button">Select image</button>
             </div>
+
             <div class="textipy-download-wrap">
+                <button id="undo-button" class="custom-btn" type="button">↩️ Undo</button>
                 <button id="textipy-update-button" class="custom-btn" type="button">⚡ Apply</button>
                 <button id="textipy-download-button" class="custom-btn" type="button">Download PNG</button>
             </div>
         </div>
 
-        <!-- Row 2: 1 Column Columns -->
+        <!-- Row 2: Main Workspace Row Area -->
         <div class="textipy-editor-row">
-            <div class="textipy-canvas-column">
-                <div class="textipy-canvas-actions-row">
-                    <div class="textipy-selection-actions">
-                        <button id="textipy-create-selection-button" class="custom-btn" type="button">📷 Original</button>
-                        <button id="textipy-create-original-selection-button" class="custom-btn" type="button">🔄 Latest</button>
-                        <button id="textipy-clear-selection-button" class="custom-btn" type="button">✂️ Deselect</button>
-                    </div>
-                    <div class="textipy-update-wrap">
-                        <span class="textipy-status-dot">.</span>
-                        <button id="textipy-undo-button" class="custom-btn" type="button">↩️ Undo</button>
-                    </div>
+            <div class="textipy-canvas-panel-editimage">
+                <div class="textipy-shape-readout" aria-live="polite">
+                    <span id="textipy-shape">Loading tensor...</span>
+                    <span> &nbsp; &nbsp; </span>
+                    <span class="textipy-status-dot"></span>
+                    <span id="textipy-image-name" class="textipy-image-name">Generated sample: </span>
                 </div>
 
-                <div class="textipy-stack-counter-align">
-                    <h4 id="textipy-tensor-count">Stack 0</h4>
-                </div>
-
-                <div class="textipy-canvas-panel-editimage">
-                    <div class="textipy-shape-readout" aria-live="polite">
-                        <span id="textipy-shape">Loading tensor...</span>
-                        <span>      </span>
-                        <span class="textipy-status-dot"></span>
-                        <span id="textipy-image-name" class="textipy-image-name">Generated sample: </span>
-                    </div>
-                    <div class="textipy-canvas-topline">
-                        <span>Rendered pixels</span>
-                        <span id="textipy-pixel-position">Hover a pixel</span>
-                    </div>
-
-                    <!-- Fixed: Container boundaries stop the layout from creating giant scrollbars -->
-                    <div class="textipy-canvas-frame">
-                        <div class="textipy-canvas-stage">
-                            <canvas id="textipy-tensor-canvas" aria-label="RGB tensor image"></canvas>
-                            <canvas id="textipy-selection-canvas" aria-label="Canvas selection overlay"></canvas>
-                            <canvas id="textipy-overlay-canvas" aria-label="Text `overlay canvas"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="textipy-canvas-footline">
-                        <span>Nearest-neighbor preview</span>
-                        <div class="textipy-canvas-actions">
-                            <span id="textipy-pixel-values">R 0 &nbsp; G 0 &nbsp; B 0</span>
-                        </div>
+                <!-- Canvas Stage Viewport Layer Stack -->
+                <div class="textipy-canvas-frame">
+                    <!-- This block inside your HTML is completely ready and stays the same: -->
+                    <div class="textipy-canvas-stage">
+                        <canvas id="textipy-tensor-canvas" aria-label="RGB tensor image"></canvas>
+                        <canvas id="textipy-selection-canvas" aria-label="Polygon selection layer"></canvas>
+                        <canvas id="textipy-text-overlay-canvas" aria-label="Text overlay canvas"></canvas>
                     </div>
                 </div>
-            </div>
         </div>
     </section>
+
 </div>
 {% endblock %}
 

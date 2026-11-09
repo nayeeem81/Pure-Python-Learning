@@ -1,51 +1,33 @@
-const canvas = document.querySelector('#tensor-canvas');
-const selectionCanvas = document.querySelector('#selection-canvas');
+const canvas = document.querySelector('#textipy-tensor-canvas');
 const context = canvas.getContext('2d', { alpha: false });
-const selectionContext = selectionCanvas.getContext('2d');
-const shape = document.querySelector('#shape');
-const position = document.querySelector('#pixel-position');
-const pixelValues = document.querySelector('#pixel-values');
-const downloadButton = document.querySelector('#download-button');
-const imageUpload = document.querySelector('#image-upload');
-const imageName = document.querySelector('#image-name');
-const controls = [
-    document.querySelector('#red-control'),
-    document.querySelector('#green-control'),
-    document.querySelector('#blue-control'),
-];
-const numberControls = [
-    document.querySelector('#red-number'),
-    document.querySelector('#green-number'),
-    document.querySelector('#blue-number'),
-];
-const outputs = [
-    document.querySelector('#red-value'),
-    document.querySelector('#green-value'),
-    document.querySelector('#blue-value'),
-];
+const shape = document.querySelector('#textipy-shape');
+const position = document.querySelector('#textipy-pixel-position');
+const pixelValues = document.querySelector('#textipy-pixel-values');
+const downloadButton = document.querySelector('#textipy-download-button');
+const imageUpload = document.querySelector('#textipy-image-upload');
+const imageName = document.querySelector('#textipy-image-name');
+
+const floatingPanel = document.querySelector('#textipy-floating-panel');
+const closePanelButton = document.querySelector('#textipy-close-panel-button');
+const titleInput = document.querySelector('#textipy-title-input');
+const briefInput = document.querySelector('#textipy-brief-input');
+const saveMetadataButton = document.querySelector('#textipy-save-metadata-button');
+const clearMetadataButton = document.querySelector('#textipy-clear-metadata-button');
+let textOverlayCanvas = document.querySelector('#textipy-text-overlay-canvas');
+
+let uploadedTensor;
+const applyButton = document.querySelector('#textipy-update-button');
+const undoButton = document.querySelector('#textipy-undo-button');
+let textOverlayContext;
+let currentMetadata = { title: '', short_brief: '' };
+
 let tensor;
 let originalTensor;
 let tensorStack = [];
 let dots = [];
-let selectedPolygon = null;
-let selectionSource = 'latest';
-const floatingPanel = document.querySelector('#floating-panel');
-const closePanelButton = document.querySelector('#close-panel-button');
-const titleInput = document.querySelector('#title-input');
-const briefInput = document.querySelector('#brief-input');
-const saveMetadataButton = document.querySelector('#save-metadata-button');
-const clearMetadataButton = document.querySelector('#clear-metadata-button');
-const textOverlayCanvas = document.querySelector('#text-overlay-canvas');
-const textOverlayContext = textOverlayCanvas.getContext('2d');
-
-let currentMetadata = { title: '', short_brief: '' };
 
 function clamp(value) {
     return Math.max(0, Math.min(255, value));
-}
-
-function pixelIsSelected(x, y) {
-    return !selectedPolygon || isPointInPolygon({ x, y }, selectedPolygon);
 }
 
 function cloneTensor(source) {
@@ -57,153 +39,77 @@ function cloneTensor(source) {
     };
 }
 
+// ==========================================================================
+// TENSOR ENGINE TRACKING HELPERS
+// ==========================================================================
+
 function setTensorStack(initialTensor) {
+    // 1. Establish the absolute baseline original image
     originalTensor = cloneTensor(initialTensor);
+
+    // 2. Initialize the historical tracking stack array with version 0
     tensorStack = [cloneTensor(initialTensor)];
+
+    // 3. Set the operational display pointer to the latest array matrix
     tensor = tensorStack[0];
+
     updateTensorReadout();
 }
 
 function updateTensorReadout() {
     if (!tensor) return;
-    shape.textContent = `${tensor.height} × ${tensor.width} × 3 uint8`;
-    document.querySelector('#tensor-count').textContent = `Stack ${tensorStack.length}`;
-    document.querySelector('#undo-button').disabled = tensorStack.length <= 1;
-}
 
-function displayPixel(x, y) {
-    const latest = tensor.pixels[y][x];
-    if (!selectedPolygon || !pixelIsSelected(x, y) || selectionSource === 'latest') {
-        return latest;
+    // Update the row size dimensions readout string (e.g. 720 × 1280 × 3 uint8)
+    shape.textContent = `${tensor.height} × ${tensor.width} × 3 uint8`;
+
+    // Update the layout tracking counter text UI label element
+    const stackCounter = document.querySelector('#textipy-tensor-count');
+    if (stackCounter) {
+        stackCounter.textContent = `Stack: ${tensorStack.length}`;
     }
-    return originalTensor.pixels[y][x];
+
+    // Safely enable/disable your Undo button based on stack size history
+    const undoBtn = document.querySelector('#textipy-undo-button');
+    if (undoBtn) {
+        undoBtn.disabled = tensorStack.length <= 1;
+    }
 }
 
 function render() {
-    const { width, height, pixels } = tensor;
+    if (!originalTensor) return; // Guard against running before an image is available
 
-    // 🔥 CRITICAL FIX: Match the overlay canvas resolution to the image data resolution
-    selectionCanvas.width = width;
-    selectionCanvas.height = height;
+    const { width, height, pixels } = originalTensor; // 🚀 Uses the active stack layer
 
+    // Allocate imageData canvas array channel buffers
     const image = context.createImageData(width, height);
-    const offsets = controls.map((control) => Number(control.value));
-    outputs.forEach((output, index) => {
-        output.value = offsets[index] > 0 ? `+${offsets[index]}` : offsets[index];
-    });
 
-    for (let y = 0; y < height; y += 1) {
-        for (let x = 0; x < width; x += 1) {
-            const source = displayPixel(x, y);
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const pixel = pixels[y][x];
             const index = (y * width + x) * 4;
-            image.data[index] = clamp(source[0] + offsets[0]);
-            image.data[index + 1] = clamp(source[1] + offsets[1]);
-            image.data[index + 2] = clamp(source[2] + offsets[2]);
-            image.data[index + 3] = 255;
+
+            image.data[index] = clamp(pixel[0]); // R
+            image.data[index + 1] = clamp(pixel[1]); // G
+            image.data[index + 2] = clamp(pixel[2]); // B
+            image.data[index + 3] = 255;             // Alpha
         }
     }
 
     context.putImageData(image, 0, 0);
 
-    // Now this will render perfectly aligned nodes on top!
-    drawSelection();
-
-    // Render text overlay with title and brief
-    renderTextOverlay();
-}
-
-
-function syncNumberControls() {
-    controls.forEach((control, index) => {
-        numberControls[index].value = control.value;
-    });
-}
-
-function setControlValue(index, value) {
-    const control = controls[index];
-    const numericValue = Number(value);
-    if (!Number.isFinite(numericValue)) {
-        numberControls[index].value = control.value;
-        return;
-    }
-    const clampedValue = Math.max(Number(control.min), Math.min(Number(control.max), numericValue));
-    control.value = clampedValue;
-    numberControls[index].value = clampedValue;
-    render();
-}
-
-function isPointInPolygon(point, polygon) {
-    let inside = false;
-    for (let index = 0, previous = polygon.length - 1; index < polygon.length; previous = index++) {
-        const currentPoint = polygon[index];
-        const previousPoint = polygon[previous];
-        const crosses = currentPoint.y > point.y !== previousPoint.y > point.y;
-        const intersects = point.x < (previousPoint.x - currentPoint.x) * (point.y - currentPoint.y)
-            / (previousPoint.y - currentPoint.y) + currentPoint.x;
-        if (crosses && intersects) inside = !inside;
-    }
-    return inside;
-}
-
-function drawSelection() {
-    selectionContext.clearRect(0, 0, selectionCanvas.width, selectionCanvas.height);
-    if (!dots.length) return;
-
-    selectionContext.save();
-    selectionContext.lineWidth = Math.max(1, tensor.width / 360);
-    selectionContext.lineJoin = 'round';
-    selectionContext.lineCap = 'round';
-    selectionContext.strokeStyle = '#f5c451';
-    selectionContext.fillStyle = 'rgba(245, 196, 81, 0.2)';
-    selectionContext.beginPath();
-    selectionContext.moveTo(dots[0].x, dots[0].y);
-    dots.slice(1).forEach((dot) => selectionContext.lineTo(dot.x, dot.y));
-    if (selectedPolygon) {
-        selectionContext.closePath();
-        selectionContext.fill();
-    }
-    selectionContext.stroke();
-    dots.forEach((dot) => {
-        selectionContext.beginPath();
-        selectionContext.fillStyle = '#fffdf8';
-        selectionContext.arc(dot.x, dot.y, Math.max(2.5, tensor.width / 180), 0, Math.PI * 2);
-        selectionContext.fill();
-        selectionContext.lineWidth = 2;
-        selectionContext.strokeStyle = '#202426';
-        selectionContext.stroke();
-    });
-    selectionContext.restore();
-}
-
-function canvasPoint(event) {
-    const bounds = selectionCanvas.getBoundingClientRect();
-
-    // Use selectionCanvas.width/height instead of tensor dimensions 
-    // if your canvas is already scaled to fit the tensor data.
-    return {
-        x: (event.clientX - bounds.left) * (selectionCanvas.width / bounds.width),
-        y: (event.clientY - bounds.top) * (selectionCanvas.height / bounds.height),
-    };
-}
-
-function showPixel(event) {
-    const point = canvasPoint(event);
-    const x = Math.min(tensor.width - 1, Math.max(0, Math.floor(point.x)));
-    const y = Math.min(tensor.height - 1, Math.max(0, Math.floor(point.y)));
-    const source = displayPixel(x, y);
-    const adjusted = source.map((value, index) => clamp(value + Number(controls[index].value)));
-    position.textContent = `x ${x} / y ${y}`;
-    pixelValues.textContent = `R ${adjusted[0]}   G ${adjusted[1]}   B ${adjusted[2]}`;
+    // Render client text layouts over the top canvas layer
+    // renderTextOverlay();
 }
 
 async function loadTensor() {
     const response = await fetch('/api/tensor');
     if (!response.ok) throw new Error('Tensor request failed');
+
     setTensorStack(await response.json());
-    canvas.width = tensor.width;
-    canvas.height = tensor.height;
-    selectionCanvas.width = tensor.width;
-    selectionCanvas.height = tensor.height;
+
+    canvas.width = originalTensor.width;
+    canvas.height = originalTensor.height;
+
     render();
 }
 
@@ -211,6 +117,7 @@ function readImageAsTensor(file) {
     return new Promise((resolve, reject) => {
         const image = new Image();
         const objectUrl = URL.createObjectURL(file);
+
         image.onload = () => {
             const sourceCanvas = document.createElement('canvas');
             const sourceContext = sourceCanvas.getContext('2d', { willReadFrequently: true });
@@ -228,191 +135,130 @@ function readImageAsTensor(file) {
                 }
                 tensorPixels.push(row);
             }
+
             URL.revokeObjectURL(objectUrl);
             resolve({ width: image.naturalWidth, height: image.naturalHeight, channels: ['r', 'g', 'b'], pixels: tensorPixels });
         };
+
         image.onerror = () => {
             URL.revokeObjectURL(objectUrl);
             reject(new Error('The selected file is not a readable image'));
         };
+
         image.src = objectUrl;
     });
 }
+// ==========================================================================
+// FILE UPLOAD AND BASE TENSOR SYNCHRONIZATION
+// ==========================================================================
 
-controls.forEach((control, index) => control.addEventListener('input', () => {
-    numberControls[index].value = control.value;
-    render();
-}));
+// 1. Trigger the hidden file input when clicking the styled "Select image" button
+const uploadBtn = document.querySelector('#textipy-upload-button');
+if (uploadBtn) {
+    uploadBtn.addEventListener('click', () => imageUpload.click());
+}
 
-numberControls.forEach((control, index) => control.addEventListener('change', () => {
-    setControlValue(index, control.value);
-}));
+// 2. Handle the file upload action safely and refresh all operational matrix pointers
+if (imageUpload) {
+    imageUpload.addEventListener('change', async () => {
+        const [file] = imageUpload.files;
+        if (!file) return;
 
-selectionCanvas.addEventListener('pointermove', showPixel);
+        try {
+            // A. Process the local raw file directly into an H x W x 3 array payload
+            const localTensor = await readImageAsTensor(file);
 
-selectionCanvas.addEventListener('click', (event) => {
-    console.log("Canvas clicked! Current selectedPolygon state:", selectedPolygon);
+            // B. Re-initialize your history tracking array stack with this new image asset
+            setTensorStack(localTensor);
 
-    if (selectedPolygon) {
-        console.warn("Click blocked because selectedPolygon is true.");
-        return;
-    }
+            // C. Synchronize the dimensions of BOTH canvas layers to match the new tensor shape boundaries
+            if (canvas && originalTensor) {
+                canvas.width = originalTensor.width;
+                canvas.height = originalTensor.height;
+            }
 
-    const point = canvasPoint(event);
-    console.log("Calculated point coordinates:", point);
+            if (textOverlayCanvas && originalTensor) {
+                textOverlayCanvas.width = originalTensor.width;
+                textOverlayCanvas.height = originalTensor.height;
+            }
 
-    dots.push(point);
-    console.log("Current dots array length:", dots.length);
+            // D. Display the clean filename to the user interface tracking label row
+            if (imageName) {
+                imageName.textContent = file.name;
+            }
 
-    drawSelection();
-});
+            // E. Clear out any lingering temporary typing inputs from the previous image state
+            currentMetadata = { title: '', short_brief: '' };
+            if (titleInput) titleInput.value = '';
+            if (briefInput) briefInput.value = '';
 
+            // F. Paint the fresh image pixels cleanly onto your workspace viewports
+            render();
 
-downloadButton.addEventListener('click', () => {
-    if (!tensor) return;
-    const outputCanvas = document.createElement('canvas');
-    outputCanvas.width = tensor.width;
-    outputCanvas.height = tensor.height;
-    const outputContext = outputCanvas.getContext('2d', { alpha: false });
-    const image = outputContext.createImageData(tensor.width, tensor.height);
-    tensor.pixels.forEach((row, y) => row.forEach((pixel, x) => {
-        const index = (y * tensor.width + x) * 4;
-        image.data[index] = pixel[0];
-        image.data[index + 1] = pixel[1];
-        image.data[index + 2] = pixel[2];
-        image.data[index + 3] = 255;
-    }));
-    outputContext.putImageData(image, 0, 0);
-    outputCanvas.toBlob((blob) => {
-        if (!blob) return;
-        const link = document.createElement('a');
-        link.download = 'tensor-lens-adjusted.png';
-        link.href = URL.createObjectURL(blob);
-        link.click();
-        URL.revokeObjectURL(link.href);
-    }, 'image/png');
-});
-document.querySelector('#upload-button').addEventListener('click', () => imageUpload.click());
-imageUpload.addEventListener('change', async () => {
-    const [file] = imageUpload.files;
-    if (!file) return;
-    try {
-        setTensorStack(await readImageAsTensor(file));
-        canvas.width = tensor.width;
-        canvas.height = tensor.height;
-        selectionCanvas.width = tensor.width;
-        selectionCanvas.height = tensor.height;
-        dots = [];
-        selectedPolygon = null;
-        selectionSource = 'latest';
-        imageName.textContent = file.name;
-        render();
-    } catch (error) {
-        imageName.textContent = error.message;
-    }
-});
-
-document.querySelector('#create-selection-button').addEventListener('click', () => {
-    if (dots.length < 3) return;
-    selectedPolygon = [...dots];
-    selectionSource = 'latest';
-    render();
-});
-
-document.querySelector('#create-original-selection-button').addEventListener('click', () => {
-    if (dots.length < 3) return;
-    selectedPolygon = [...dots];
-    selectionSource = 'original';
-    render();
-});
-
-document.querySelector('#clear-selection-button').addEventListener('click', () => {
-    dots = [];
-    selectedPolygon = null;
-    selectionSource = 'latest';
-    render();
-});
-
-document.querySelector('#update-button').addEventListener('click', () => {
-    if (!tensor) return;
-    const offsets = controls.map((control) => Number(control.value));
-    const nextTensor = cloneTensor(tensor);
-
-    for (let y = 0; y < nextTensor.height; y += 1) {
-        for (let x = 0; x < nextTensor.width; x += 1) {
-            if (!pixelIsSelected(x, y)) continue;
-            const source = selectionSource === 'original'
-                ? originalTensor.pixels[y][x]
-                : tensor.pixels[y][x];
-            nextTensor.pixels[y][x] = source.map((value, index) => clamp(value + offsets[index]));
+        } catch (error) {
+            console.error('File upload execution error:', error);
+            if (imageName) {
+                imageName.textContent = `Upload error: ${error.message}`;
+            }
         }
-    }
-
-    tensorStack.push(nextTensor);
-    tensor = nextTensor;
-    updateTensorReadout();
-    controls.forEach((control) => { control.value = 0; });
-    syncNumberControls();
-    dots = [];
-    selectedPolygon = null;
-    selectionSource = 'latest';
-    render();
-});
-document.querySelector('#undo-button').addEventListener('click', () => {
-    if (tensorStack.length <= 1) return;
-    tensorStack.pop();
-    tensor = tensorStack[tensorStack.length - 1];
-    controls.forEach((control) => { control.value = 0; });
-    syncNumberControls();
-    dots = [];
-    selectedPolygon = null;
-    selectionSource = 'latest';
-    updateTensorReadout();
-    render();
-});
-document.querySelector('#reset-button').addEventListener('click', () => {
-    controls.forEach((control) => { control.value = 0; });
-    syncNumberControls();
-    render();
-});
-loadTensor().catch((error) => {
-    shape.textContent = 'Tensor unavailable';
-    position.textContent = error.message;
-});
+    });
+}
 
 // ====================================================================
 // FLOATING PANEL AND TEXT OVERLAY FUNCTIONALITY
 // ====================================================================
 
+async function loadTensor() {
+    const response = await fetch('/api/tensor');
+    if (!response.ok) throw new Error('Tensor request failed');
+    setTensorStack(await response.json());
+    canvas.width = tensor.width;
+    canvas.height = tensor.height;
+    render();
+}
 
-// Load existing metadata on page load
+document.addEventListener('keydown', (event) => {
+    const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+    if (event.key.toLowerCase() === 't' && !isTyping) {
+        event.preventDefault();
+        if (floatingPanel) floatingPanel.classList.toggle('hidden');
+    }
+});
+
+if (closePanelButton) {
+    closePanelButton.addEventListener('click', () => {
+        if (floatingPanel) floatingPanel.classList.add('hidden');
+    });
+}
+
+
 async function loadCurrentMetadata() {
     try {
-        const response = await fetch('/api/metadata/current');
-        if (response.ok && response.status !== 204) {
+        const response = await fetch('/api/current'); // Standardize endpoint URL
+        if (response.ok) {
             const data = await response.json();
-            if (data) {
-                currentMetadata = {
-                    title: data.title || '',
-                    short_brief: data.short_brief || ''
-                };
-                titleInput.value = currentMetadata.title;
-                briefInput.value = currentMetadata.short_brief;
-                renderTextOverlay();
-            }
+            currentMetadata = {
+                title: data.title || '',
+                short_brief: data.short_brief || ''
+            };
+            // Seed the inputs with saved values
+            if (titleInput) titleInput.value = currentMetadata.title;
+            if (briefInput) briefInput.value = currentMetadata.short_brief;
+            // renderTextOverlay();
         }
     } catch (error) {
-        console.error('Failed to load metadata:', error);
+        console.warn('Initial metadata preload skipped or endpoint unavailable:', error);
     }
 }
 
 // Save or update metadata
 async function saveMetadata() {
+    if (!titleInput || !briefInput) return;
     const title = titleInput.value.trim();
     const short_brief = briefInput.value.trim();
 
     try {
-        const response = await fetch('/api/metadata/save', {
+        const response = await fetch('/api/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title, short_brief })
@@ -424,7 +270,7 @@ async function saveMetadata() {
                 title: data.title,
                 short_brief: data.short_brief
             };
-            renderTextOverlay();
+            // renderTextOverlay();
             console.log('Metadata saved successfully');
         } else {
             alert('Failed to save metadata');
@@ -438,13 +284,13 @@ async function saveMetadata() {
 // Clear metadata
 async function clearMetadata() {
     try {
-        const response = await fetch('/api/metadata/clear', { method: 'POST' });
+        const response = await fetch('/api/clear', { method: 'POST' });
 
         if (response.ok) {
             currentMetadata = { title: '', short_brief: '' };
-            titleInput.value = '';
-            briefInput.value = '';
-            renderTextOverlay();
+            if (titleInput) titleInput.value = '';
+            if (briefInput) briefInput.value = '';
+            // renderTextOverlay();
             console.log('Metadata cleared');
         } else {
             alert('Failed to clear metadata');
@@ -454,10 +300,19 @@ async function clearMetadata() {
         alert('Error clearing metadata: ' + error.message);
     }
 }
+// ==========================================================================
+// 3. CANVAS TEXT OVERLAY RENDERING ENGINE
+// ==========================================================================
 
-// Render text overlay on canvas
 function renderTextOverlay() {
-    if (!tensor) return;
+    // 🚀 FIX: Match your actual global variable tracking naming structure (originalTensor)
+    if (!originalTensor || !textOverlayCanvas) return;
+
+    // 🚀 FIX: Auto-initialize the canvas context on-demand if it hasn't been configured yet
+    if (!textOverlayContext) {
+        textOverlayContext = textOverlayCanvas.getContext('2d');
+        if (!textOverlayContext) return;
+    }
 
     textOverlayCanvas.width = canvas.width;
     textOverlayCanvas.height = canvas.height;
@@ -467,20 +322,17 @@ function renderTextOverlay() {
         return;
     }
 
-    // Clear canvas
     textOverlayContext.clearRect(0, 0, textOverlayCanvas.width, textOverlayCanvas.height);
 
     const width = textOverlayCanvas.width;
     const height = textOverlayCanvas.height;
     const marginX = Math.max(20, width / 20);
-    const marginY = Math.max(40, height / 12);  // Increased top padding
+    const marginY = Math.max(40, height / 12);
 
-    // Calculate font sizes based on canvas dimensions
     const titleFontSize = Math.max(24, Math.floor(height / 12));
     const briefFontSize = Math.max(16, Math.floor(height / 18));
 
     textOverlayContext.save();
-
     let yPos = marginY;
 
     // Draw title
@@ -492,7 +344,7 @@ function renderTextOverlay() {
         textOverlayContext.shadowOffsetX = 2;
         textOverlayContext.shadowOffsetY = 2;
         textOverlayContext.fillText(currentMetadata.title, marginX, yPos);
-        yPos += titleFontSize + 32;  // Increased gap before brief
+        yPos += titleFontSize + 32;
         textOverlayContext.shadowColor = 'transparent';
     }
 
@@ -506,7 +358,7 @@ function renderTextOverlay() {
         textOverlayContext.shadowOffsetY = 1;
 
         const maxWidth = width - (2 * marginX);
-        const lineHeight = briefFontSize + 12;  // Increased line height for better spacing
+        const lineHeight = briefFontSize + 12;
         const lines = wrapText(currentMetadata.short_brief, maxWidth, briefFontSize);
 
         lines.forEach((line) => {
@@ -518,19 +370,16 @@ function renderTextOverlay() {
     textOverlayContext.restore();
 }
 
-// Helper function to wrap text and handle line breaks
 function wrapText(text, maxWidth, fontSize) {
     const canvas_temp = document.createElement('canvas');
     const ctx_temp = canvas_temp.getContext('2d');
     ctx_temp.font = `${fontSize}px Arial`;
 
-    // Split by line breaks first (\n)
     const paragraphs = text.split('\n');
     const lines = [];
 
     paragraphs.forEach((paragraph) => {
         if (!paragraph.trim()) {
-            // Empty line - add empty line for spacing
             lines.push('');
             return;
         }
@@ -558,68 +407,155 @@ function wrapText(text, maxWidth, fontSize) {
     return lines;
 }
 
-// Toggle floating panel with T key
-document.addEventListener('keydown', (event) => {
-    // Only toggle if not typing in an input or textarea
-    if (event.key.toLowerCase() === 't' && 
-        document.activeElement !== titleInput && 
-        document.activeElement !== briefInput) {
-        event.preventDefault();
-        floatingPanel.style.display = floatingPanel.style.display === 'none' ? 'block' : 'none';
+// ==========================================================================
+// 4. USER INTERACTION EVENT LISTENERS
+// ==========================================================================
+// ==========================================================================
+// 4. APPLY BUTTON EVENT HANDLER (Fetch Updated Tensor Matrix from Backend)
+// ==========================================================================
+
+
+if (applyButton) {
+    applyButton.addEventListener('click', async () => {
+        try {
+            // 1. Visually guide the user by setting a loading state on the button
+            const originalText = applyButton.innerHTML;
+            applyButton.disabled = true;
+            applyButton.innerHTML = "⚡ Baking Tensor...";
+
+            // 2. Prepare the text fields to tell the server what to bake into the pixels
+            const title = titleInput ? titleInput.value.trim() : '';
+            const short_brief = briefInput ? briefInput.value.trim() : '';
+
+            // 3. Make an API call to a tensor processing endpoint on your FastAPI backend
+            const response = await fetch('/api/bake-text', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, short_brief })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server tensor processing failed with status: ${response.status}`);
+            }
+
+            // Inside your applyButton listener block...
+            const updatedTensorData = await response.json();
+
+            // 🚀 Safe Push: Add the backend-baked image as a new historical layer
+            tensorStack.push(cloneTensor(updatedTensorData));
+
+            // Point your operational references to this latest baked layer version
+            tensor = tensorStack[tensorStack.length - 1];
+            originalTensor = cloneTensor(tensor); // Syncs baseline matrix tracking
+
+            // Clear out local temporary client overlays since it's hard baked down now
+            currentMetadata = { title: '', short_brief: '' };
+
+            // Refresh layout tracking statistics and redraw the image viewport
+            updateTensorReadout();
+
+            render();
+
+            // Restore button layout states
+            applyButton.disabled = false;
+
+            applyButton.innerHTML = originalText;
+
+            console.log("Tensor updated from backend engine cleanly.");
+
+        } catch (error) {
+
+            console.error('Tensor apply modification error:', error);
+
+            alert('Error updating image tensor from backend: ' + error.message);
+
+            // Re-enable button on error states
+            applyButton.disabled = false;
+
+            applyButton.innerHTML = "⚡ Apply";
+        }
+    });
+}
+
+if (downloadButton) {
+    downloadButton.addEventListener('click', async () => {
+        try {
+            // 1. Show a loading state on the button to guide the user
+            const originalText = downloadButton.innerHTML;
+            downloadButton.disabled = true;
+            downloadButton.innerHTML = "⏳ Processing Text...";
+
+            // 2. Fetch the server-baked composite image stream directly from FastAPI
+            // This path hits your new @router_magiclens endpoint
+            const response = await fetch('/api/download-baked');
+
+            if (!response.ok) {
+                throw new Error(`Server processing failed with status: ${response.status}`);
+            }
+
+            // 3. Convert the response stream into a binary Blob object
+            const imageBlob = await response.blob();
+
+            // 4. Create an ephemeral memory URL for the downloaded blob asset
+            const downloadUrl = URL.createObjectURL(imageBlob);
+
+            // 5. Instantly instantiate an off-screen link anchor to trigger the browser save dialog
+            const downloadLink = document.createElement('a');
+            downloadLink.href = downloadUrl;
+            downloadLink.download = `textipy_baked_presentation_${Date.now()}.png`;
+
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+
+            // 6. Housekeeping: Remove the anchor link and release memory buffers right away
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(downloadUrl);
+
+            // Restore the download button text
+            downloadButton.disabled = false;
+            downloadButton.innerHTML = originalText;
+
+        } catch (error) {
+            console.error('Server-side baking download error:', error);
+            alert('Error downloading baked image from server: ' + error.message);
+
+            // Reset button state in case of unexpected errors
+            downloadButton.disabled = false;
+            downloadButton.innerHTML = "Download PNG";
+        }
+    });
+}
+
+if (saveMetadataButton) saveMetadataButton.addEventListener('click', saveMetadata);
+
+if (clearMetadataButton) {
+    clearMetadataButton.addEventListener('click', async () => {
+        if (confirm('Are you sure you want to clear all text?')) {
+            await clearMetadata();
+        }
+    });
+}
+
+function resizeCanvasToDisplay() {
+    if (!textOverlayCanvas) return;
+    if (textOverlayCanvas.width !== textOverlayCanvas.clientWidth ||
+        textOverlayCanvas.height !== textOverlayCanvas.clientHeight) {
+            textOverlayCanvas.width = textOverlayCanvas.clientWidth;
+        textOverlayCanvas.height = textOverlayCanvas.clientHeight;
+        renderTextOverlay(); // 🚀 FIX: Safely re-triggers the text pass mapping loop
     }
-});
-
-// Close panel button
-closePanelButton.addEventListener('click', () => {
-    floatingPanel.style.display = 'none';
-});
-
-// Save metadata button
-saveMetadataButton.addEventListener('click', saveMetadata);
-
-// Clear metadata button
-clearMetadataButton.addEventListener('click', async () => {
-    if (confirm('Are you sure you want to clear all text?')) {
-        await clearMetadata();
+}
+// ==========================================================================
+// 5. DOM CONTENT COMPLIANCE WRAPPER LOOP
+// ==========================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    textOverlayCanvas = document.querySelector('#textipy-text-overlay-canvas');
+    if (textOverlayCanvas) {
+        textOverlayContext = textOverlayCanvas.getContext('2d');
+        console.log("Canvas context loaded successfully!");
+        resizeCanvasToDisplay();
+        window.addEventListener('resize', resizeCanvasToDisplay);
     }
+    // 🚀 FIX: Cleanly close code and execute server metadata queries
+    loadTensor();
 });
-
-// Update text overlay when inputs change
-titleInput.addEventListener('change', renderTextOverlay);
-briefInput.addEventListener('change', renderTextOverlay);
-
-// Download button modification to include text overlay
-const originalDownloadButton = downloadButton;
-downloadButton.addEventListener('click', async () => {
-    try {
-        // Create a composite canvas with both the image and text
-        const compositeCanvas = document.createElement('canvas');
-        compositeCanvas.width = canvas.width;
-        compositeCanvas.height = canvas.height;
-        const compositeCtx = compositeCanvas.getContext('2d');
-
-        // Draw the main image
-        compositeCtx.drawImage(canvas, 0, 0);
-
-        // Draw the text overlay
-        compositeCtx.drawImage(textOverlayCanvas, 0, 0);
-
-        // Download the composite image
-        compositeCanvas.toBlob((blob) => {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `image_with_text_${Date.now()}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }, 'image/png');
-    } catch (error) {
-        console.error('Download error:', error);
-        alert('Error downloading image: ' + error.message);
-    }
-});
-
-// Load metadata and render overlay on initial load
-loadCurrentMetadata();

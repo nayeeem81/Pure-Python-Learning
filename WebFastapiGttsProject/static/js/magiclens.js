@@ -292,6 +292,7 @@ downloadButton.addEventListener('click', () => {
         URL.revokeObjectURL(link.href);
     }, 'image/png');
 });
+
 document.querySelector('#upload-button').addEventListener('click', () => imageUpload.click());
 imageUpload.addEventListener('change', async () => {
     const [file] = imageUpload.files;

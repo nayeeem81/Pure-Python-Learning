@@ -7,6 +7,7 @@ from api.gttsanalyzer import router_gttsanalyzer
 from api.gttsprocess import router_gttsprocess
 from api.gttsword import router_gttsword
 from api.magiclens import router_magiclens
+from api.textipyimage import router_textipyimage
 from api.paragraph import router_paragraph
 from api.sentence import router_sentence
 from api.slideshow import router_slideshow
@@ -21,4 +22,5 @@ api_router.include_router(router_gttsword)
 api_router.include_router(router_sentence)
 api_router.include_router(router_slideshow)
 api_router.include_router(router_magiclens)
+api_router.include_router(router_textipyimage)
 api_router.include_router(router_paragraph)

@@ -2,24 +2,24 @@
    1. PAGE CONTEXT & CORE LAYOUT 
    ========================================================================== */
 
-.magic-lens-container {
+.textipy-magic-lens-container {
     position: relative;
     width: 100%;
 }
 
-    .magic-lens-container .hidden {
+    .textipy-magic-lens-container .hidden {
         display: none !important;
     }
 
-.editor-row {
+.textipy-editor-row {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 1fr;
     gap: 10px;
     align-items: start;
     margin-top: 20px;
 }
 
-.controls-column {
+.textipy-controls-column {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -30,10 +30,10 @@
     border-radius: 6px;
 }
 
-.canvas-column {
+.textipy-canvas-column {
     display: flex;
     flex-direction: column;
-    flex: 2;
+    flex: 1;
     gap: 12px;
 }
 
@@ -42,7 +42,7 @@
    2. FLOATING CONTROLLER BLOCK & STRUCTURAL PANELS
    ========================================================================== */
 
-.floating-panel {
+.textipy-floating-panel {
     position: absolute;
     z-index: 10;
     color: #fff;
@@ -54,7 +54,11 @@
     user-select: none;
 }
 
-.floating-panel-header {
+.hidden {
+    display: none !important;
+}
+
+.textipy-floating-panel .floating-panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -64,30 +68,30 @@
     border-radius: 6px 6px 0 0;
 }
 
-    .floating-panel-header h3 {
+    .textipy-floating-panel .textipy-floating-panel-header h3 {
         margin: 0;
         color: #f5c451;
         font-size: 16px;
         font-weight: 600;
     }
 
-.floating-panel-content {
+.textipy-floating-panel-content {
     padding: 16px;
 }
 
-    .floating-panel-content .form-group {
+    .textipy-floating-panel-content .form-group {
         margin-bottom: 12px;
     }
 
-    .floating-panel-content label {
+    .textipy-floating-panel-content label {
         display: block;
         margin-bottom: 4px;
         color: #ccc;
         font-size: 12px;
     }
 
-    .floating-panel-content input[type="text"],
-    .floating-panel-content textarea {
+    .textipy-floating-panel-content input[type="text"],
+    .textipy-floating-panel-content textarea {
         width: 100%;
         padding: 8px;
         color: #fff;
@@ -97,14 +101,14 @@
         box-sizing: border-box;
     }
 
-.floating-panel-actions {
+.textipy-floating-panel-actions {
     display: flex;
     gap: 8px;
     margin-top: 15px;
 }
 
 
-    .floating-panel-actions button {
+    .textipy-floating-panel-actions button {
         flex: 1;
         background: #0077b6;
         color: white;
@@ -117,15 +121,15 @@
         transition: background 0.2s ease;
     }
 
-        .floating-panel-actions button:hover {
+        .textipy-floating-panel-actions button:hover {
             background: #0056a3;
         }
 
-    .floating-panel-actions #clear-metadata-button {
+    .textipy-floating-panel-actions #clear-metadata-button {
         background: #dc3545;
     }
 
-        .floating-panel-actions #clear-metadata-button:hover {
+        .textipy-floating-panel-actions #clear-metadata-button:hover {
             background: #c82333;
         }
 
@@ -192,7 +196,7 @@
             color: #888;
         }
 
-.upload-row {
+.textipy-upload-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -200,7 +204,7 @@
     gap: 15px;
 }
 
-.download-wrap {
+.textipy-download-wrap {
     display: flex;
     gap: 10px;
     margin-top: 6px;
@@ -228,7 +232,7 @@
         cursor: not-allowed;
     }
 
-.close-button {
+.textipy-close-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -244,79 +248,26 @@
     transition: background 0.2s ease;
 }
 
-    .close-button:hover {
+    .textipy-close-button:hover {
         background: #a02020;
     }
 
-
-/* ==========================================================================
-   4. COLOR CHANNEL MIXERS & SLIDERS
-   ========================================================================== */
-
-.sliders {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.channel-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 15px;
-    padding: 10px;
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
-}
-
-.channel-name {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 700;
-}
-
-.channel-inputs {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 6px;
-}
-
-    .channel-inputs input[type="range"] {
-        flex: 1 1 auto;
-    }
-
-.channel-number {
-    width: 72px;
-    padding: 6px;
-    text-align: center;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-}
-
-
-/* ==========================================================================
-   5. CANVAS PANEL VIEWBOX CONSTRAINTS
-   ========================================================================== */
-
-.canvas-panel-editimage {
+.textipy-canvas-panel-editimage {
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 6px;
     overflow: hidden;
 }
 
-.canvas-actions-row {
+.textipy-canvas-actions-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
 }
 
-.shape-readout, .canvas-topline, .canvas-footline
-.canvas-frame {
+.textipy-shape-readout, .textipy-canvas-topline, .textipy-canvas-footline
+.textipy-canvas-frame {
     background: #f5efef;
     border-radius: 4px;
     overflow: auto;
@@ -328,47 +279,38 @@
 }
 
     /* Webkit scrollbar (Chrome, Safari, Edge) */
-    .canvas-frame::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
+.textipy-canvas-frame::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
 
-    .canvas-frame::-webkit-scrollbar-track {
-        background: #333;
-        border-radius: 4px;
-    }
+.textipy-canvas-frame::-webkit-scrollbar-track {
+    background: #333;
+    border-radius: 4px;
+}
 
-    .canvas-frame::-webkit-scrollbar-thumb {
-        background: #f5c451;
-        border-radius: 4px;
-    }
+.textipy-canvas-frame::-webkit-scrollbar-thumb {
+    background: #f5c451;
+    border-radius: 4px;
+}
 
-        .canvas-frame::-webkit-scrollbar-thumb:hover {
+        .textipy-canvas-frame::-webkit-scrollbar-thumb:hover {
             background: #ffd700;
         }
 
-.canvas-stage {
+.textipy-canvas-stage {
     position: relative;
     display: inline-block;
 }
 
-#tensor-canvas {
+#textipy-tensor-canvas {
     display: block;
     width: 100%;
     height: auto;
     border: dashed 2px #f5c451;
 }
 
-#selection-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: auto;
-}
-
-#text-overlay-canvas {
+#textipy-overlay-canvas {
     position: absolute;
     top: 0;
     left: 0;
@@ -379,24 +321,24 @@
    6. UI MESSAGES, NOTIFICATIONS & CONTROLS
    ========================================================================== */
 
-.tensor-editor {
+.textipy-tensor-editor {
     display: flex;
     flex-direction: column;
     width: 100%;
 }
 
-.panel-heading .eyebrow {
+.textipy-panel-heading .eyebrow {
     color: #6c757d;
     font-size: 14px;
     text-transform: uppercase;
 }
 
-.panel-heading .muted {
+.textipy-panel-heading .muted {
     color: #6c757d;
     font-size: 13px;
 }
 
-.history-actions {
+.textipy-history-actions {
     margin: 10px 0 15px 0;
 }
 
@@ -405,7 +347,7 @@
     text-align: right;
 }
 
-.tensor-note {
+.textipy-tensor-note {
     display: flex;
     gap: 8px;
     margin-top: 15px;
@@ -413,7 +355,7 @@
     font-size: 14px;
 }
 
-.keyboard-instruction {
+.textipy-keyboard-instruction {
     margin: 15px 0;
     padding: 15px;
     color: #333;
@@ -423,7 +365,7 @@
     font-size: 14px;
 }
 
-    .keyboard-instruction kbd {
+    .textipy-keyboard-instruction kbd {
         margin: 0 4px;
         padding: 3px 8px;
         color: #fff;

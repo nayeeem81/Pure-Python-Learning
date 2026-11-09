@@ -27,7 +27,6 @@ def get_system_font(size: int = 40):
     # Fallback to default font
     return ImageFont.load_default()
 
-
 def composite_text_on_image(
     image_array: np.ndarray,
     title: str,
@@ -39,19 +38,8 @@ def composite_text_on_image(
     """
     Composite title and short brief text onto an image in presentation style.
     Places text in optimal positions based on image dimensions.
-
-    Args:
-        image_array: H x W x 3 uint8 RGB matrix
-        title: Title text (usually short)
-        short_brief: Brief description (usually longer)
-        bg_color: Background color for text overlays (RGB tuple)
-        text_color: Primary text color (RGB tuple)
-        accent_color: Accent color for title (RGB tuple)
-
-    Returns:
-        H x W x 3 uint8 RGB matrix with text composited
     """
-    # Clone array to avoid modifying the original
+    # Clone array to avoid modifying the original source reference matrix
     result = image_array.copy()
     img = Image.fromarray(result, mode="RGB")
     draw = ImageDraw.Draw(img, "RGBA")
@@ -69,9 +57,7 @@ def composite_text_on_image(
     title_font = get_system_font(title_font_size)
     brief_font = get_system_font(brief_font_size)
 
-    # Calculate usable width for text
     usable_width = width - (2 * margin_x)
-
     y_position = margin_y
 
     # Draw Title (top-left, accent color with semi-transparent background)
@@ -79,8 +65,8 @@ def composite_text_on_image(
         title_lines = wrap(title, width=max(15, usable_width // (title_font_size // 2)))
 
         for line in title_lines:
-            # Get bounding box for text
             bbox = draw.textbbox((0, 0), line, font=title_font)
+            # 🚀 FIX: Correctly extract tuple indexes to find geometric width & height
             text_width = bbox[2] - bbox[0]
             text_height = bbox[3] - bbox[1]
 
@@ -94,21 +80,21 @@ def composite_text_on_image(
             ]
             draw.rectangle(bg_box, fill=(*bg_color, 200), outline=accent_color)
 
-            # Draw text
-            draw.text((margin_x, y_position), line, fill=text_color, font=title_font)
+            # Draw accent title text
+            draw.text((margin_x, y_position), line, fill=accent_color, font=title_font)
 
             y_position += text_height + 12
 
-        y_position += 20  # Add spacing after title
+        y_position += 20  
 
     # Draw Short Brief (below title, left-aligned with semi-transparent background)
     if short_brief:
         brief_lines = wrap(short_brief, width=max(20, usable_width // (brief_font_size // 2)))
 
-        # Merge all brief lines and create background box
         brief_text_height = 0
         for line in brief_lines:
             bbox = draw.textbbox((0, 0), line, font=brief_font)
+            # 🚀 FIX: Calculate height index bounding metrics cleanly
             brief_text_height += (bbox[3] - bbox[1]) + 6
 
         # Draw background box for brief
@@ -121,14 +107,14 @@ def composite_text_on_image(
         ]
         draw.rectangle(bg_box, fill=(*bg_color, 180))
 
-        # Draw brief text
+        # Draw brief text lines
         for line in brief_lines:
             draw.text((margin_x, y_position), line, fill=text_color, font=brief_font)
 
             bbox = draw.textbbox((0, 0), line, font=brief_font)
+            # 🚀 FIX: Increment row markers safely using coordinate indexes
             y_position += (bbox[3] - bbox[1]) + 6
 
-    # Convert back to array
     return np.asarray(img, dtype=np.uint8)
 
 
