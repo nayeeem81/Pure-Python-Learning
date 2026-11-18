@@ -3,11 +3,13 @@ import os
 import sys
 from contextlib import asynccontextmanager 
 from pathlib import Path
+from starlette.middleware.sessions import SessionMiddleware
 
 # ==========================================================================
 # 1. ENVIRONMENT CONFIGURATION & PATH ANCHORS
 # ==========================================================================
 # Dynamically add the current folder workspace to Python's path
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
@@ -36,6 +38,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel  
 
 # Core application dependencies
+
 from routers.api_routes import api_router
 from routers.view_routes import view_router
 from config import config  
@@ -47,10 +50,12 @@ from data.model import Sentence, Word, SentenceHistory, WordHistory, Story, Chap
 # ==========================================================================
 # 3. D: DRIVE STORAGE CONTEXT REGISTRATION
 # ==========================================================================
-STORAGE_ROOT = "D:\\StudioStorage"
-GENERATED_DIR = os.path.normpath(os.path.join(STORAGE_ROOT, "generated"))
+
+GENERATED_DIR = os.path.normpath(os.path.join(config.STORAGE_ROOT, "generated"))
+IMAGE_TEXT_DIR = os.path.normpath(os.path.join(config.STORAGE_ROOT, "imageuploads"))
 
 # Initialize storage folders right away on runtime boot configuration
+os.makedirs(IMAGE_TEXT_DIR, exist_ok=True)
 os.makedirs(GENERATED_DIR, exist_ok=True)
 os.makedirs(os.path.abspath("./static"), exist_ok=True)
 
@@ -87,11 +92,20 @@ async def lifespan(app: FastAPI):
 # ==========================================================================
 # 5. APPLICATION INITIALIZATION & ROUTING MAPS
 # ==========================================================================
-app = FastAPI(title="Modern Audio Studio Backend", lifespan=lifespan)
+app = FastAPI(title="Modern Studio Backend", lifespan=lifespan)
+
+app.add_middleware(
+    SessionMiddleware, 
+    secret_key="local-test-secret"
+)
 
 # 🛠️ FIXED: Mount the D: drive folder onto the path alias /project/generated
 # This enables the UI grid to load asset URLs like /project/generated/sentence_1.mp3
 app.mount("/project/generated", StaticFiles(directory=GENERATED_DIR), name="d-drive-media")
+
+# 🛠️ FIXED: Mount the D: drive folder onto the path alias /imageuploads
+# This enables the UI grid to load asset URLs like /imageuploads/sample1.png
+app.mount("/imageuploads", StaticFiles(directory=IMAGE_TEXT_DIR), name="d-drive-imagetext")
 
 # Framework web script dependency configurations
 app.mount("/static", StaticFiles(directory="static"), name="static")

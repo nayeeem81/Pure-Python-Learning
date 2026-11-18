@@ -7,8 +7,8 @@ import numpy as np
 from textwrap import wrap
 
 # Resolve the absolute path to the project root static folder
-BASE_DIR = Path(__file__).resolve().parent.parent
-DEFAULT_IMAGE = BASE_DIR / "static" / "sample.png"
+# BASE_DIR = Path(__file__).resolve().parent.parent
+# DEFAULT_IMAGE = BASE_DIR / "static" / "sample.png"
 
 
 def get_system_font(size: int = 40):
@@ -136,24 +136,26 @@ def get_image_data_url(image_array: np.ndarray) -> str:
     return f"data:image/png;base64,{encoded}"
 
 
-def create_sample_image(path: Path = DEFAULT_IMAGE) -> Path:
-    """Create a small RGB test image when no source image has been supplied."""
-    path.parent.mkdir(parents=True, exist_ok=True)
+# def create_sample_image(path: Path = DEFAULT_IMAGE) -> Path:
+#     """Create a small RGB test image when no source image has been supplied."""
+#     path.parent.mkdir(parents=True, exist_ok=True)
     
-    height, width = 96, 144
-    y, x = np.mgrid[0:height, 0:width]
-    red = (x / (width - 1) * 255).astype(np.uint8)
-    green = (y / (height - 1) * 255).astype(np.uint8)
-    blue = (((x + y) / (width + height - 2)) * 255).astype(np.uint8)
-    tensor = np.stack((red, green, blue), axis=-1)
-    Image.fromarray(tensor, mode="RGB").save(path)
-    return path
+#     height, width = 96, 144
+#     y, x = np.mgrid[0:height, 0:width]
+#     red = (x / (width - 1) * 255).astype(np.uint8)
+#     green = (y / (height - 1) * 255).astype(np.uint8)
+#     blue = (((x + y) / (width + height - 2)) * 255).astype(np.uint8)
+#     tensor = np.stack((red, green, blue), axis=-1)
+#     Image.fromarray(tensor, mode="RGB").save(path)
+#     return path
 
 
-def load_rgb_tensor(path: Path = DEFAULT_IMAGE) -> np.ndarray:
+def load_rgb_tensor(path: Path) -> np.ndarray:
     """Load an image as an H x W x 3 uint8 RGB matrix."""
+    path = Path(path)
     if not path.exists():
-        create_sample_image(path)
+        # create_sample_image(path)
+        raise FileNotFoundError("Image file not found")
     with Image.open(path) as image:
         return np.asarray(image.convert("RGB"), dtype=np.uint8).copy()
 

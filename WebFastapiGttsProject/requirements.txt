@@ -20,3 +20,5 @@ asyncpg
 python-jose[cryptography]
 sqlmodel
 pygame
+python-multipart
+itsdangerous
