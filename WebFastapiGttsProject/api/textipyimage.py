@@ -84,28 +84,6 @@ async def save_image_metadata(request: ImageMetadataRequest, session: Session = 
             detail=f"Metadata save failed: {str(exc)}"
         )
 
-@router_textipyimage.get("/current", response_model=ImageMetadataResponse | None, status_code=status.HTTP_200_OK)
-async def get_image_metadata(session: Session = Depends(get_db)):
-    """Retrieve the current image metadata."""
-    try:
-        statement = select(ImageMetadata)
-        result = await session.execute(statement)
-        metadata = result.scalars().first()
-        if not metadata:
-            return None
-        return ImageMetadataResponse(
-            id=metadata.id,
-            title=metadata.title,
-            short_brief=metadata.short_brief,
-            version=metadata.version,
-            modified_at=metadata.modified_at
-        )
-    except Exception as exc:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Metadata retrieval failed: {str(exc)}"
-        )
-
 @router_textipyimage.post("/clear", status_code=status.HTTP_200_OK)
 async def clear_image_metadata(session: Session = Depends(get_db)):
     """Clear all image metadata."""
@@ -126,42 +104,6 @@ async def clear_image_metadata(session: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Metadata clear failed: {str(exc)}"
         )
-
-# @router_textipyimage.get("/tensor")
-# async def get_image_tensor():
-#     """Retrieve the current image tensor."""
-#     try:
-#         payload = tensor_payload(load_rgb_tensor(DEFAULT_IMAGE))
-#         return JSONResponse(content=payload)
-#     except Exception as exc:
-#         raise HTTPException(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#             detail=f"Tensor payload mapping failure: {str(exc)}"
-#         )
-
-@router_textipyimage.get("/download-baked")
-async def download_baked_image(session: Session = Depends(get_db)):
-    # 1. Grab the latest metadata string entries from PostgreSQL
-    statement = select(ImageMetadata)
-    result = await session.execute(statement)
-    metadata = result.scalars().first()
-    # 2. Load your raw base matrix tensor
-    raw_image_matrix = load_rgb_tensor() 
-    # 3. 🚀 BAKING IT ON THE BACKEND: Pass text straight to your utility
-    if metadata:
-        final_matrix = composite_text_on_image(
-            image_array=raw_image_matrix,
-            title=metadata.title,
-            short_brief=metadata.short_brief
-        )
-    else:
-        final_matrix = raw_image_matrix
-
-    # 4. Stream the raw baked array cleanly back to the web browser
-    buffer = io.BytesIO()
-    Image.fromarray(final_matrix).save(buffer, format="PNG")
-    buffer.seek(0)
-    return StreamingResponse(buffer, media_type="image/png")
 
 # 2. The core endpoint handling your JavaScript Apply button network requests
 @router_textipyimage.post("/bake-text", status_code=status.HTTP_200_OK)
