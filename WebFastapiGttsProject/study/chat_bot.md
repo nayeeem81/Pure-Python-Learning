@@ -208,3 +208,61 @@ Other languages
 2 of 3
 Skip
 
+
+The 503 UNAVAILABLE error is a temporary traffic spike on Google's Gemini servers—not a bug in your code or PostgreSQL setup.
+To make your chatbot resilient so users don't get stuck when gemini-3.8-flash is overloaded, add automatic retry with model fallback in api/chatbot.py.
+
+Add Automatic Retry & Fallback (api/chatbot.py)
+
+Replace your single gemini_client.models.generate_content(...) block with a small helper loop that retries on 503 (high demand) or 429 (rate limit) and falls back to another Flash model (like gemini-3.8-flash-lite or gemini-2.5-flash-lite) if the primary model is busy:
+python
+import asyncio
+from google.genai.errors import APIError
+
+async def generate_gemini_reply(contents) -> str:
+    models_to_try = ["gemini-3.8-flash", "gemini-3.8-flash-lite"]
+    last_error = None
+
+    for model_name in models_to_try:
+        for attempt in range(2):  # Try up to 2 times per model
+            try:
+                response = gemini_client.models.generate_content(
+                    model=model_name,
+                    contents=contents,
+                    config=types.GenerateContentConfig(
+                        system_instruction="You are a helpful, concise assistant speaking English."
+                    )
+                )
+                return response.text.strip()
+            except APIError as e:
+                last_error = e
+                # Retry only on temporary overload (503) or rate-limit (429)
+                if e.code in (429, 503):
+                    await asyncio.sleep(1.5 * (attempt + 1))
+                    continue
+                raise  # Immediately raise permanent errors like 400 (bad key)
+
+    raise HTTPException(
+        status_code=503,
+        detail=f"Gemini servers are temporarily busy. Please try again in a few seconds. ({last_error})"
+    )
+Use code with caution.
+Then call it inside send_and_save_chat:
+python
+    try:
+        bot_reply_text = await generate_gemini_reply(gemini_contents)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gemini API error: {str(e)}")
+Use code with caution.
+
+Why This Helps
+
+• Zero-code-change recovery: When Google experiences a momentary 503 spike, your backend waits ~1.5 seconds and retries automatically before returning an error to the browser.
+• Automatic fallback: If gemini-3.8-flash remains congested, it seamlessly falls back to gemini-3.8-flash-lite so your chat and gTTS audio continue working uninterrupted.
+After adding this retry/fallback wrapper, try sending your message again—let me know if the voice reply and PostgreSQL history complete smoothly!
+
+
+
+ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AQ.Ab8RN6Iphno3nu83n5ChGbDBL8xYxnwVGGuBAAFSnlxSCVL3Ig")

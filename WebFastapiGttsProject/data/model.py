@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 from sqlmodel import SQLModel, Field, Relationship, Column, String 
 from sqlalchemy import String, Text, LargeBinary, Column
-from sqlalchemy.dialects.postgresql import JSONB  
+from sqlalchemy.dialects.postgresql import JSONB 
 
 # =====================================================================
 # 1. SENTENCE MODEL
@@ -172,3 +172,30 @@ class ImageMetadata(SQLModel, table=True):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     modified_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     modified_by: Optional[str] = Field(default=None, max_length=100)
+
+
+# =====================================================================
+# 8. IMAGE METADATA MODEL
+# =====================================================================
+class ChatSession(SQLModel, table=True):
+    __tablename__ = "chat_sessions"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    session_token: str = Field(index=True, unique=True)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    messages: List["ChatMessage"] = Relationship(
+        back_populates="session",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
+
+class ChatMessage(SQLModel, table=True):
+    __tablename__ = "chat_messages"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    session_id: int = Field(foreign_key="chat_sessions.id", ondelete="CASCADE")
+    role: str  # "user" or "model"
+    content: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    session: Optional[ChatSession] = Relationship(back_populates="messages")

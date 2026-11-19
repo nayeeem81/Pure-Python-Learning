@@ -53,10 +53,12 @@ from data.model import Sentence, Word, SentenceHistory, WordHistory, Story, Chap
 
 GENERATED_DIR = os.path.normpath(os.path.join(config.STORAGE_ROOT, "generated"))
 IMAGE_TEXT_DIR = os.path.normpath(os.path.join(config.STORAGE_ROOT, "imageuploads"))
+CHAT_AUDIO_DIR = os.path.normpath(os.path.join(config.STORAGE_ROOT, "chat_audio"))
 
 # Initialize storage folders right away on runtime boot configuration
 os.makedirs(IMAGE_TEXT_DIR, exist_ok=True)
 os.makedirs(GENERATED_DIR, exist_ok=True)
+os.makedirs(CHAT_AUDIO_DIR, exist_ok=True)
 os.makedirs(os.path.abspath("./static"), exist_ok=True)
 
 

@@ -11,6 +11,7 @@ from api.textipyimage import router_textipyimage
 from api.paragraph import router_paragraph
 from api.sentence import router_sentence
 from api.slideshow import router_slideshow
+from api.chatbot import router_chatbot
 
 api_router = APIRouter()
 
@@ -23,4 +24,5 @@ api_router.include_router(router_sentence)
 api_router.include_router(router_slideshow)
 api_router.include_router(router_magiclens)
 api_router.include_router(router_textipyimage)
-api_router.include_router(router_paragraph)
+api_router.include_router(router_paragraph)	 
+api_router.include_router(router_chatbot)
