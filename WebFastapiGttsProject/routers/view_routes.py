@@ -83,3 +83,13 @@ def textipy_image(request: Request):
         name="textipyimage.html", 
         context={"page_title": "Add Text to Image"}
     )
+
+
+@view_router.get("/chatbot", response_class=HTMLResponse)
+def chatbot(request: Request):
+    """Serves the Chatbot interface template safely via FastAPI."""
+    return templates.TemplateResponse(
+        request=request, 
+        name="chatbot.html", 
+        context={"page_title": "Chat bot"}
+    )

@@ -51,12 +51,14 @@
     <Content Include=".gitignore" />
     <Content Include="api\gttsanalyzer.py" />
     <Content Include="README.md" />
+    <Content Include="static\content\chatbot.css" />
     <Content Include="static\content\textipyimage.css" />
     <Content Include="static\content\storyparagraphs.css" />
     <Content Include="static\content\slideshow.css" />
     <Content Include="static\content\studiogtts.css" />
     <Content Include="static\content\magiclens.css" />
     <Content Include="static\content\paragraphs.css" />
+    <Content Include="static\js\chatbot.js" />
     <Content Include="static\js\textipyimage.js" />
     <Content Include="static\js\magiclens.js" />
     <Content Include="static\js\paragraphs.js" />
@@ -83,6 +85,7 @@
     <Content Include="static\LogoPyLens\More\tensor-lens-adjusted %283%29.png" />
     <Content Include="static\LogoPyLens\More\tensor-lens-adjusted %284%29.png" />
     <Content Include="static\LogoPyLens\More\tensor-lens-adjusted.png" />
+    <Content Include="study\chat_bot.md" />
     <Content Include="study\gridpopupsavemodal.md" />
     <Content Include="study\ReadMeAcademic.md" />
     <Content Include="requirements.txt" />
@@ -116,6 +119,7 @@
     <Content Include="study\textdisksave_bestpractice.md" />
     <Content Include="study\texteditor.md" />
     <Content Include="templates\about.html" />
+    <Content Include="templates\chatbot.html" />
     <Content Include="templates\textipyimage.html" />
     <Content Include="templates\magiclens.html" />
     <Content Include="templates\studiogtts.html" />
