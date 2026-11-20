@@ -8,12 +8,10 @@
 {% block content %}
 <div class="magic-lens-container">
     <div class="jumbotron">
-        <h1>🎛️ MAGIC LENS</h1>
-    </div>
-
-    <!-- Keyboard Instruction Label -->
-    <div class="keyboard-instruction">
-        <p><strong>💡 Tip:</strong> Press <kbd>T</kbd> to toggle the floating text panel</p>
+        <h1> 
+            <img src="/static/logo.png" class="logo" alt="FastAPI DSP Logo" />
+            Magic Lens
+        </h1>
     </div>
 
     <!-- Floating Text Panel (Controlled via JS visibility) -->
@@ -43,7 +41,7 @@
         <div class="upload-row">
             <div class="upload-block">
                 <input id="image-upload" type="file" accept="image/*" class="hidden">
-                <button id="upload-button" class="custom-btn" type="button">Select image</button>
+                <button id="upload-button" class="custom-btn" type="button">Select Image</button>
             </div>
             <div class="download-wrap">
                 <button id="update-button" class="custom-btn" type="button">⚡ Apply</button>

@@ -2,18 +2,16 @@
    1. PAGE CONTEXT & CORE LAYOUT 
    ========================================================================== */
 
-.box {
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 8px;
-}
-
-img {
-    max-width: 100%;
+#sessionImage {
+    max-width: 80vh;
     max-height: 80vh;
     width: auto;
     height: auto;
     display: block;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    padding: 20px;
+    text-align:center;
 }
 
 
@@ -106,6 +104,10 @@ img {
         color: #ccc;
         font-size: 12px;
     }
+
+input[type="file"] {
+    border: 2px inset transparent;
+}
 
     .textipy-floating-panel-content input[type="text"],
     .textipy-floating-panel-content textarea {

@@ -3,6 +3,8 @@
     padding: 10px;
     height: 250px;
     overflow-y: auto;
+    background-color: #1e1e2f;
+    color: white;
 }
 
 #textInput {

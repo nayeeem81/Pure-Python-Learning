@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-        {{ title if title else "Dashboard" }} - Magic Lens App
-    </title>
+	<title>
+		{{ title if title else "Dashboard" }} - Magic Lens App
+	</title>
 
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+	<link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 
-    <!-- Global CSS Framework Assets -->
-    <link rel="stylesheet" type="text/css" href="/static/content/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="/static/content/site.css" />
+	<!-- Global CSS Framework Assets -->
+	<link rel="stylesheet" type="text/css" href="/static/content/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="/static/content/site.css" />
 
-    <!-- 💡 FIXED 1: Added placeholder block for page-specific CSS -->
-    {% block page_css %}{% endblock %}
+	<!-- 💡 FIXED 1: Added placeholder block for page-specific CSS -->
+	{% block page_css %}{% endblock %}
 
-    <script src="/static/scripts/modernizr-2.6.2.js"></script>
+	<script src="/static/scripts/modernizr-2.6.2.js"></script>
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -31,21 +31,27 @@
 
                 <a href="/" class="navbar-brand">
                     <img src="/static/logo.png" class="logo" alt="FastAPI DSP Logo" />
-                    <span>MAGIC LENS App</span>
+                    <span>MAGIC LENS</span>
                 </a>
             </div>
 
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="/">HOME</a></li>
+                    <li><a href="/about">ABOUT</a></li>
+                </ul>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+
                     <li><a href="/dsp-studio">CENTCOM LIVE</a></li>
-                    <li><a href="/text-editor">PARAGRAPHS</a></li>
-                    <li><a href="/storygrid">MAK STORY</a></li>
-                    <li><a href="/editimage">EDT IMG</a></li>
-                    <li><a href="/textipyimage">TXT IMG</a></li>
-                    <li><a href="/slideshow">SLD SHOW</a></li>
-                    <li><a href="/chatbot">Chatti</a></li>
-                    <li><a href="/about">ABUT</a></li>
+                    <li><a href="/text-editor">SPEECH</a></li>
+                    <li><a href="/storygrid">AUDIO STORY</a></li>
+                    <li><a href="/editimage">EDIT IMG</a></li>
+                    <li><a href="/textipyimage">TEXT > IMG</a></li>
+                    <li><a href="/slideshow">SLIDE SHOW</a></li>
+                    <li><a href="/chatbot">LET'S CHAT</a></li>
+
                 </ul>
             </div>
         </div>
@@ -64,7 +70,25 @@
     <script src="/static/scripts/jquery-1.10.2.js"></script>
     <script src="/static/scripts/bootstrap.js"></script>
     <script src="/static/scripts/respond.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const navLinks = document.querySelectorAll(".nav > li > a");
+          const currentPath = window.location.pathname;
 
+          navLinks.forEach((link) => {
+            // 1. Highlight the link matching the current URL after page load
+            if (link.getAttribute("href") === currentPath) {
+              link.classList.add("active");
+            }
+
+            // 2. Switch the highlight immediately when clicked (useful for SPA/AJAX routing)
+            link.addEventListener("click", function () {
+              navLinks.forEach((item) => item.classList.remove("active"));
+              this.classList.add("active");
+            });
+          });
+        });
+    </script>
     <!-- 💡 FIXED 2: Isolated child script injection block -->
     {% block scripts %}{% endblock %}
 </body>

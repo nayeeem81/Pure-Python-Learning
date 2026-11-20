@@ -4,49 +4,93 @@
 
 
     <div class="jumbotron">
-        <h2>⚡ Key Features</h2>
 
-       
-        
+        <h1>⚡ Key Features</h1>
+     
         <p>
-         
-            <span style="color:floralwhite;">"using: fast api web lib, gtts lib (speech), pydub (dsp), pure python, postgres, github copilot, google ai mode, vs ide 2026"</span>
+
+            <span style="color:floralwhite;">
+                "using: fast api web lib, gtts lib (speech), pydub (dsp), pure python, postgres, github copilot, google ai mode, vs ide 2026"
+            </span>
 
             <br />
             <br />
-            <span class="bullet">🚀</span> Advanced Text-to-Speech: Instant, natural-sounding multi-language voice generation powered by gTTS.
+
+            <span class="bullet">🚀</span>
+
+            Text-to-speech generation: Users can enter a sentence that is converted into audio using GTTS (Google Text-to-Speech). Live speech pipeline controls: The dashboard includes actions such as: Generate Live Speech Pipeline. 
+
             <br />
             <br />
-            <span class="bullet">🚀</span> Dynamic Waveform Generation: Automatically transforms raw audio outputs into structured visual waveforms for front-end rendering.
+
+            <span class="bullet">🚀</span>
+            Dynamic Waveform Generation: Automatically transforms raw audio outputs into structured visual waveforms for front-end rendering.
+
             <br />
             <br />
-            <span class="bullet">🚀</span> Word-Level Analysis: Breaks down sentences into independent word fragments to track pronunciation layout and structures.
+
+            <span class="bullet">🚀</span>
+
+            Word-Level Analysis: Breaks down sentences into independent word fragments to track pronunciation layout and structures.
+            &nbsp; <a class="btn btn-default" href="#centcom">Learn more &raquo;</a>
+
             <br />
             <br />
-            <span class="bullet">🚀</span> Audio Tuning (Tone & Volume): Built-in middleware configurations to tweak and fine-tune volume and tone parameters on the fly.
-            <br />
-            <br />
-            <span class="bullet">🚀</span> Blazing Fast API Endpoints: Fully asynchronous background processing driven by FastAPI and Uvicorn.
-        </p>
+
+
     </div>
 
-    <div class="row">
-        <div class="col-md-4">
-            <h2>Getting started</h2>
+    
+    <div id="centcom" class="jumbotron">
+        
+            
+
+            <h1>Text-to-speech generation</h1>
+
             <p>
-                Fast API gives you a powerful python based application to use apifeature with web based  full control over markup for enjoyable, agile development. 
+                Users can enter a sentence that is converted into audio using GTTS (Google Text-to-Speech).
+
+                Live speech pipeline controls: The dashboard includes actions such as:
+
+                Generate Live Speech Pipeline
+                Synthesize and Load Workspace
+                Play Original
+                Play Modified Track
+                Consolidate and Render New MP3
             </p>
-            <p><a class="btn btn-default" href="http://flask.pocoo.org/docs/">Learn more &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-            <h2>Get more libraries</h2>
-            <p>The Python Package Index is a repository of software for the Python programming language.</p>
-            <p><a class="btn btn-default" href="https://pypi.python.org/pypi">Learn more &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-            <h2>Microsoft Azure</h2>
-            <p>You can easily publish to Microsoft Azure using Visual Studio. Find out how you can host your application using a free trial today.</p>
-            <p><a class="btn btn-default" href="http://azure.microsoft.com">Learn more &raquo;</a></p>
-        </div>
+            <h1>Per-word audio editing</h1>
+
+            <p>
+                After speech is generated, users can adjust each word individually using:
+                Tone (Pitch Shift) controls
+                Amplitude (Volume dB) controls
+
+                <br />
+                <br />
+                Word control grid: The current sentence is broken into individual words, each with its own pitch and volume sliders.
+
+                <br />
+                <br />
+                Some words have non-default settings, such as:
+                “welcome” with a pitch shift of 0.2 and volume of 13 dB
+                “to” with a pitch shift of 0.5 and volume of 12 dB
+                Example sentence: The workspace is loaded with a sample greeting beginning, “Hello, welcome to the Center of Command (GTTS, DSP)...” and explains that users can type sentences, convert them to audio, and then adjust tone and volume word-by-word.
+                <br />
+                <br />
+                After speech is generated, users can adjust each word individually using:
+                Tone (Pitch Shift) controls
+                Amplitude (Volume dB) controls
+                Word control grid: The current sentence is broken into individual words, each with its own pitch and volume sliders. Some words have non-default settings, such as:
+                “welcome” with a pitch shift of 0.2 and volume of 13 dB
+                “to” with a pitch shift of 0.5 and volume of 12 dB
+                Example sentence: The workspace is loaded with a sample greeting beginning, “Hello, welcome to the Center of Command (GTTS, DSP)...” and explains that users can type sentences, convert them to audio, and then adjust tone and volume word-by-word.
+
+                <br />
+                <br />
+                In one sentence, The page is an audio-processing dashboard that converts text into speech and lets users fine-tune the pitch and volume of individual words before rendering a modified MP3 file.
+            </p>
+
     </div>
+
+
 {% endblock %}

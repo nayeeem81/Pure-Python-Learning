@@ -25,13 +25,21 @@ span.bullet {
         line-height: 1.6;
     }
 
-    .jumbotron h2 {
+    .jumbotron h1 {
+        padding-top: 45px;
         margin-bottom: 35px;
+        color: gold;
     }
 
 .logo {
     width: 28px;
     height: 28px;
+}
+
+.jumbotron h1 img.logo {
+    width: 63px;
+    height: 63px;
+    line-height: 1;
 }
 
 input,
@@ -120,3 +128,15 @@ th {
 nav navbar-nav ul {
     text-transform: uppercase;
 }
+
+.nav > li > a.active {
+    border-bottom: 10px solid #fff;
+    padding-bottom: 5px;
+}
+
+.nav > li > a:focus,
+.nav > li > a:hover {
+    background-color: #f8f9fa;
+    color: #007BFF;
+}
+

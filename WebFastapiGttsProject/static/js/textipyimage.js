@@ -257,6 +257,7 @@ function loadSessionImage() {
     imgElement.onerror = () => { imgElement.style.display = "none"; };
 }
 
+
 // Function to upload the selected file using JS fetch
 async function uploadImage() {
     const fileInput = document.getElementById("imageInput");
