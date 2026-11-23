@@ -1,0 +1,41 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # Overrides your config.py Windows defaults for the Linux container:
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "8000"
+      APP_ENV: "PRODUCTION"
+      STORAGE_ROOT: "/app/storage"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+    volumes:
+      # Maps your Windows D:\StudioStorage directly to /app/storage
+      - D:/StudioStorage:/app/storage
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+

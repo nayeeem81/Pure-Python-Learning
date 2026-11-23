@@ -38,6 +38,7 @@
     </Compile>
     <Compile Include="api\gttsword.py" />
     <Compile Include="api\gttsagent.py" />
+    <Compile Include="Dockerfile" />
     <Compile Include="routers\api_routes.py" />
     <Compile Include="api\__init__.py" />
     <Compile Include="routers\__init__.py" />
@@ -49,8 +50,10 @@
     <Compile Include="views\__init__.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".dockerignore" />
     <Content Include=".gitignore" />
     <Content Include="api\gttsanalyzer.py" />
+    <Content Include="compose.yaml" />
     <Content Include="README.md" />
     <Content Include="static\content\chatbot.css" />
     <Content Include="static\content\textipyimage.css" />
@@ -86,8 +89,17 @@
     <Content Include="static\LogoPyLens\More\tensor-lens-adjusted %283%29.png" />
     <Content Include="static\LogoPyLens\More\tensor-lens-adjusted %284%29.png" />
     <Content Include="static\LogoPyLens\More\tensor-lens-adjusted.png" />
+    <Content Include="study\Break Point Debugging.pdf" />
     <Content Include="study\chat_bot.md" />
+    <Content Include="study\Deploy - DockerDesktop - Compose - Ubuntu Win 11 Build - For Fast Api App.pdf" />
+    <Content Include="study\docker wsl ubuntu.md" />
+    <Content Include="study\Frontier Models LLM - Rewards Are Non-negotiables.pdf" />
     <Content Include="study\gridpopupsavemodal.md" />
+    <Content Include="study\Guide - Magic Lens - FastAPI - Vanila JS - UnitTest.pdf" />
+    <Content Include="study\Guide For Debugging Interview Questions.pdf" />
+    <Content Include="study\install wsl.pdf" />
+    <Content Include="study\Installation For PyTest GitHub Unit Testing LLM.pdf" />
+    <Content Include="study\LLM Evaluation.pdf" />
     <Content Include="study\ReadMeAcademic.md" />
     <Content Include="requirements.txt" />
     <Content Include="static\content\banner.png" />
@@ -119,6 +131,7 @@
     <Content Include="static\scripts\_references.js" />
     <Content Include="study\textdisksave_bestpractice.md" />
     <Content Include="study\texteditor.md" />
+    <Content Include="study\Turing - LLM PyTest 4 Pliiers Guide Google AI Mode.pdf" />
     <Content Include="templates\about.html" />
     <Content Include="templates\chatbot.html" />
     <Content Include="templates\textipyimage.html" />

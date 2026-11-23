@@ -15,17 +15,24 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 # Configure FFmpeg Environment path strings immediately
-ffmpeg_path = r"C:\ffmpeg\bin"
-if ffmpeg_path not in os.environ["PATH"]:
-    os.environ["PATH"] = ffmpeg_path + os.pathsep + os.environ["PATH"]
-
-# Force early configuration initialization on Pydub before internal modules load
-try:
-    import pydub
-    pydub.AudioSegment.converter = os.path.join(ffmpeg_path, "ffmpeg.exe")
-    pydub.AudioSegment.ffprobe = os.path.join(ffmpeg_path, "ffprobe.exe")
-except ImportError:
-    pass
+import shutil
+if os.name == "nt":
+    ffmpeg_path = r"C:\ffmpeg\bin"
+    if ffmpeg_path not in os.environ["PATH"]:
+        os.environ["PATH"] = ffmpeg_path + os.pathsep + os.environ["PATH"]
+    try:
+        import pydub
+        pydub.AudioSegment.converter = os.path.join(ffmpeg_path, "ffmpeg.exe")
+        pydub.AudioSegment.ffprobe = os.path.join(ffmpeg_path, "ffprobe.exe")
+    except ImportError:
+        pass
+else:
+    try:
+        import pydub
+        pydub.AudioSegment.converter = shutil.which("ffmpeg") or "ffmpeg"
+        pydub.AudioSegment.ffprobe = shutil.which("ffprobe") or "ffprobe"
+    except ImportError:
+        pass
 
 
 # ==========================================================================
@@ -97,9 +104,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Modern Studio Backend", lifespan=lifespan)
 
 app.add_middleware(
-    SessionMiddleware, 
-    secret_key="local-test-secret"
+    SessionMiddleware,
+    secret_key=config.SECRET_KEY
 )
+
 
 # 🛠️ FIXED: Mount the D: drive folder onto the path alias /project/generated
 # This enables the UI grid to load asset URLs like /project/generated/sentence_1.mp3
